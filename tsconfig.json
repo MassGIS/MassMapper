@@ -1,0 +1,26 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"alwaysStrict": true,
+		"baseUrl": ".",
+		"downlevelIteration": true,
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"jsx": "preserve",
+		"module": "esnext",
+		"moduleResolution": "node",
+		"noImplicitAny": true,
+		"noImplicitReturns": true,
+		"noImplicitThis": true,
+		"outDir": "dist",
+		"sourceMap": true,
+		"strictFunctionTypes": true,
+		"strictNullChecks": true,
+		"suppressImplicitAnyIndexErrors": true,
+		"target": "esnext",
+		"typeRoots": [
+			"./node_modules/@types"
+		]
+	}
+}
