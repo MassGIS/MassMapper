@@ -1,3 +1,4 @@
 node_modules/
 htdocs/*.html
 htdocs/dist/*.bundle*
+version.json

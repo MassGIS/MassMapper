@@ -24,7 +24,7 @@ const bundles = {
 			filename: '../../htdocs/oliver.html', // relative to webpack.config.output.path
 			hash: true,
 			inject: 'head',
-			favicon: path.join(__dirname, '../../static/favicon.ico'),
+			// favicon: path.join(__dirname, '../../static/favicon.ico'),
 			chunks: ['oliverApp'],
 			scriptLoading: 'defer'
 		}),

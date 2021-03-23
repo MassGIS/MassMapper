@@ -3,6 +3,7 @@ import { observer, Observer } from 'mobx-react';
 import queryString from 'query-string';
 import React from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import './OliverApp.module.css';
 // import { Tab, TabPaneProps } from 'semantic-ui-react';
 // import { Container } from 'typedi';
 
@@ -41,9 +42,17 @@ class OliverApp extends React.Component<
 		// }
 
 		return (
-			<>
-				The New OLIVER!!!
-			</>
+			<div styleName="container">
+				<div styleName="nav">
+					Nav Bar
+				</div>
+				<div styleName="right">
+					Right Panel
+				</div>
+				<div styleName="main">
+					Map Panel
+				</div>
+			</div>
 		);
 	}
 }
