@@ -6,7 +6,7 @@ const gitDirty = execa.sync('git', ['status', '-s', '-uall']).stdout.length > 0;
 const gitHash = execa.sync('git', ['rev-parse', '--short', 'HEAD']).stdout;
 const gitNumCommits = Number(execa.sync('git', ['rev-list', 'HEAD', '--count']).stdout);
 const gitBranch = execa.sync('git', ['rev-parse', '--abbrev-ref', 'HEAD']).stdout;
-// const gitTag = execa.sync('git', ['describe','--tags']).stdout;
+const gitTag = execa.sync('git', ['describe','--tags']).stdout;
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const path = require('path');
@@ -49,9 +49,9 @@ module.exports = {
 
 	output: {
 		filename: '[name].bundle.js',
-		path: path.resolve(__dirname, './dist'),
+		path: path.resolve(__dirname, './htdocs/dist'),
 		pathinfo: false,
-		publicPath: '/htdocs/dist/',
+		publicPath: '/dist/',
 	},
 
 	resolve: {
