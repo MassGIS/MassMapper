@@ -19,7 +19,6 @@ import './OliverApp.module.css';
 
 
 interface OliverAppProps extends RouteComponentProps<any> {}
-@observer
 class OliverApp extends React.Component<
 	OliverAppProps
 > {

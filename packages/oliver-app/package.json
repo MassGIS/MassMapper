@@ -13,11 +13,11 @@
 		"@types/detect-browser": "^3.0.0",
 		"@types/isomorphic-fetch": "0.0.34",
 		"@types/query-string": "~6.1.0",
-		"@types/react": "^16.9.22",
+		"@types/react": "^17.0.3",
 		"@types/react-css-modules": "^4.6.2",
-		"@types/react-dom": "^16.8.4",
-		"@types/react-router-dom": "^4.3.2",
-		"@types/react-virtualized": "^9.18.12",
+		"@types/react-dom": "^17.0.3",
+		"@types/react-router-dom": "^5.1.7",
+		"@types/uuid": "^8.3.0",
 		"webpack": "^4.42.1"
 	},
 	"dependencies": {
@@ -26,17 +26,16 @@
 		"detect-browser": "^4.0.3",
 		"fetch-retry": "^4.0.1",
 		"isomorphic-fetch": "^2.2.1",
-		"mobx": "^4.4.0",
-		"mobx-react": "^5.2.6",
-		"mobx-react-lite": "^1.3.2",
-		"mobx-react-devtools": "^6.0.3",
+		"mobx": "^6.1.8",
+		"mobx-react": "^7.1.0",
+		"mobx-react-lite": "^3.2.0",
 		"query-string": "^5.1.0",
-		"react": "^16.12.0",
-		"react-dom": "^16.12.0",
-		"react-router": "^5.1.2",
-		"react-router-dom": "^5.1.2",
-		"react-virtualized": "^9.21.0",
-		"semantic-ui-less": "^2.4.1",
-		"semantic-ui-react": "^0.87.3"
+		"react": "^17.0.2",
+		"react-css-modules": "^4.7.11",
+		"react-dom": "^17.0.2",
+		"react-router": "^5.2.0",
+		"react-router-dom": "^5.2.0",
+		"typedi": "^0.10.0",
+		"uuid": "^8.3.2"
 	}
 }

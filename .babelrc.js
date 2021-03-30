@@ -16,8 +16,8 @@ module.exports = {
 		],
 		'@babel/plugin-proposal-async-generator-functions',
 		'@babel/plugin-proposal-object-rest-spread',
-		['@babel/plugin-proposal-decorators', { legacy: true }],
 		['transform-class-properties', { loose: true }],
+		["@babel/plugin-proposal-class-properties", { "loose": false }],
 		'lodash',
 	],
 	presets: [

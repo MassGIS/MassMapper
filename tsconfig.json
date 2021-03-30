@@ -5,8 +5,6 @@
 		"alwaysStrict": true,
 		"baseUrl": ".",
 		"downlevelIteration": true,
-		"emitDecoratorMetadata": true,
-		"experimentalDecorators": true,
 		"jsx": "preserve",
 		"module": "esnext",
 		"moduleResolution": "node",
@@ -21,6 +19,7 @@
 		"target": "esnext",
 		"typeRoots": [
 			"./node_modules/@types"
-		]
+		],
+		"useDefineForClassFields": true
 	}
 }
