@@ -6,7 +6,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import './OliverApp.module.css';
 import { useService } from './services/useService';
 import { ServiceContext, ServiceContextType } from './services/ServiceContext';
-import { LegendService } from './services/LegendService';
+import { LegendService, Layer } from './services/LegendService';
 import { ContainerInstance, ServiceNotFoundError } from 'typedi';
 
 // import logo from '../assets/img/logo.png';
@@ -22,10 +22,13 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 	const { services } = useContext(ServiceContext);
 
 	if (!services.has(typeof LegendService)) {
-		services.set(typeof LegendService, new LegendService());
+		const ls = new LegendService();
+		loadSomeLayers(ls);
+		services.set(typeof LegendService, ls);
 	}
 
 	const legendService = useService(typeof LegendService) as LegendService;
+	window['legendService'] = legendService;
 
 	if (!legendService.ready) {
 		return (<>Loading...</>);
@@ -37,15 +40,59 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 				Nav Bar
 			</div>
 			<div styleName="right">
-				Right Panel
+				{legendService.layers.map((l) => (
+					<div
+						key={`layer-${l.id}`}
+					>
+						<input
+							type="checkbox"
+							onClick={() => {
+								l.enabled = !l.enabled;
+							}}
+							checked={l.enabled}
+						/>
+						<label>{l.name}</label>
+					</div>
+				))}
 			</div>
 			<div styleName="main">
-				Map Panel
+				<div>Enabled Layers:</div>
+				{legendService.enabledLayers.map((l) => (
+					<div
+						key={`layer-${l.id}`}
+					>
+						{l.name}
+					</div>
+				))}
 			</div>
 		</div>
 	);
 });
 
+const loadSomeLayers = (legendService:LegendService) => {
+	[{
+		name: "test",
+		id: "test-id",
+		enabled: true,
+	},
+	{
+		name: "another test",
+		id: "test-2",
+		enabled: true,
+	},
+	{
+		name: "layer 3",
+		id: "test-3",
+		enabled: true,
+	},
+	{
+		name: "layer d",
+		id: "test-4",
+		enabled: true,
+	}].forEach((l:Layer) => {
+		legendService.addLayer(l);
+	})
+}
 
 
 export default withRouter(OliverApp);

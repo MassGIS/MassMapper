@@ -43,8 +43,8 @@ class LegendService {
 class Layer {
 	public name: string;
 	public id: string;
-	public legendURL: string;
 	public enabled: boolean;
+	public legendURL?: string;
 }
 
 export { Layer, LegendService };
