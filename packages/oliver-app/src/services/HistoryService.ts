@@ -4,7 +4,9 @@ import * as queryString from 'query-string';
 
 type QueryParameter = string | boolean | object | undefined;
 
-let history: History;
+const history: History = createBrowserHistory({
+	basename: '/',
+});;
 
 class HistoryService {
 	private _currentQueryParams: Map<string, QueryParameter>;
@@ -12,18 +14,14 @@ class HistoryService {
 	private _currentLocationSearch: string;
 
 	constructor() {
-		history = createBrowserHistory({
-			basename: '/',
-		});
+		this._currentLocationSearch = history.location.search;
+		this._currentQueryParams = this.parseQueryString(history.location.search);
 
 		makeObservable<HistoryService, '_currentQueryParams'>( // see https://mobx.js.org/observable-state.html#limitations
 			this, {
 				_currentQueryParams: observable
 			}
 		);
-
-		this._currentLocationSearch = history.location.search;
-		this._currentQueryParams = this.parseQueryString(history.location.search);
 
 		history.listen((location) => {
 			if (this._currentLocationSearch !== location.search) {

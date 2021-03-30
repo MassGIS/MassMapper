@@ -1,15 +1,13 @@
 import { observer, Observer } from 'mobx-react';
-// import DevTools from 'mobx-react-devtools';
 import queryString from 'query-string';
-import React from 'react';
+import React, { FunctionComponent, useContext, useEffect } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+
 import './OliverApp.module.css';
-// import { Tab, TabPaneProps } from 'semantic-ui-react';
-// import { Container } from 'typedi';
-
-// import PortalService from '../services/PortalService';
-
-// import './Portal.module.css';
+import { useService } from './services/useService';
+import { ServiceContext, ServiceContextType } from './services/ServiceContext';
+import { LegendService } from './services/LegendService';
+import { ContainerInstance, ServiceNotFoundError } from 'typedi';
 
 // import logo from '../assets/img/logo.png';
 // import timeIcon from '../assets/img/time-icon.png';
@@ -19,42 +17,34 @@ import './OliverApp.module.css';
 
 
 interface OliverAppProps extends RouteComponentProps<any> {}
-class OliverApp extends React.Component<
-	OliverAppProps
-> {
-	constructor(props: OliverAppProps) {
-		super(props);
-		// Container.of(this).set(PortalService, new PortalService());
+const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
+
+	const { services } = useContext(ServiceContext);
+
+	if (!services.has(typeof LegendService)) {
+		services.set(typeof LegendService, new LegendService());
 	}
 
-	public shouldComponentUpdate(nextProps: OliverAppProps) {
-		const qs = queryString.parse(this.props.location.search);
-		const newQs = queryString.parse(nextProps.location.search);
+	const legendService = useService(typeof LegendService) as LegendService;
 
-		return qs.sid !== newQs.sid || qs.config_id !== newQs.config_id;
+	if (!legendService.ready) {
+		return (<>Loading...</>);
 	}
 
-	public render() {
-		// const ps = Container.of(this).get(PortalService);
-		// if (!ps.ready) {
-		// 	return (<span>Loading...</span>);
-		// }
-
-		return (
-			<div styleName="container">
-				<div styleName="nav">
-					Nav Bar
-				</div>
-				<div styleName="right">
-					Right Panel
-				</div>
-				<div styleName="main">
-					Map Panel
-				</div>
+	return (
+		<div styleName="container">
+			<div styleName="nav">
+				Nav Bar
 			</div>
-		);
-	}
-}
+			<div styleName="right">
+				Right Panel
+			</div>
+			<div styleName="main">
+				Map Panel
+			</div>
+		</div>
+	);
+});
 
 
 

@@ -10,4 +10,4 @@ const ServiceContext = createContext<ServiceContextType>({
 	services: Container.of(uuid()),
 });
 
-export { ServiceContext };
+export { ServiceContext, ServiceContextType };

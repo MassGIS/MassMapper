@@ -1,4 +1,4 @@
-import { createBrowserHistory } from 'history';
+import 'reflect-metadata';
 import React, { FunctionComponent } from 'react';
 import { render } from 'react-dom';
 import { Router, Switch, Route } from 'react-router-dom';
