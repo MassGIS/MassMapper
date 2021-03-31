@@ -42,17 +42,7 @@ const useStyles = makeStyles((theme) => ({
 interface OliverAppProps extends RouteComponentProps<any> {}
 const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
-	const { services } = useContext(ServiceContext);
 	const classes = useStyles();
-
-	if (!services.has(LegendService)) {
-		const ls = new LegendService();
-		loadSomeLayers(ls);
-		services.set(LegendService, ls);
-
-		const ms = new MapService(ls);
-		services.set(MapService, ms);
-	}
 
 	const legendService = useService(LegendService);
 	window['legendService'] = legendService;

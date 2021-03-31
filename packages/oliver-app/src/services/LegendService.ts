@@ -1,5 +1,7 @@
 import { makeObservable, observable } from "mobx";
+import { ContainerInstance, Service } from "typedi";
 
+@Service()
 class LegendService {
 	private _layers: Layer[];
 	private _ready: boolean = false;
@@ -16,7 +18,7 @@ class LegendService {
 		return this._ready;
 	}
 
-	constructor() {
+	constructor(services:ContainerInstance) {
 		this._layers = [];
 
 		makeObservable<LegendService,'_layers' | '_ready'>(

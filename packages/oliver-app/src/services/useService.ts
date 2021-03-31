@@ -1,9 +1,10 @@
 import { useContext } from 'react';
-import { Token } from 'typedi';
+import { Token, ServiceIdentifier } from 'typedi';
 import { ServiceContext } from './ServiceContext';
 
 type ServiceType<T> =
 	| string
+	| ServiceIdentifier<T>
 	| Token<T>
 	| {
 		service: T;
@@ -24,6 +25,7 @@ function useService(serviceType: any | any[]): any {
 	const instances = [];
 
 	for (const type of types) {
+		debugger;
 		const service = services.get(type as any);
 
 		if (!service) throw new Error(`Dependency injection container could not resolve service: '${type}'.`);

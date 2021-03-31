@@ -1,7 +1,8 @@
 import { autorun, makeObservable, observable } from "mobx";
 import { Layer, LegendService } from './LegendService';
 import { Map } from 'leaflet';
-
+import { ContainerInstance, Service } from "typedi";
+@Service()
 class MapService {
 	private _map: Map | null = null;
 	private _ready: boolean = false;
@@ -11,7 +12,7 @@ class MapService {
 		return this._ready;
 	}
 
-	constructor(l:LegendService) {
+	constructor(services:ContainerInstance) {
 		makeObservable<MapService,'_map' | '_ready'>(
 			this,
 			{
@@ -20,7 +21,7 @@ class MapService {
 			}
 		);
 
-		this._legendService = l;
+		this._legendService = services.get(LegendService);
 
 		(async () => {
 			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
