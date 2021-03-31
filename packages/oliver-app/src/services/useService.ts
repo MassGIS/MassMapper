@@ -25,7 +25,6 @@ function useService(serviceType: any | any[]): any {
 	const instances = [];
 
 	for (const type of types) {
-		debugger;
 		const service = services.get(type as any);
 
 		if (!service) throw new Error(`Dependency injection container could not resolve service: '${type}'.`);

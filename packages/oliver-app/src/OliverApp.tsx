@@ -56,8 +56,6 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
 	const position = [51.505, -0.09] as LatLngExpression;
 
-	debugger;
-
 	return (
 		<div styleName="container">
 			<div styleName="nav">
@@ -119,31 +117,5 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 		</div>
 	);
 });
-
-const loadSomeLayers = (legendService: LegendService) => {
-	[{
-		name: "test",
-		id: "test-id",
-		enabled: true,
-	},
-	{
-		name: "another test",
-		id: "test-2",
-		enabled: true,
-	},
-	{
-		name: "layer 3",
-		id: "test-3",
-		enabled: true,
-	},
-	{
-		name: "layer d",
-		id: "test-4",
-		enabled: true,
-	}].forEach((l: Layer) => {
-		legendService.addLayer(l);
-	});
-}
-
 
 export default withRouter(OliverApp);

@@ -31,6 +31,7 @@ class LegendService {
 
 		(async () => {
 			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
+			loadSomeLayers(this);
 			this._ready = true;
 		})();
 	}
@@ -49,3 +50,29 @@ class Layer {
 }
 
 export { Layer, LegendService };
+
+
+const loadSomeLayers = (legendService: LegendService) => {
+	[{
+		name: "test",
+		id: "test-id",
+		enabled: true,
+	},
+	{
+		name: "another test",
+		id: "test-2",
+		enabled: true,
+	},
+	{
+		name: "layer 3",
+		id: "test-3",
+		enabled: true,
+	},
+	{
+		name: "layer d",
+		id: "test-4",
+		enabled: true,
+	}].forEach((l: Layer) => {
+		legendService.addLayer(l);
+	});
+}
