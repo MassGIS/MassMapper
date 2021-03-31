@@ -1,16 +1,16 @@
-import { observer, Observer } from 'mobx-react';
-import queryString from 'query-string';
-import React, { FunctionComponent, useContext, useEffect } from 'react';
+import { observer } from 'mobx-react';
+import React, { FunctionComponent, useContext } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { useService } from './services/useService';
+import { ServiceContext } from './services/ServiceContext';
+import { LegendService, Layer } from './services/LegendService';
+
+import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 
 import './OliverApp.module.css';
-import { useService } from './services/useService';
-import { ServiceContext, ServiceContextType } from './services/ServiceContext';
-import { LegendService, Layer } from './services/LegendService';
-import { ContainerInstance, ServiceNotFoundError } from 'typedi';
+import 'leaflet/dist/leaflet.css';
 
 import { makeStyles } from '@material-ui/core/styles';
-
 import Checkbox from '@material-ui/core/Checkbox';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormLabel from '@material-ui/core/FormLabel';
@@ -24,12 +24,8 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
-
-// import logo from '../assets/img/logo.png';
-// import timeIcon from '../assets/img/time-icon.png';
-// import saltIcon from '../assets/img/salt-icon.png';
-// import snowIcon from '../assets/img/snow-icon.png';
-// import vehicleIcon from '../assets/img/vehicle-icon.png';
+import { LatLngExpression, Map } from 'leaflet';
+import { MapService } from './services/MapService';
 
 const useStyles = makeStyles((theme) => ({
 	root: {
@@ -49,18 +45,28 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 	const { services } = useContext(ServiceContext);
 	const classes = useStyles();
 
-	if (!services.has(typeof LegendService)) {
+	if (!services.has(LegendService)) {
 		const ls = new LegendService();
 		loadSomeLayers(ls);
-		services.set(typeof LegendService, ls);
+		services.set(LegendService, ls);
+
+		const ms = new MapService(ls);
+		services.set(MapService, ms);
 	}
 
-	const legendService = useService(typeof LegendService) as LegendService;
+	const legendService = useService(LegendService);
 	window['legendService'] = legendService;
+
+	const mapService = useService(MapService);
+	window['mapService'] = mapService;
 
 	if (!legendService.ready) {
 		return (<>Loading...</>);
 	}
+
+	const position = [51.505, -0.09] as LatLngExpression;
+
+	debugger;
 
 	return (
 		<div styleName="container">
@@ -89,7 +95,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 				</FormControl>
 			</div>
 			<div styleName="main">
-				<TableContainer component={Paper}>
+				{/* <TableContainer component={Paper}>
 					<Table className={classes.table} aria-label="Active Layers">
 						<TableHead>
 							<TableRow>
@@ -106,7 +112,19 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							))}
 						</TableBody>
 					</Table>
-				</TableContainer>
+				</TableContainer> */}
+				<MapContainer
+					center={position}
+					zoom={13}
+					scrollWheelZoom={true}
+					style={{
+						height: "100%"
+					}}
+					whenCreated={(map:Map) => {
+						mapService.initLeafletMap(map);
+					}}
+				>
+				</MapContainer>
 			</div>
 		</div>
 	);

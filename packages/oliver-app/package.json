@@ -12,6 +12,7 @@
 	"devDependencies": {
 		"@types/detect-browser": "^3.0.0",
 		"@types/isomorphic-fetch": "0.0.34",
+		"@types/leaflet": "^1.7.0",
 		"@types/query-string": "~6.1.0",
 		"@types/react": "^17.0.3",
 		"@types/react-css-modules": "^4.6.2",
@@ -21,11 +22,13 @@
 		"webpack": "^4.42.1"
 	},
 	"dependencies": {
+		"@material-ui/core": "^4.11.3",
 		"@turf/turf": "^6.3.0",
 		"date-fns": "^2.16.1",
 		"detect-browser": "^4.0.3",
 		"fetch-retry": "^4.0.1",
 		"isomorphic-fetch": "^2.2.1",
+		"leaflet": "^1.7.1",
 		"mobx": "^6.1.8",
 		"mobx-react": "^7.1.0",
 		"mobx-react-lite": "^3.2.0",
@@ -33,10 +36,10 @@
 		"react": "^17.0.2",
 		"react-css-modules": "^4.7.11",
 		"react-dom": "^17.0.2",
+		"react-leaflet": "^3.1.0",
 		"react-router": "^5.2.0",
 		"react-router-dom": "^5.2.0",
 		"typedi": "^0.10.0",
-		"uuid": "^8.3.2",
-		"@material-ui/core": "^4.11.3"
+		"uuid": "^8.3.2"
 	}
 }

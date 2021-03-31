@@ -1,4 +1,4 @@
-import { autorun, computed, makeObservable, observable } from "mobx";
+import { makeObservable, observable } from "mobx";
 
 class LegendService {
 	private _layers: Layer[];
@@ -24,14 +24,13 @@ class LegendService {
 			{
 				_layers: observable,
 				_ready: observable,
-				layers: computed,
 			}
 		);
 
-		autorun(async () => {
+		(async () => {
 			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
 			this._ready = true;
-		})
+		})();
 	}
 
 	public async addLayer(l:Layer):Promise<void> {

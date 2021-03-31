@@ -17,6 +17,8 @@
 .main {
 	width: 70%;
 	background-color: grey;
+	/* height: calc(100vh - 20%); */
+	/* height: 200px; */
 	height: 80%;
 	float: left;
 }
@@ -27,3 +29,7 @@
 	height: 80%;
 	float: right;
 }
+
+/* :global(.leaflet-container) {
+	height: 100%;
+} */
