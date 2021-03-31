@@ -9,17 +9,45 @@ import { ServiceContext, ServiceContextType } from './services/ServiceContext';
 import { LegendService, Layer } from './services/LegendService';
 import { ContainerInstance, ServiceNotFoundError } from 'typedi';
 
+import { makeStyles } from '@material-ui/core/styles';
+
+import Checkbox from '@material-ui/core/Checkbox';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormLabel from '@material-ui/core/FormLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 // import logo from '../assets/img/logo.png';
 // import timeIcon from '../assets/img/time-icon.png';
 // import saltIcon from '../assets/img/salt-icon.png';
 // import snowIcon from '../assets/img/snow-icon.png';
 // import vehicleIcon from '../assets/img/vehicle-icon.png';
 
+const useStyles = makeStyles((theme) => ({
+	root: {
+		display: 'flex',
+	},
+	formControl: {
+		margin: theme.spacing(3),
+	},
+	table: {
+		minWidth: 650,
+	},
+}));
 
 interface OliverAppProps extends RouteComponentProps<any> {}
 const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
 	const { services } = useContext(ServiceContext);
+	const classes = useStyles();
 
 	if (!services.has(typeof LegendService)) {
 		const ls = new LegendService();
@@ -39,37 +67,52 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 			<div styleName="nav">
 				Nav Bar
 			</div>
-			<div styleName="right">
-				{legendService.layers.map((l) => (
-					<div
-						key={`layer-${l.id}`}
-					>
-						<input
-							type="checkbox"
-							onClick={() => {
-								l.enabled = !l.enabled;
-							}}
-							checked={l.enabled}
-						/>
-						<label>{l.name}</label>
-					</div>
-				))}
+			<div styleName="right" className={classes.root}>
+				<FormControl component="fieldset" className={classes.formControl}>
+					<FormLabel component="legend">Available layers</FormLabel>
+					<FormGroup>
+						{legendService.layers.map((l) => (
+							<FormControlLabel
+								key={`layer-${l.id}`}
+								control={
+									<Checkbox
+										onChange={(e) => {
+											l.enabled = e.target.checked;
+										}}
+										checked={l.enabled}
+										color="default"
+									/>}
+								label={l.name}
+							/>
+						))}
+					</FormGroup>
+				</FormControl>
 			</div>
 			<div styleName="main">
-				<div>Enabled Layers:</div>
-				{legendService.enabledLayers.map((l) => (
-					<div
-						key={`layer-${l.id}`}
-					>
-						{l.name}
-					</div>
-				))}
+				<TableContainer component={Paper}>
+					<Table className={classes.table} aria-label="Active Layers">
+						<TableHead>
+							<TableRow>
+								<TableCell>Active Layers</TableCell>
+							</TableRow>
+						</TableHead>
+						<TableBody>
+							{legendService.enabledLayers.map((l) => (
+								<TableRow key={`layer-${l.id}`}>
+									<TableCell component="th" scope="row">
+										{l.name}
+									</TableCell>
+								</TableRow>
+							))}
+						</TableBody>
+					</Table>
+				</TableContainer>
 			</div>
 		</div>
 	);
 });
 
-const loadSomeLayers = (legendService:LegendService) => {
+const loadSomeLayers = (legendService: LegendService) => {
 	[{
 		name: "test",
 		id: "test-id",
@@ -89,9 +132,9 @@ const loadSomeLayers = (legendService:LegendService) => {
 		name: "layer d",
 		id: "test-4",
 		enabled: true,
-	}].forEach((l:Layer) => {
+	}].forEach((l: Layer) => {
 		legendService.addLayer(l);
-	})
+	});
 }
 
 
