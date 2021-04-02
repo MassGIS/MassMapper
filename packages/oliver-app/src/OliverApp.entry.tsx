@@ -1,3 +1,4 @@
+import { configure } from 'mobx';
 import React, { FunctionComponent } from 'react';
 import { render } from 'react-dom';
 import { Router, Switch, Route } from 'react-router-dom';
@@ -18,6 +19,8 @@ const renderTarget = document.getElementById('react-root');
 
 if (!renderTarget)
 	throw new Error('Render target "react-root" not found in page');
+
+configure({ useProxies: "ifavailable" });
 
 const EntryComponent: FunctionComponent = () => (
 	<ServiceProvider>
