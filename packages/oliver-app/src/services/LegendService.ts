@@ -1,5 +1,14 @@
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { Service } from "typedi";
+
+class Layer {
+	public name: string;
+	public id: string;
+	public enabled: boolean;
+	public legendURL?: string;
+}
+
+type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';
 
 @Service()
 class LegendService {
@@ -21,35 +30,30 @@ class LegendService {
 	constructor() {
 		this._layers = [];
 
-		makeObservable<LegendService, '_layers' | '_ready'>(
+		makeObservable<LegendService, LegendServiceAnnotations>(
 			this,
 			{
 				_layers: observable,
-				_ready: observable
+				_ready: observable,
+				setReady: action
 			}
 		);
 
 		(async () => {
 			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
 			await loadSomeLayers(this);
-			this._ready = true;
+			this.setReady(true);
 		})();
 	}
 
 	public addLayer(l: Layer): void {
 		this._layers.push(l);
 	}
+
+	private setReady(isReady: boolean) {
+		this._ready = isReady;
+	}
 }
-
-class Layer {
-	public name: string;
-	public id: string;
-	public enabled: boolean;
-	public legendURL?: string;
-}
-
-export { Layer, LegendService };
-
 
 const loadSomeLayers =  async (legendService: LegendService) => {
 	[ {
@@ -75,3 +79,5 @@ const loadSomeLayers =  async (legendService: LegendService) => {
 		legendService.addLayer(l);
 	});
 }
+
+export { Layer, LegendService };
