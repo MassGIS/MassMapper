@@ -5,6 +5,14 @@ import 'reflect-metadata';
 import OliverApp from './OliverApp';
 import { ServiceProvider } from './services/ServiceProvider';
 import { history } from './services/HistoryService';
+import "fontsource-roboto/300.css";
+import "fontsource-roboto/400.css";
+import "fontsource-roboto/500.css";
+import "fontsource-roboto/700.css";
+import "fontsource-roboto/300-italic.css";
+import "fontsource-roboto/400-italic.css";
+import "fontsource-roboto/500-italic.css";
+import "fontsource-roboto/700-italic.css";
 
 const renderTarget = document.getElementById('react-root');
 
