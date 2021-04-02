@@ -44,10 +44,8 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
 	const classes = useStyles();
 
-	const legendService = useService(LegendService);
+	const [legendService, mapService] = useService([LegendService, MapService]);
 	window['legendService'] = legendService;
-
-	const mapService = useService(MapService);
 	window['mapService'] = mapService;
 
 	if (!legendService.ready) {

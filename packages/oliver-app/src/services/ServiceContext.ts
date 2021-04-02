@@ -1,6 +1,6 @@
 import { createContext } from 'react';
-import { v4 as uuid } from 'uuid';
 import { Container, ContainerInstance } from 'typedi';
+import { v4 as uuid } from 'uuid';
 
 interface ServiceContextType {
 	services: ContainerInstance;

@@ -1,11 +1,10 @@
-import 'reflect-metadata';
 import React, { FunctionComponent } from 'react';
 import { render } from 'react-dom';
 import { Router, Switch, Route } from 'react-router-dom';
+import 'reflect-metadata';
 import OliverApp from './OliverApp';
 import { ServiceProvider } from './services/ServiceProvider';
 import { history } from './services/HistoryService';
-// import 'semantic-ui-less/semantic.less';
 
 const renderTarget = document.getElementById('react-root');
 

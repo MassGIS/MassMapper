@@ -5,6 +5,7 @@
 		"alwaysStrict": true,
 		"baseUrl": ".",
 		"downlevelIteration": true,
+		"experimentalDecorators": true,
 		"jsx": "preserve",
 		"module": "esnext",
 		"moduleResolution": "node",

@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Container } from 'typedi';
 import { v4 as uuid } from 'uuid';
-import { ServiceContext } from './ServiceContext';
 import { HistoryService } from './HistoryService';
+import { ServiceContext } from './ServiceContext';
 
 type ServiceProviderProps = {};
 
