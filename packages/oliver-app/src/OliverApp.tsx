@@ -1,50 +1,64 @@
+import {
+	AppBar,
+	Checkbox,
+	FormControl,
+	FormControlLabel,
+	FormGroup,
+	FormLabel,
+	Grid,
+	Paper,
+	Toolbar,
+	Typography
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { LatLngExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useContext } from 'react';
+import React, { FunctionComponent } from 'react';
+import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { LegendService } from './services/LegendService';
+import { MapService } from './services/MapService';
 import { useService } from './services/useService';
-import { ServiceContext } from './services/ServiceContext';
-import { LegendService, Layer } from './services/LegendService';
-
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
-
-import './OliverApp.module.css';
 import 'leaflet/dist/leaflet.css';
 
-import { makeStyles } from '@material-ui/core/styles';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
-import { LatLngExpression, Map } from 'leaflet';
-import { MapService } from './services/MapService';
-
 const useStyles = makeStyles((theme) => ({
-	root: {
-		display: 'flex',
+	appBarSpacer: theme.mixins.toolbar,
+	container: {
+		flexGrow: 1
+	},
+	content: {
+		flexGrow: 1,
+		height: '100%',
+		overflow: 'auto'
 	},
 	formControl: {
-		margin: theme.spacing(3),
+		margin: theme.spacing(3)
+	},
+	map: {
+		height: '100%'
+	},
+	mapContainer: {
+		flexGrow: 1
+	},
+	root: {
+		display: 'flex',
+		height: '100%'
 	},
 	table: {
-		minWidth: 650,
+		minWidth: 650
 	},
+	title: {
+		flexGrow: 1
+	}
 }));
 
-interface OliverAppProps extends RouteComponentProps<any> {}
-const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
+interface OliverAppProps extends RouteComponentProps<any> {
+}
 
+const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 	const classes = useStyles();
 
-	const [legendService, mapService] = useService([LegendService, MapService]);
+	const [ legendService, mapService ] = useService([ LegendService, MapService ]);
 	window['legendService'] = legendService;
 	window['mapService'] = mapService;
 
@@ -52,66 +66,72 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 		return (<>Loading...</>);
 	}
 
-	const position = [51.505, -0.09] as LatLngExpression;
+	const position = [ 51.505, -0.09 ] as LatLngExpression;
 
 	return (
-		<div styleName="container">
-			<div styleName="nav">
-				Nav Bar
-			</div>
-			<div styleName="right" className={classes.root}>
-				<FormControl component="fieldset" className={classes.formControl}>
-					<FormLabel component="legend">Available layers</FormLabel>
-					<FormGroup>
-						{legendService.layers.map((l) => (
-							<FormControlLabel
-								key={`layer-${l.id}`}
-								control={
-									<Checkbox
-										onChange={(e) => {
-											l.enabled = e.target.checked;
-										}}
-										checked={l.enabled}
-										color="default"
-									/>}
-								label={l.name}
-							/>
-						))}
-					</FormGroup>
-				</FormControl>
-			</div>
-			<div styleName="main">
-				{/* <TableContainer component={Paper}>
-					<Table className={classes.table} aria-label="Active Layers">
-						<TableHead>
-							<TableRow>
-								<TableCell>Active Layers</TableCell>
-							</TableRow>
-						</TableHead>
-						<TableBody>
-							{legendService.enabledLayers.map((l) => (
-								<TableRow key={`layer-${l.id}`}>
-									<TableCell component="th" scope="row">
-										{l.name}
-									</TableCell>
-								</TableRow>
-							))}
-						</TableBody>
-					</Table>
-				</TableContainer> */}
-				<MapContainer
-					center={position}
-					zoom={13}
-					scrollWheelZoom={true}
-					style={{
-						height: "100%"
-					}}
-					whenCreated={(map:Map) => {
-						mapService.initLeafletMap(map);
-					}}
-				>
-				</MapContainer>
-			</div>
+		<div className={classes.root}>
+			<AppBar position="absolute">
+				<Toolbar>
+					<Typography className={classes.title} color="inherit" component="h1" noWrap variant="h6">
+						Nav Bar
+					</Typography>
+				</Toolbar>
+			</AppBar>
+			<Grid className={classes.content} component="main" container direction="column">
+				<Grid className={classes.appBarSpacer} item/>
+				<Grid className={classes.container} container item wrap="nowrap">
+					<Grid className={classes.mapContainer} item>
+						{/* <TableContainer component={Paper}>
+							<Table className={classes.table} aria-label="Active Layers">
+								<TableHead>
+									<TableRow>
+										<TableCell>Active Layers</TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody>
+									{legendService.enabledLayers.map((l) => (
+										<TableRow key={`layer-${l.id}`}>
+											<TableCell component="th" scope="row">
+												{l.name}
+											</TableCell>
+										</TableRow>
+									))}
+								</TableBody>
+							</Table>
+						</TableContainer> */}
+						<MapContainer
+							center={position}
+							className={classes.map}
+							scrollWheelZoom={true}
+							whenCreated={(map: Map) => {
+								mapService.initLeafletMap(map);
+							}}
+							zoom={13}
+						/>
+					</Grid>
+					<Grid component={Paper} item square xs={3}>
+						<FormControl className={classes.formControl} component="fieldset">
+							<FormLabel component="legend">Available layers</FormLabel>
+							<FormGroup>
+								{legendService.layers.map((l) => (
+									<FormControlLabel
+										control={
+											<Checkbox
+												onChange={(e) => {
+													l.enabled = e.target.checked;
+												}}
+												checked={l.enabled}
+												color="default"
+											/>}
+										key={`layer-${l.id}`}
+										label={l.name}
+									/>
+								))}
+							</FormGroup>
+						</FormControl>
+					</Grid>
+				</Grid>
+			</Grid>
 		</div>
 	);
 });
