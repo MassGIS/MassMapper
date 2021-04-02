@@ -23,10 +23,12 @@
 	},
 	"dependencies": {
 		"@material-ui/core": "^4.11.3",
+		"@material-ui/icons": "^4.11.2",
 		"@turf/turf": "^6.3.0",
 		"date-fns": "^2.16.1",
 		"detect-browser": "^4.0.3",
 		"fetch-retry": "^4.0.1",
+		"fontsource-roboto": "^4.0.0",
 		"isomorphic-fetch": "^2.2.1",
 		"leaflet": "^1.7.1",
 		"mobx": "^6.1.8",
