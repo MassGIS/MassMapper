@@ -5,6 +5,7 @@ const isTest = process.env.NODE_ENV === 'test';
 
 module.exports = {
 	plugins: [
+
 		[
 			'react-css-modules',
 			{
@@ -16,8 +17,21 @@ module.exports = {
 		],
 		'@babel/plugin-proposal-async-generator-functions',
 		'@babel/plugin-proposal-object-rest-spread',
-		['transform-class-properties', { loose: true }],
-		["@babel/plugin-proposal-class-properties", { "loose": false }],
+		['transform-class-properties', {loose: true}],
+		[
+			'transform-imports',
+			{
+				'@material-ui/core': {
+					'transform': '@material-ui/core/esm/${member}',
+					'preventFullImport': true
+				},
+				'@material-ui/icons': {
+					'transform': '@material-ui/icons/esm/${member}',
+					'preventFullImport': true
+				}
+			}
+		],
+		["@babel/plugin-proposal-class-properties", {"loose": false}],
 		'lodash',
 	],
 	presets: [
