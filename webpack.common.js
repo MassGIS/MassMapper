@@ -1,5 +1,4 @@
 const buildMode = process.env.NODE_ENV;
-const easyMediaQuery = require('postcss-easy-media-query');
 const execa = require('execa');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const gitDirty = execa.sync('git', ['status', '-s', '-uall']).stdout.length > 0;
@@ -13,35 +12,6 @@ const path = require('path');
 const WebpackVersionFilePlugin = require('webpack-version-file-plugin');
 
 const context = path.resolve(__dirname, 'packages');
-
-const breakpoints = {
-	computer: '992px',
-	largeMonitor: '1200px',
-	lg: '1200px',
-	md: '992px',
-	mobile: '320px',
-	sm: '768px',
-	tablet: '768px',
-	widescreenMonitor: '1920px',
-	xs: '544px',
-};
-
-const postcssConfig = {
-	plugins: [
-		easyMediaQuery({
-			breakpoints,
-		}),
-		require('postcss-nested')(),
-		require('postcss-import')({
-			resolve: (id, basedir, importOptions) => (id[0] === '~' ? id.slice(1) : id),
-		}),
-		require('postcss-custom-properties')(),
-		require('postcss-custom-selectors')(),
-		require('postcss-color-function')(),
-		require('autoprefixer')(),
-	],
-};
-
 const babelOptions = require('./.babelrc');
 
 module.exports = {
@@ -55,11 +25,6 @@ module.exports = {
 	},
 
 	resolve: {
-		// Configure theme location for semantic ui
-		alias: {
-			'../../theme.config$': path.join(__dirname, 'sui-theme/theme.config'),
-		},
-
 		// Look for modules in these places...
 		modules: ['node_modules'],
 
@@ -99,47 +64,15 @@ module.exports = {
 				],
 			},
 
-			// CSS (CSS Modules)
-			{
-				test: /\.module\.css$/, // Only handle *.module.css
-				use: [
-					MiniCssExtractPlugin.loader,
-					{
-						loader: 'css-loader',
-						options: {
-							modules: {
-								localIdentName: '[local]__[hash:base64:5]',
-							},
-							importLoaders: 2,
-						},
-					},
-					{
-						loader: 'postcss-loader',
-						options: postcssConfig,
-					},
-				],
-			},
-
-			// CSS (global/non-css-module)
+			// CSS
 			{
 				test: /\.css$/,
-				exclude: /\.module\.css$/, // Don't handle *.module.css
 				use: [
 					MiniCssExtractPlugin.loader,
 					{
 						loader: 'css-loader',
-					},
-					{
-						loader: 'postcss-loader',
-						options: postcssConfig,
-					},
+					}
 				],
-			},
-
-			// Semantic-UI
-			{
-				test: /\.less$/,
-				use: [MiniCssExtractPlugin.loader, 'css-loader', 'less-loader'],
 			},
 			{
 				test: /\.jpe?g$|\.gif$|\.ico$|\.png$|\.svg$/,
