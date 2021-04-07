@@ -71,7 +71,7 @@ class MapService {
 				}
 			});
 
-			console.log("adding", toAdd);
+			console.log("deleting", toDelete);
 			toDelete.forEach((id) => {
 				const ll = this._leafletLayers.get(id);
 				ll && this._map?.removeLayer(ll);
@@ -79,7 +79,7 @@ class MapService {
 
 			});
 
-			console.log("deleting", toAdd);
+			console.log("adding", toAdd);
 			toAdd.forEach(({ id, srcURL }) => {
 				const newLayer = MapService.createLeafletLayer(id, srcURL);
 				this._map?.addLayer(newLayer);
