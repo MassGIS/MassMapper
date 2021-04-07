@@ -1,8 +1,7 @@
 import { TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
-import { stringify } from 'query-string';
 import { ContainerInstance, Service } from "typedi";
-import { LegendService } from './LegendService';
+import { LegendService, Layer } from './LegendService';
 
 @Service()
 class MapService {
@@ -50,20 +49,20 @@ class MapService {
 		// clear all layers, if there were any to start
 		m.eachLayer((l) => {
 			m.removeLayer(l);
-		})
+		});
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
-			const toAdd: string[] = [];
+			const toAdd: Layer[] = [];
 			const toDelete: string[] = [];
 
 			const els = this._legendService.enabledLayers;
 			els.forEach((l) => {
 				if (!this._leafletLayers.has(l.id)) {
 					// add layer
-					toAdd.push(l.id);
+					toAdd.push(l);
 				}
-			})
+			});
 
 			this._leafletLayers.forEach((ll) => {
 				const enabled = els.filter((l) => ll.options.id === l.id);
@@ -81,16 +80,12 @@ class MapService {
 			});
 
 			console.log("deleting", toAdd);
-			toAdd.forEach((id) => {
-				// This seems dumb.
-				const srcURL = els.find((el) => {
-					return el.id === id;
-				})!.srcURL;
+			toAdd.forEach(({ id, srcURL }) => {
 				const newLayer = MapService.createLeafletLayer(id, srcURL);
 				this._map?.addLayer(newLayer);
 				this._leafletLayers.set(id, newLayer);
-			})
-		})
+			});
+		});
 	}
 }
 
