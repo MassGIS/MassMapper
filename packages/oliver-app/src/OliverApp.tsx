@@ -11,7 +11,7 @@ import {
 	Typography
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { LatLngExpression, Map } from 'leaflet';
+import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import { MapContainer } from 'react-leaflet';
@@ -66,14 +66,17 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 		return (<>Loading...</>);
 	}
 
-	const position = [ 51.505, -0.09 ] as LatLngExpression;
+	const bbox = [
+		[41.237964, -73.508142],
+		[42.886589, -69.928393]
+	] as LatLngBoundsExpression;
 
 	return (
 		<div className={classes.root}>
 			<AppBar position="absolute">
 				<Toolbar>
 					<Typography className={classes.title} color="inherit" component="h1" noWrap variant="h6">
-						Nav Bar
+						OLIVER
 					</Typography>
 				</Toolbar>
 			</AppBar>
@@ -100,13 +103,12 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							</Table>
 						</TableContainer> */}
 						<MapContainer
-							center={position}
+							bounds={bbox}
 							className={classes.map}
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map);
 							}}
-							zoom={13}
 						/>
 					</Grid>
 					<Grid component={Paper} item square xs={3}>
@@ -124,7 +126,16 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 												color="default"
 											/>}
 										key={`layer-${l.id}`}
-										label={l.name}
+										label={
+											<p>
+												{l.name}<br/>
+												<img
+													src={l.legendURL}
+													className='img-fluid'
+													alt={l.name}
+												/>
+										  </p>
+										}
 									/>
 								))}
 							</FormGroup>
