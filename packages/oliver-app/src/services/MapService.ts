@@ -1,15 +1,15 @@
 import { TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
+import { stringify } from 'query-string';
 import { ContainerInstance, Service } from "typedi";
 import { LegendService } from './LegendService';
 
 @Service()
 class MapService {
-	private static createLeafletLayer(id: string): TileLayer {
+	private static createLeafletLayer(id: string, srcURL: string): TileLayer {
 		return new TileLayer(
-			'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			srcURL,
 			{
-				attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 				id
 			}
 		);
@@ -82,7 +82,11 @@ class MapService {
 
 			console.log("deleting", toAdd);
 			toAdd.forEach((id) => {
-				const newLayer = MapService.createLeafletLayer(id);
+				// This seems dumb.
+				const srcURL = els.find((el) => {
+					return el.id === id;
+				})!.srcURL;
+				const newLayer = MapService.createLeafletLayer(id, srcURL);
 				this._map?.addLayer(newLayer);
 				this._leafletLayers.set(id, newLayer);
 			})
