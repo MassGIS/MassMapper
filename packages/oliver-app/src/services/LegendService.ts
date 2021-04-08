@@ -58,24 +58,13 @@ class LegendService {
 
 const loadSomeLayers =  async (legendService: LegendService) => {
 	// Stack order:  bottom-to-top.
-	[ 
-		{
-			name: "Basemap",
-			id: "basemap",
-			srcURL: "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}",
-			legendURL: "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.CENSUS1990BLOCKGROUPS_POLY%3A%3ADefault&FOO=Census%201990%20Block%20Groups&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.CENSUS1990BLOCKGROUPS_POLY&SCALE=72223.81928599995&FORMAT=image%2Fgif",
-			enabled: true
-		},
-		{
-			name: "Overlay",
-			id: "overlay",
-			srcURL: "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Basemap_Detailed_Features/MapServer/tile/{z}/{y}/{x}",
-			legendURL: "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.CENSUS1990BLOCKGROUPS_POLY%3A%3ADefault&FOO=Census%201990%20Block%20Groups&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.CENSUS1990BLOCKGROUPS_POLY&SCALE=72223.81928599995&FORMAT=image%2Fgif",
-			enabled: true
-		},
-	].forEach((l: Layer) => {
-		legendService.addLayer(l);
-	});
+	fetch('layers.json')
+		.then(response => response.json())
+		.then(data => 
+			data.forEach((l: Layer) => {
+				legendService.addLayer(l);
+			})
+		)
 }
 
 export { Layer, LegendService };

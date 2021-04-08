@@ -115,29 +115,36 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormLabel component="legend">Available layers</FormLabel>
 							<FormGroup>
-								{legendService.layers.map((l) => (
-									<FormControlLabel
-										control={
-											<Checkbox
-												onChange={(e) => {
-													l.enabled = e.target.checked;
-												}}
-												checked={l.enabled}
-												color="default"
-											/>}
-										key={`layer-${l.id}`}
-										label={
-											<p>
-												{l.name}<br/>
-												<img
-													src={l.legendURL}
-													className='img-fluid'
-													alt={l.name}
-												/>
-										  </p>
-										}
-									/>
-								))}
+								{legendService.layers.map((l) => {
+									// Don't show a legend image if we have none.
+									const img = l.legendURL ? (
+										<img
+											src={l.legendURL}
+											className='img-fluid'
+											alt={l.name}
+										/>
+									) : '';
+									return (
+										<FormControlLabel
+											control={
+												<Checkbox
+													onChange={(e) => {
+														l.enabled = e.target.checked;
+													}}
+													checked={l.enabled}
+													color="default"
+												/>}
+											key={`layer-${l.id}`}
+											label={
+												<p>
+													{l.name}<br/>
+													{img}
+												</p>
+											}
+										/>
+									)
+								})}
+								
 							</FormGroup>
 						</FormControl>
 					</Grid>
