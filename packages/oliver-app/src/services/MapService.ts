@@ -1,4 +1,4 @@
-import { TileLayer, Map as LeafletMap } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
@@ -9,7 +9,8 @@ class MapService {
 		return new TileLayer(
 			srcURL,
 			{
-				id
+				id,
+				pane: id
 			}
 		);
 	}
@@ -75,15 +76,35 @@ class MapService {
 			toDelete.forEach((id) => {
 				const ll = this._leafletLayers.get(id);
 				ll && this._map?.removeLayer(ll);
-				this._leafletLayers.delete(id);
 
+				const pane = this._map?.getPane(id);
+
+				if (pane) {
+					DomUtil.remove(pane);
+				} else {
+					console.error(`No pane for layer with id '${id}'.`);
+				}
+
+				this._leafletLayers.delete(id);
 			});
 
 			console.log("adding", toAdd);
 			toAdd.forEach(({ id, srcURL }) => {
+				this._map?.createPane(id);
+
 				const newLayer = MapService.createLeafletLayer(id, srcURL);
 				this._map?.addLayer(newLayer);
 				this._leafletLayers.set(id, newLayer);
+			});
+
+			els.forEach((l, index) => {
+				const pane = this._map?.getPane(l.id);
+
+				if (pane) {
+					pane.style.zIndex = `${index * 100}`;
+				} else {
+					console.error(`No pane for layer with id '${l.id}'.`);
+				}
 			});
 		});
 	}
