@@ -101,7 +101,8 @@ class MapService {
 				const pane = this._map?.getPane(l.id);
 
 				if (pane) {
-					pane.style.zIndex = `${index * 100}`;
+					// .leaflet-tile-pane starts at zIndex of 200.
+					pane.style.zIndex = `${index + 200}`;
 				} else {
 					console.error(`No pane for layer with id '${l.id}'.`);
 				}

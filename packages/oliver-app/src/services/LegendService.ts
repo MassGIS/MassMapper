@@ -57,7 +57,7 @@ class LegendService {
 }
 
 const loadSomeLayers =  async (legendService: LegendService) => {
-	// Need to tie each layer to a z-indexed map pane.
+	// Stack order:  bottom-to-top.
 	[ 
 		{
 			name: "Basemap",
