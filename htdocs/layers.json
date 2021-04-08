@@ -6,11 +6,25 @@
         "legendURL": null,
         "enabled": true
     },
+     {
+        "name": "Structures",
+        "id": "Basemaps_Structures",
+        "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Structures/MapServer/tile/{z}/{y}/{x}",
+        "legendURL": null,
+        "enabled": true
+    },
     {
-        "name": "Overlay",
-        "id": "overlay",
+        "name": "Detailed Features",
+        "id": "Basemaps_MassGISBasemapWithLabels2",
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Basemap_Detailed_Features/MapServer/tile/{z}/{y}/{x}",
-        "legendURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.CENSUS1990BLOCKGROUPS_POLY%3A%3ADefault&FOO=Census%201990%20Block%20Groups&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.CENSUS1990BLOCKGROUPS_POLY&SCALE=72223.81928599995&FORMAT=image%2Fgif",
+        "legendURL": null,
+        "enabled": true
+    },
+    {
+        "name": "Tax Parcels for Display",
+        "id": "Basemaps_L3Parcels",
+        "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Level3_Parcels/MapServer/tile/{z}/{y}/{x}",
+        "legendURL": null,
         "enabled": true
     }
 ]
