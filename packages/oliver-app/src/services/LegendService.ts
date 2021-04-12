@@ -58,7 +58,7 @@ class LegendService {
 
 const loadSomeLayers =  async (legendService: LegendService) => {
 	// Stack order:  bottom-to-top.
-	fetch('layers.json')
+	fetch('layers.json', {cache: "no-store"})
 		.then(response => response.json())
 		.then(data => 
 			data.forEach((l: Layer) => {
