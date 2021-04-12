@@ -10,11 +10,18 @@ const theme = createMuiTheme({
 			main: red.A400,
 		},
 		primary: {
-			main: '#556cd6',
+			main: '#D1DFF0',
 		},
 		secondary: {
 			main: '#19857b',
 		},
+	},
+	mixins: {
+		// toolbar: {
+		// 	'@media (min-width:600px)' : {
+		// 		minHeight: 34
+		// 	}
+		// }
 	},
 	overrides: {
 		MuiCssBaseline: {

@@ -22,42 +22,42 @@ import { useService } from './services/useService';
 import 'leaflet/dist/leaflet.css';
 
 const useStyles = makeStyles((theme) => ({
-	appBarSpacer: theme.mixins.toolbar,
-	container: {
-		flexGrow: 1
-	},
-	content: {
-		flexGrow: 1,
-		height: '100%',
-		overflow: 'auto'
-	},
-	formControl: {
-		margin: theme.spacing(3)
-	},
-	map: {
-		height: '100%'
-	},
-	mapContainer: {
-		flexGrow: 1
-	},
-	root: {
-		display: 'flex',
-		height: '100%'
-	},
-	table: {
-		minWidth: 650
-	},
-	title: {
-		flexGrow: 1
-	}
-}));
+		appBarSpacer: theme.mixins.toolbar,
+		container: {
+			flexGrow: 1
+		},
+		content: {
+			flexGrow: 1,
+			height: '100%',
+			overflow: 'auto'
+		},
+		formControl: {
+			margin: theme.spacing(3)
+		},
+		map: {
+			height: '100%'
+		},
+		mapContainer: {
+			flexGrow: 1
+		},
+		root: {
+			display: 'flex',
+			height: '100%'
+		},
+		table: {
+			minWidth: 650
+		},
+		title: {
+			flexGrow: 1
+		}
+	}));
 
 interface OliverAppProps extends RouteComponentProps<any> {
 }
 
 const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
-	const classes = useStyles();
 
+	const classes = useStyles();
 	const [ legendService, mapService ] = useService([ LegendService, MapService ]);
 	window['legendService'] = legendService;
 	window['mapService'] = mapService;
@@ -75,8 +75,9 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 		<div className={classes.root}>
 			<AppBar position="absolute">
 				<Toolbar>
+					<img src="http://maps.massgis.state.ma.us/map_ol/img/oliver_small.png" />
 					<Typography className={classes.title} color="inherit" component="h1" noWrap variant="h6">
-						OLIVER
+						&nbsp;&nbsp;MassMapper: MassGIS's Online Mapping Tool
 					</Typography>
 				</Toolbar>
 			</AppBar>
@@ -84,24 +85,6 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 				<Grid className={classes.appBarSpacer} item/>
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
-						{/* <TableContainer component={Paper}>
-							<Table className={classes.table} aria-label="Active Layers">
-								<TableHead>
-									<TableRow>
-										<TableCell>Active Layers</TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{legendService.enabledLayers.map((l) => (
-										<TableRow key={`layer-${l.id}`}>
-											<TableCell component="th" scope="row">
-												{l.name}
-											</TableCell>
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</TableContainer> */}
 						<MapContainer
 							bounds={bbox}
 							className={classes.map}
@@ -144,7 +127,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 										/>
 									)
 								})}
-								
+
 							</FormGroup>
 						</FormControl>
 					</Grid>
