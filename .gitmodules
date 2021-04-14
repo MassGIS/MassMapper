@@ -1,3 +1,0 @@
-[submodule "packages/leaflet.wms"]
-	path = packages/leaflet.wms
-	url = https://github.com/asascience-open/leaflet.wms
