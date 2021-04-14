@@ -32,6 +32,18 @@
         "enabled": false
     },
     {
+        "name": "Land Use 2005",
+        "id": "massgis:GISDATA.LANDUSE2005_POLY",
+        "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
+        "legendURL": null,
+        "type": "wms",
+        "options": {
+            "layers": "massgis:GISDATA.LANDUSE2005_POLY",
+            "styles": "GISDATA.LANDUSE2005_POLY::Default"
+        },
+        "enabled": false
+    },
+    {
         "name": "Land Cover Land Use (2016) Index",
         "id": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
         "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",

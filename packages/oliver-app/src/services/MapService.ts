@@ -16,8 +16,8 @@ class MapService {
 		);
 	}
 
-	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string): TileLayer.WMS {
-		return new TileLayer.WMS(
+	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
+		return new wms.overlay(
 			srcURL,
 			{
 					id,
@@ -40,7 +40,6 @@ class MapService {
 	private _ready: boolean = false;
 
 	constructor(services: ContainerInstance) {
-		const wmsLayer = wms.Source;
 		makeObservable<MapService, '_map' | '_ready'>(
 			this,
 			{
