@@ -5,12 +5,26 @@ import { LegendService, Layer } from './LegendService';
 
 @Service()
 class MapService {
-	private static createLeafletLayer(id: string, srcURL: string): TileLayer {
+	private static createLeafletTileLayer(id: string, srcURL: string): TileLayer {
 		return new TileLayer(
 			srcURL,
 			{
 				id,
 				pane: id
+			}
+		);
+	}
+
+	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string): TileLayer.WMS {
+		return new TileLayer.WMS(
+			srcURL,
+			{
+					id,
+					pane: id,
+					layers: layers,
+					styles: styles,
+					transparent: true,
+					format: "image/png"
 			}
 		);
 	}
@@ -89,12 +103,19 @@ class MapService {
 			});
 
 			console.log("adding", toAdd);
-			toAdd.forEach(({ id, srcURL }) => {
+			toAdd.forEach(({ id, srcURL, type, options }) => {
 				this._map?.createPane(id);
 
-				const newLayer = MapService.createLeafletLayer(id, srcURL);
-				this._map?.addLayer(newLayer);
-				this._leafletLayers.set(id, newLayer);
+				if (type === 'tile') {
+					const newLayer = MapService.createLeafletTileLayer(id, srcURL);
+					this._map?.addLayer(newLayer);
+					this._leafletLayers.set(id, newLayer);
+				}
+				else if (type === 'wms') {
+					const newLayer = MapService.createLeafletWMSLayer(id, srcURL, options!.layers, options!.styles);
+					this._map?.addLayer(newLayer);
+					this._leafletLayers.set(id, newLayer);
+				}
 			});
 
 			els.forEach((l, index) => {

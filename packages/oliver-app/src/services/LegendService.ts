@@ -6,6 +6,11 @@ class Layer {
 	public id: string;
 	public enabled: boolean;
 	public srcURL: string;
+	public type: string;
+	public options?: {
+		"layers": string, 
+		"styles": string
+	};
 	public legendURL?: string;
 }
 
