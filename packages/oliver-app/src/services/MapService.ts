@@ -2,7 +2,7 @@ import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
-import wms from 'leaflet.wms';
+import * as wms from '@2creek/leaflet-wms';
 
 @Service()
 class MapService {
@@ -17,7 +17,7 @@ class MapService {
 	}
 
 	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
-		return new wms.overlay(
+		const ret = wms.overlay(
 			srcURL,
 			{
 					id,
@@ -28,6 +28,8 @@ class MapService {
 					format: "image/png"
 			}
 		);
+		debugger;
+		return ret;
 	}
 
 	get ready(): boolean {

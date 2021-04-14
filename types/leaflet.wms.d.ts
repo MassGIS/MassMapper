@@ -1,1 +1,1 @@
-declare module 'leaflet.wms';
+declare module '@2creek/leaflet-wms';
