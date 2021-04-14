@@ -2,6 +2,7 @@ import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
+import wms from 'leaflet.wms';
 
 @Service()
 class MapService {
@@ -39,6 +40,7 @@ class MapService {
 	private _ready: boolean = false;
 
 	constructor(services: ContainerInstance) {
+		const wmsLayer = wms.Source;
 		makeObservable<MapService, '_map' | '_ready'>(
 			this,
 			{
