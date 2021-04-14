@@ -28,7 +28,6 @@ class MapService {
 					format: "image/png"
 			}
 		);
-		debugger;
 		return ret;
 	}
 
