@@ -24,14 +24,6 @@
         "enabled": true
     },
     {
-        "name": "Tax Parcels for Display",
-        "id": "Basemaps_L3Parcels",
-        "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Level3_Parcels/MapServer/tile/{z}/{y}/{x}",
-        "legendURL": null,
-        "type": "tile",
-        "enabled": false
-    },
-    {
         "name": "Land Use 2005",
         "id": "massgis:GISDATA.LANDUSE2005_POLY",
         "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
@@ -41,6 +33,14 @@
             "layers": "massgis:GISDATA.LANDUSE2005_POLY",
             "styles": "GISDATA.LANDUSE2005_POLY::Default"
         },
+        "enabled": false
+    },
+    {
+        "name": "Tax Parcels for Display",
+        "id": "Basemaps_L3Parcels",
+        "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Level3_Parcels/MapServer/tile/{z}/{y}/{x}",
+        "legendURL": null,
+        "type": "tile",
         "enabled": false
     },
     {
