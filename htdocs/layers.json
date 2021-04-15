@@ -13,7 +13,7 @@
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Structures/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": false
+        "enabled": true
     },
     {
         "name": "Detailed Features",
@@ -21,7 +21,7 @@
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Basemap_Detailed_Features/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": false
+        "enabled": true
     },
     {
         "name": "Tax Parcels for Display",
@@ -53,6 +53,6 @@
             "layers": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
             "styles": "GISDATA.LANDCOVER_USE_INDEX_POLY::Default"
         },
-        "enabled": true
+        "enabled": false
     }
 ]

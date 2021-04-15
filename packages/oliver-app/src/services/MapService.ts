@@ -17,10 +17,9 @@ class MapService {
 	}
 
 	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
-		const ret = wms.overlay(
+		let ret = wms.overlay(
 			srcURL,
 			{
-					id,
 					pane: id,
 					layers: layers,
 					styles: styles,
@@ -28,6 +27,8 @@ class MapService {
 					format: "image/png"
 			}
 		);
+		// For now, explicitly set the id (hopefully this will eventually be taken care of inside wms.overlay).
+		ret.options.id = id;
 		return ret;
 	}
 
