@@ -4,6 +4,7 @@
         "id": "basemap",
         "srcURL": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
+        "type": "tile",
         "enabled": true
     },
      {
@@ -11,6 +12,7 @@
         "id": "Basemaps_Structures",
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Structures/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
+        "type": "tile",
         "enabled": true
     },
     {
@@ -18,6 +20,7 @@
         "id": "Basemaps_MassGISBasemapWithLabels2",
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Basemap_Detailed_Features/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
+        "type": "tile",
         "enabled": true
     },
     {
@@ -25,6 +28,31 @@
         "id": "Basemaps_L3Parcels",
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Level3_Parcels/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
-        "enabled": true
+        "type": "tile",
+        "enabled": false
+    },
+    {
+        "name": "Land Use 2005",
+        "id": "massgis:GISDATA.LANDUSE2005_POLY",
+        "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
+        "legendURL": null,
+        "type": "wms",
+        "options": {
+            "layers": "massgis:GISDATA.LANDUSE2005_POLY",
+            "styles": "GISDATA.LANDUSE2005_POLY::Default"
+        },
+        "enabled": false
+    },
+    {
+        "name": "Land Cover Land Use (2016) Index",
+        "id": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
+        "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
+        "legendURL": null,
+        "type": "wms",
+        "options": {
+            "layers": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
+            "styles": "GISDATA.LANDCOVER_USE_INDEX_POLY::Default"
+        },
+        "enabled": false
     }
 ]

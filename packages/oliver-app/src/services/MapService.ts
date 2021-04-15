@@ -2,10 +2,11 @@ import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
+import * as wms from '@2creek/leaflet-wms';
 
 @Service()
 class MapService {
-	private static createLeafletLayer(id: string, srcURL: string): TileLayer {
+	private static createLeafletTileLayer(id: string, srcURL: string): TileLayer {
 		return new TileLayer(
 			srcURL,
 			{
@@ -13,6 +14,22 @@ class MapService {
 				pane: id
 			}
 		);
+	}
+
+	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
+		let ret = wms.overlay(
+			srcURL,
+			{
+					pane: id,
+					layers: layers,
+					styles: styles,
+					transparent: true,
+					format: "image/png"
+			}
+		);
+		// For now, explicitly set the id (hopefully this will eventually be taken care of inside wms.overlay).
+		ret.options.id = id;
+		return ret;
 	}
 
 	get ready(): boolean {
@@ -89,12 +106,19 @@ class MapService {
 			});
 
 			console.log("adding", toAdd);
-			toAdd.forEach(({ id, srcURL }) => {
+			toAdd.forEach(({ id, srcURL, type, options }) => {
 				this._map?.createPane(id);
 
-				const newLayer = MapService.createLeafletLayer(id, srcURL);
-				this._map?.addLayer(newLayer);
-				this._leafletLayers.set(id, newLayer);
+				if (type === 'tile') {
+					const newLayer = MapService.createLeafletTileLayer(id, srcURL);
+					this._map?.addLayer(newLayer);
+					this._leafletLayers.set(id, newLayer);
+				}
+				else if (type === 'wms') {
+					const newLayer = MapService.createLeafletWMSLayer(id, srcURL, options!.layers, options!.styles);
+					this._map?.addLayer(newLayer);
+					this._leafletLayers.set(id, newLayer);
+				}
 			});
 
 			els.forEach((l, index) => {
