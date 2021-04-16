@@ -93,7 +93,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							}}
 						/>
 					</Grid>
-					<Grid style={{maxHeight: '100vh', overflow: 'auto'}} component={Paper} item square xs={3}>
+					<Grid style={{maxHeight: 'calc(100vh - 64px)', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormGroup>
 								{legendService.layers.map((l) => {
