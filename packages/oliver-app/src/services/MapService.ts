@@ -69,11 +69,10 @@ class MapService {
 			m.removeLayer(l);
 		});
 
-		const self = this;
-		m.addEventListener('moveend', function() {
-			const els = self._legendService.enabledLayers;
+		m.addEventListener('moveend', () => {
+			const els = this._legendService.enabledLayers;
 			els.forEach((l) => {
-				// l.foo = 'bar';
+				l.foo = 'bar';
 			});
 		})
 
