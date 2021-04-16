@@ -27,7 +27,8 @@ const theme = createMuiTheme({
 		MuiCssBaseline: {
 			'@global': {
 				body: {
-					height: '100%'
+					height: '100%',
+					overflowY: 'hidden'
 				},
 				html: {
 					height: '100%'

@@ -81,8 +81,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-			<Grid className={classes.content} component="main" container direction="column">
-				<Grid className={classes.appBarSpacer} item/>
+			<Grid style={{marginTop: 65}} className={classes.content} component="main" container direction="column">
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
 						<MapContainer
@@ -94,7 +93,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							}}
 						/>
 					</Grid>
-					<Grid component={Paper} item square xs={3}>
+					<Grid style={{maxHeight: '100vh', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormLabel component="legend">Available layers</FormLabel>
 							<FormGroup>

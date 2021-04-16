@@ -47,7 +47,7 @@
         "name": "Land Cover Land Use (2016) Index",
         "id": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
         "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
-        "legendURL": null,
+        "legendURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.LANDUSE2005_POLY%3A%3ADefault&FOO=Land%20Use%202005&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.LANDUSE2005_POLY&SCALE=36111.90964299998&FORMAT=image%2Fgif",
         "type": "wms",
         "options": {
             "layers": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
