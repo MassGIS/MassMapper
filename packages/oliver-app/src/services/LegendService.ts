@@ -12,6 +12,7 @@ class Layer {
 		"styles": string
 	};
 	public legendURL?: string;
+	public foo?: string;
 }
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';

@@ -69,6 +69,14 @@ class MapService {
 			m.removeLayer(l);
 		});
 
+		const self = this;
+		m.addEventListener('moveend', function() {
+			const els = self._legendService.enabledLayers;
+			els.forEach((l) => {
+				// l.foo = 'bar';
+			});
+		})
+
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
 			const toAdd: Layer[] = [];
