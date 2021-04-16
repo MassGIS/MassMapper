@@ -95,7 +95,6 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					</Grid>
 					<Grid style={{maxHeight: '100vh', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
-							<FormLabel component="legend">Available layers</FormLabel>
 							<FormGroup>
 								{legendService.layers.map((l) => {
 									// Don't show a legend image if we have none.
@@ -108,20 +107,24 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 									) : '';
 									return (
 										<FormControlLabel
+											style={{display: 'table'}}
 											control={
-												<Checkbox
-													onChange={(e) => {
-														l.enabled = e.target.checked;
-													}}
-													checked={l.enabled}
-													color="default"
-												/>}
+												<div style={{display: 'table-cell', width: 42}}>
+													<Checkbox
+														onChange={(e) => {
+															l.enabled = e.target.checked;
+														}}
+														checked={l.enabled}
+														color="default"
+													/>
+												</div>
+											}
 											key={`layer-${l.id}`}
 											label={
-												<p>
+												<div>
 													{l.name}<br/>
 													{img}
-												</p>
+												</div>
 											}
 										/>
 									)
