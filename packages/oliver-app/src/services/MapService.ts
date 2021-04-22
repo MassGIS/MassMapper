@@ -1,4 +1,4 @@
-import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
@@ -32,6 +32,19 @@ class MapService {
 		return ret;
 	}
 
+	private getMapScale(): number {
+		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
+		const EARTH_RADIUS = 6378137;
+		const SCREEN_PPI = 96;
+		if (this._map) {
+			return (Math.cos(this._map.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) / 
+				(256 * Math.pow(2, this._map.getZoom()) * 0.0254);
+		}
+		else {
+			return 0;
+		}
+	}
+
 	get ready(): boolean {
 		return this._ready;
 	}
@@ -62,12 +75,25 @@ class MapService {
 	public async initLeafletMap(m: LeafletMap): Promise<void> {
 		this._map = m;
 
+		new Control.Scale({position: 'bottomright'}).addTo(m);
+
 		this._leafletLayers.clear();
 
 		// clear all layers, if there were any to start
 		m.eachLayer((l) => {
 			m.removeLayer(l);
 		});
+
+		m.addEventListener('moveend', () => {
+			// Determine if a layer should be visible for the map's current (calcualted) scale.
+			const scale = this.getMapScale();
+			const els = this._legendService.enabledLayers;
+			els.forEach((l) => {
+				if (l.minScale !== undefined && l.maxScale !== undefined) {
+					l.scaleOK = l.minScale <= scale && scale <= l.maxScale;
+				}
+			});
+		})
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
@@ -89,7 +115,6 @@ class MapService {
 				}
 			});
 
-			console.log("deleting", toDelete);
 			toDelete.forEach((id) => {
 				const ll = this._leafletLayers.get(id);
 				ll && this._map?.removeLayer(ll);
@@ -105,8 +130,7 @@ class MapService {
 				this._leafletLayers.delete(id);
 			});
 
-			console.log("adding", toAdd);
-			toAdd.forEach(({ id, srcURL, type, options }) => {
+			toAdd.forEach(({ id, srcURL, type, options}) => {
 				this._map?.createPane(id);
 
 				if (type === 'tile') {
@@ -131,6 +155,9 @@ class MapService {
 					console.error(`No pane for layer with id '${l.id}'.`);
 				}
 			});
+
+			// Line up ancillary scale info.
+			this._map?.fireEvent('moveend');
 		});
 	}
 }

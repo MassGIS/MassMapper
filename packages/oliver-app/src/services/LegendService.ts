@@ -12,6 +12,9 @@ class Layer {
 		"styles": string
 	};
 	public legendURL?: string;
+	public minScale?: number;
+	public maxScale?: number;
+	public scaleOK: boolean;
 }
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';

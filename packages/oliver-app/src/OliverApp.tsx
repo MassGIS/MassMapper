@@ -4,12 +4,16 @@ import {
 	FormControl,
 	FormControlLabel,
 	FormGroup,
-	FormLabel,
 	Grid,
 	Paper,
 	Toolbar,
-	Typography
+	Typography,
+	Tooltip
 } from '@material-ui/core';
+import {
+	ThumbUp,
+	ThumbDown
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
@@ -81,7 +85,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-			<Grid style={{marginTop: 65}} className={classes.content} component="main" container direction="column">
+			<Grid style={{paddingTop: 65}} className={classes.content} component="main" container direction="column">
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
 						<MapContainer
@@ -93,7 +97,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							}}
 						/>
 					</Grid>
-					<Grid style={{maxHeight: 'calc(100vh - 64px)', overflow: 'auto'}} component={Paper} item square xs={3}>
+					<Grid style={{maxHeight: 'calc(100vh - 65px)', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormGroup>
 								{legendService.layers.map((l) => {
@@ -105,6 +109,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											alt={l.name}
 										/>
 									) : '';
+									const scale = l.enabled ? (l.scaleOK ? <ThumbUp fontSize="small"/> : <ThumbDown fontSize="small"/>) : '';
 									return (
 										<FormControlLabel
 											style={{display: 'table'}}
@@ -122,7 +127,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											key={`layer-${l.id}`}
 											label={
 												<div>
-													{l.name}<br/>
+													{l.name} <Tooltip title="Scale indicator"><span>{scale}</span></Tooltip><br/>
 													{img}
 												</div>
 											}
