@@ -5,7 +5,9 @@
         "srcURL": "https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": true
+        "enabled": true,
+        "minScale": 1128.497176,
+        "maxScale": 4622324.434309
     },
      {
         "name": "Structures",
@@ -13,7 +15,9 @@
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Structures/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": true
+        "enabled": true,
+        "minScale": 1128.497176,
+        "maxScale": 18055.954822
     },
     {
         "name": "Detailed Features",
@@ -21,19 +25,23 @@
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Basemap_Detailed_Features/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": true
+        "enabled": true,
+        "minScale": 1128.497176,
+        "maxScale": 4622324.434309
     },
     {
         "name": "Land Use 2005",
         "id": "massgis:GISDATA.LANDUSE2005_POLY",
         "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
-        "legendURL": null,
+        "legendURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.LANDUSE2005_POLY%3A%3ADefault&FOO=Land%20Use%202005&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.LANDUSE2005_POLY&SCALE=36111.90964299998&FORMAT=image%2Fgif",
         "type": "wms",
         "options": {
             "layers": "massgis:GISDATA.LANDUSE2005_POLY",
             "styles": "GISDATA.LANDUSE2005_POLY::Default"
         },
-        "enabled": false
+        "enabled": false,
+        "minScale": 0,
+        "maxScale": 200000
     },
     {
         "name": "Tax Parcels for Display",
@@ -41,18 +49,22 @@
         "srcURL": "https://tiles1.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Level3_Parcels/MapServer/tile/{z}/{y}/{x}",
         "legendURL": null,
         "type": "tile",
-        "enabled": false
+        "enabled": false,
+        "minScale": 564.248588,
+        "maxScale": 18055.954822
     },
     {
         "name": "Land Cover Land Use (2016) Index",
         "id": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
         "srcURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms",
-        "legendURL": "http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.LANDUSE2005_POLY%3A%3ADefault&FOO=Land%20Use%202005&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.LANDUSE2005_POLY&SCALE=36111.90964299998&FORMAT=image%2Fgif",
+        "legendURL": null,
         "type": "wms",
         "options": {
             "layers": "massgis:GISDATA.LANDCOVER_USE_INDEX_POLY",
             "styles": "GISDATA.LANDCOVER_USE_INDEX_POLY::Default"
         },
-        "enabled": false
+        "enabled": false,
+        "minScale": 0,
+        "maxScale": 10000000
     }
 ]

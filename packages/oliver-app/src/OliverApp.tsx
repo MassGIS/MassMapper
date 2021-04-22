@@ -4,12 +4,16 @@ import {
 	FormControl,
 	FormControlLabel,
 	FormGroup,
-	FormLabel,
 	Grid,
 	Paper,
 	Toolbar,
-	Typography
+	Typography,
+	Tooltip,
+	CircularProgress
 } from '@material-ui/core';
+import {
+	ErrorOutline
+} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
@@ -81,7 +85,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					</Typography>
 				</Toolbar>
 			</AppBar>
-			<Grid style={{marginTop: 65}} className={classes.content} component="main" container direction="column">
+			<Grid style={{paddingTop: 65}} className={classes.content} component="main" container direction="column">
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
 						<MapContainer
@@ -93,7 +97,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 							}}
 						/>
 					</Grid>
-					<Grid style={{maxHeight: 'calc(100vh - 64px)', overflow: 'auto'}} component={Paper} item square xs={3}>
+					<Grid style={{maxHeight: 'calc(100vh - 65px)', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormGroup>
 								{legendService.layers.map((l) => {
@@ -105,6 +109,20 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											alt={l.name}
 										/>
 									) : '';
+
+									let status = <span/>;
+									if (l.enabled) {
+										if (l.scaleOk) {
+											status = l.isLoading ? <CircularProgress size="20px"/> : status;
+										}
+										else {
+											status = 
+												<Tooltip title="Out of scale">
+													<ErrorOutline fontSize="small"/>
+												</Tooltip>;
+										}
+									}
+
 									return (
 										<FormControlLabel
 											style={{display: 'table'}}
@@ -122,7 +140,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											key={`layer-${l.id}`}
 											label={
 												<div>
-													{l.name}<br/>
+													{l.name}&nbsp;&nbsp;{status}<br/>
 													{img}
 												</div>
 											}

@@ -1,35 +1,70 @@
-import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
-import { autorun, makeObservable, observable } from "mobx";
+import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
+import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
 import * as wms from '@2creek/leaflet-wms';
 
 @Service()
 class MapService {
-	private static createLeafletTileLayer(id: string, srcURL: string): TileLayer {
-		return new TileLayer(
+	private static createLeafletTileLayer(uiLayer: Layer): TileLayer {
+		const { id, srcURL} = uiLayer;
+		const lyr = new TileLayer(
 			srcURL,
 			{
 				id,
 				pane: id
 			}
 		);
+
+		lyr.addEventListener('loading', () => {
+			uiLayer.isLoading = true;
+		});
+		lyr.addEventListener('load', () => {
+			uiLayer.isLoading = false;
+		});
+
+		return lyr;
 	}
 
-	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
-		let ret = wms.overlay(
+	private static createLeafletWMSLayer(uiLayer: Layer) {
+		const { id, srcURL, options} = uiLayer;
+		let lyr = wms.overlay(
 			srcURL,
 			{
 					pane: id,
-					layers: layers,
-					styles: styles,
+					layers: options!.layers,
+					styles: options!.styles,
 					transparent: true,
 					format: "image/png"
 			}
 		);
-		// For now, explicitly set the id (hopefully this will eventually be taken care of inside wms.overlay).
-		ret.options.id = id;
-		return ret;
+
+		// Explicitly set the id since wms.overlay doesn't do this free of charge.
+		lyr.options.id = id;
+
+		lyr.onLoadStart = function() {
+			console.log(uiLayer.id + ' loading');
+			uiLayer.isLoading = true;
+		}
+		lyr.onLoadEnd = function() {
+			console.log(uiLayer.id + ' DONE');
+			uiLayer.isLoading = false;
+		}
+
+		return lyr;
+	}
+
+	get currentScale(): number {
+		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
+		const EARTH_RADIUS = 6378137;
+		const SCREEN_PPI = 96;
+		if (this._map) {
+			return (Math.cos(this._map.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) /
+				(256 * Math.pow(2, this._mapZoom) * 0.0254);
+		}
+		else {
+			return 0;
+		}
 	}
 
 	get ready(): boolean {
@@ -40,13 +75,16 @@ class MapService {
 	private _legendService: LegendService;
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
+	private _mapZoom: number = 0;
 
 	constructor(services: ContainerInstance) {
-		makeObservable<MapService, '_map' | '_ready'>(
+		makeObservable<MapService, '_map' | '_ready' | '_mapZoom'>(
 			this,
 			{
 				_map: observable,
-				_ready: observable
+				_ready: observable,
+				_mapZoom: observable,
+				currentScale: computed,
 			}
 		);
 
@@ -62,11 +100,17 @@ class MapService {
 	public async initLeafletMap(m: LeafletMap): Promise<void> {
 		this._map = m;
 
+		new Control.Scale({position: 'bottomright'}).addTo(m);
+
 		this._leafletLayers.clear();
 
 		// clear all layers, if there were any to start
 		m.eachLayer((l) => {
 			m.removeLayer(l);
+		});
+
+		m.addEventListener('moveend', () => {
+			this._mapZoom = this._map?.getZoom() || 0;
 		});
 
 		// after every change to the enabledLayers, sync the layer list to the map
@@ -89,7 +133,6 @@ class MapService {
 				}
 			});
 
-			console.log("deleting", toDelete);
 			toDelete.forEach((id) => {
 				const ll = this._leafletLayers.get(id);
 				ll && this._map?.removeLayer(ll);
@@ -105,17 +148,17 @@ class MapService {
 				this._leafletLayers.delete(id);
 			});
 
-			console.log("adding", toAdd);
-			toAdd.forEach(({ id, srcURL, type, options }) => {
+			toAdd.forEach((l) => {
+				const { id, type } = l;
 				this._map?.createPane(id);
 
 				if (type === 'tile') {
-					const newLayer = MapService.createLeafletTileLayer(id, srcURL);
+					const newLayer = MapService.createLeafletTileLayer(l);
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
 				}
 				else if (type === 'wms') {
-					const newLayer = MapService.createLeafletWMSLayer(id, srcURL, options!.layers, options!.styles);
+					const newLayer = MapService.createLeafletWMSLayer(l);
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
 				}
@@ -131,6 +174,9 @@ class MapService {
 					console.error(`No pane for layer with id '${l.id}'.`);
 				}
 			});
+
+			// Line up ancillary scale info.
+			this._map?.fireEvent('moveend');
 		});
 	}
 }

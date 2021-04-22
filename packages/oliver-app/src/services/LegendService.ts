@@ -1,17 +1,39 @@
-import { action, makeObservable, observable } from "mobx";
-import { Service } from "typedi";
+import { action, computed, makeObservable, observable } from "mobx";
+import { ContainerInstance, Inject, Service } from "typedi";
+import { MapService } from "./MapService";
 
 class Layer {
 	public name: string;
 	public id: string;
-	public enabled: boolean;
+	public enabled: boolean = false;
 	public srcURL: string;
 	public type: string;
 	public options?: {
-		"layers": string, 
+		"layers": string,
 		"styles": string
 	};
 	public legendURL?: string;
+	public minScale?: number;
+	public maxScale?: number;
+	get scaleOk(): boolean {
+		const scale = this._mapService.currentScale;
+		return (this.minScale || 0) <= scale && scale <= (this.maxScale || 999999999);
+	}
+	public isLoading: boolean = false;
+
+	// private _mapService:MapService;
+
+	constructor(private _mapService:MapService) {
+		// this._mapService = mapService;
+		makeObservable<Layer>(
+			this,
+			{
+				isLoading: observable,
+				scaleOk: computed,
+				enabled: observable
+			}
+		);
+	}
 }
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';
@@ -33,7 +55,7 @@ class LegendService {
 	private readonly _layers: Layer[];
 	private _ready: boolean = false;
 
-	constructor() {
+	constructor(services: ContainerInstance) {
 		this._layers = [];
 
 		makeObservable<LegendService, LegendServiceAnnotations>(
@@ -47,7 +69,8 @@ class LegendService {
 
 		(async () => {
 			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
-			await loadSomeLayers(this);
+			const mapService = services.get(MapService);
+			await loadSomeLayers(this, mapService);
 			this.setReady(true);
 		})();
 	}
@@ -61,13 +84,15 @@ class LegendService {
 	}
 }
 
-const loadSomeLayers =  async (legendService: LegendService) => {
+const loadSomeLayers =  async (legendService: LegendService, mapService: MapService) => {
 	// Stack order:  bottom-to-top.
 	fetch('layers.json', {cache: "no-store"})
 		.then(response => response.json())
-		.then(data => 
+		.then(data =>
 			data.forEach((l: Layer) => {
-				legendService.addLayer(l);
+				const layer = new Layer(mapService);
+				Object.assign(layer, l);
+				legendService.addLayer(layer);
 			})
 		)
 }

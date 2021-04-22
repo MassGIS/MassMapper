@@ -24,7 +24,7 @@ if (!renderTarget) {
 	throw new Error('Render target "react-root" not found in page');
 }
 
-configure({ useProxies: "ifavailable" });
+configure({ useProxies: "always" });
 
 const App: FunctionComponent = () => (
 	<ServiceProvider>
