@@ -15,6 +15,7 @@ class Layer {
 	public minScale?: number;
 	public maxScale?: number;
 	public scaleOK: boolean;
+	public isLoading: boolean;
 }
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';

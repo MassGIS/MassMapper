@@ -7,17 +7,28 @@ import * as wms from '@2creek/leaflet-wms';
 @Service()
 class MapService {
 	private static createLeafletTileLayer(id: string, srcURL: string): TileLayer {
-		return new TileLayer(
+		let layer = new TileLayer(
 			srcURL,
 			{
 				id,
 				pane: id
 			}
 		);
+
+		layer.addEventListener('loading', () => {
+			console.log(layer.options.id + ' loading');
+			// legendRec.isLoading = true;
+		});
+		layer.addEventListener('load', () => {
+			console.log(layer.options.id + ' DONE');
+			// legendRec.isLoading = false;
+		});
+
+		return layer;
 	}
 
 	private static createLeafletWMSLayer(id: string, srcURL: string, layers: string, styles: string) {
-		let ret = wms.overlay(
+		let layer = wms.overlay(
 			srcURL,
 			{
 					pane: id,
@@ -27,9 +38,20 @@ class MapService {
 					format: "image/png"
 			}
 		);
-		// For now, explicitly set the id (hopefully this will eventually be taken care of inside wms.overlay).
-		ret.options.id = id;
-		return ret;
+		// Explicitly set the id.
+		layer.options.id = id;
+		
+		layer.onLoadStart = function() {
+			console.log(layer.options.id + ' loading');
+			// legendRec.isLoading = true;
+		}
+
+		layer.onLoadEnd = function() {
+			console.log(layer.options.id + ' DONE');
+			// legendRec.isLoading = false;
+		}
+
+		return layer;
 	}
 
 	private getMapScale(): number {
