@@ -1,4 +1,4 @@
-import { DomUtil, TileLayer, Map as LeafletMap } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
 import { autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
@@ -32,6 +32,14 @@ class MapService {
 		return ret;
 	}
 
+	private static getMapScale(m: LeafletMap): number {
+		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
+		const EARTH_RADIUS = 6378137; // meters
+        const SCREEN_PPI = 96;
+		return (Math.cos(m.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) / 
+			(256 * Math.pow(2, m.getZoom()) * 0.0254);
+	}
+
 	get ready(): boolean {
 		return this._ready;
 	}
@@ -62,6 +70,8 @@ class MapService {
 	public async initLeafletMap(m: LeafletMap): Promise<void> {
 		this._map = m;
 
+		new Control.Scale({position: 'bottomright'}).addTo(m);
+
 		this._leafletLayers.clear();
 
 		// clear all layers, if there were any to start
@@ -70,9 +80,14 @@ class MapService {
 		});
 
 		m.addEventListener('moveend', () => {
+			// Determine if a layer should be visible for the map's current (calcualted) scale.
+			const scale = MapService.getMapScale(m);
 			const els = this._legendService.enabledLayers;
 			els.forEach((l) => {
-				l.foo = 'bar';
+				if (l.minScale !== undefined && l.maxScale !== undefined) {
+					l.scaleOK = l.minScale <= scale && scale <= l.maxScale;
+					console.log(l.name + ' @ good scale? ' + l.scaleOK);
+				}
 			});
 		})
 
@@ -96,7 +111,6 @@ class MapService {
 				}
 			});
 
-			console.log("deleting", toDelete);
 			toDelete.forEach((id) => {
 				const ll = this._leafletLayers.get(id);
 				ll && this._map?.removeLayer(ll);
@@ -112,8 +126,7 @@ class MapService {
 				this._leafletLayers.delete(id);
 			});
 
-			console.log("adding", toAdd);
-			toAdd.forEach(({ id, srcURL, type, options }) => {
+			toAdd.forEach(({ id, srcURL, type, options}) => {
 				this._map?.createPane(id);
 
 				if (type === 'tile') {
@@ -138,6 +151,9 @@ class MapService {
 					console.error(`No pane for layer with id '${l.id}'.`);
 				}
 			});
+
+			// Line up ancillary scale info.
+			this._map?.fireEvent('moveend');
 		});
 	}
 }
