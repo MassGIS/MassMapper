@@ -32,12 +32,17 @@ class MapService {
 		return ret;
 	}
 
-	private static getMapScale(m: LeafletMap): number {
+	private getMapScale(): number {
 		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
-		const EARTH_RADIUS = 6378137; // meters
+		const EARTH_RADIUS = 6378137;
 		const SCREEN_PPI = 96;
-		return (Math.cos(m.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) / 
-			(256 * Math.pow(2, m.getZoom()) * 0.0254);
+		if (this._map) {
+			return (Math.cos(this._map.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) / 
+				(256 * Math.pow(2, this._map.getZoom()) * 0.0254);
+		}
+		else {
+			return 0;
+		}
 	}
 
 	get ready(): boolean {
@@ -81,12 +86,11 @@ class MapService {
 
 		m.addEventListener('moveend', () => {
 			// Determine if a layer should be visible for the map's current (calcualted) scale.
-			const scale = MapService.getMapScale(m);
+			const scale = this.getMapScale();
 			const els = this._legendService.enabledLayers;
 			els.forEach((l) => {
 				if (l.minScale !== undefined && l.maxScale !== undefined) {
 					l.scaleOK = l.minScale <= scale && scale <= l.maxScale;
-					console.log(l.name + ' @ good scale? ' + l.scaleOK);
 				}
 			});
 		})
