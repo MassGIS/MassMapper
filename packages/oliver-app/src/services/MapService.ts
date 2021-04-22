@@ -43,11 +43,9 @@ class MapService {
 		lyr.options.id = id;
 
 		lyr.onLoadStart = function() {
-			console.log(uiLayer.id + ' loading');
 			uiLayer.isLoading = true;
 		}
 		lyr.onLoadEnd = function() {
-			console.log(uiLayer.id + ' DONE');
 			uiLayer.isLoading = false;
 		}
 
