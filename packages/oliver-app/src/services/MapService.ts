@@ -35,7 +35,7 @@ class MapService {
 	private static getMapScale(m: LeafletMap): number {
 		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
 		const EARTH_RADIUS = 6378137; // meters
-        const SCREEN_PPI = 96;
+		const SCREEN_PPI = 96;
 		return (Math.cos(m.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) / 
 			(256 * Math.pow(2, m.getZoom()) * 0.0254);
 	}
