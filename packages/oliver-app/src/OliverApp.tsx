@@ -111,9 +111,17 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 									) : '';
 
 									let status = <span/>;
+									let image = <span/>;
 									if (l.enabled) {
 										if (l.scaleOk) {
 											status = l.isLoading ? <CircularProgress size="20px"/> : status;
+											image = l.legendURL ? (
+												<img
+													src={l.legendURL}
+													className='img-fluid'
+													alt={l.name}
+												/>
+											) : image;
 										}
 										else {
 											status = 
@@ -141,7 +149,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											label={
 												<div>
 													{l.name}&nbsp;&nbsp;{status}<br/>
-													{img}
+													{image}
 												</div>
 											}
 										/>
