@@ -1,19 +1,10 @@
 import {
 	AppBar,
-	Checkbox,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
 	Grid,
 	Paper,
 	Toolbar,
 	Typography,
-	Tooltip,
-	CircularProgress
 } from '@material-ui/core';
-import {
-	ErrorOutline
-} from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
@@ -21,7 +12,10 @@ import React, { FunctionComponent } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
+import { CatalogService } from './services/CatalogService';
 import { MapService } from './services/MapService';
+import LegendComponent from './components/LegendComponent';
+import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
 import 'leaflet/dist/leaflet.css';
 
@@ -62,9 +56,10 @@ interface OliverAppProps extends RouteComponentProps<any> {
 const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
 	const classes = useStyles();
-	const [ legendService, mapService ] = useService([ LegendService, MapService ]);
+	const [ legendService, mapService, catalogService ] = useService([ LegendService, MapService, CatalogService ]);
 	window['legendService'] = legendService;
 	window['mapService'] = mapService;
+	window['catalogService'] = catalogService;
 
 	if (!legendService.ready) {
 		return (<>Loading...</>);
@@ -98,69 +93,14 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 						/>
 					</Grid>
 					<Grid style={{maxHeight: 'calc(100vh - 65px)', overflow: 'auto'}} component={Paper} item square xs={3}>
-						<FormControl className={classes.formControl} component="fieldset">
-							<FormGroup>
-								{legendService.enabledLayers.filter(l => l.isLoading).length > 0 && (
-									(<div>loading...</div>)
-								)}
-								{legendService.layers.map((l) => {
-									// Don't show a legend image if we have none.
-									const img = l.legendURL ? (
-										<img
-											src={l.legendURL}
-											className='img-fluid'
-											alt={l.name}
-										/>
-									) : '';
-
-									let status = <span/>;
-									let image = <span/>;
-									if (l.enabled) {
-										if (l.scaleOk) {
-											status = l.isLoading ? <CircularProgress size="20px"/> : status;
-											image = l.legendURL ? (
-												<img
-													src={l.legendURL}
-													className='img-fluid'
-													alt={l.name}
-												/>
-											) : image;
-										}
-										else {
-											status =
-												<Tooltip title="Out of scale">
-													<ErrorOutline fontSize="small"/>
-												</Tooltip>;
-										}
-									}
-
-									return (
-										<FormControlLabel
-											style={{display: 'table'}}
-											control={
-												<div style={{display: 'table-cell', width: 42}}>
-													<Checkbox
-														onChange={(e) => {
-															l.enabled = e.target.checked;
-														}}
-														checked={l.enabled}
-														color="default"
-													/>
-												</div>
-											}
-											key={`layer-${l.id}`}
-											label={
-												<div>
-													{l.name}&nbsp;&nbsp;{status}<br/>
-													{image}
-												</div>
-											}
-										/>
-									)
-								})}
-
-							</FormGroup>
-						</FormControl>
+						<Grid container style={{height: '100%'}} direction="column">
+							<Grid item style={{minHeight: '50%', overflow: 'auto'}}>
+								<CatalogComponent classes={classes} />
+							</Grid>
+							<Grid item style={{minHeight: '50%', overflow: 'auto'}}>
+								<LegendComponent classes={classes} />
+							</Grid>
+						</Grid>
 					</Grid>
 				</Grid>
 			</Grid>

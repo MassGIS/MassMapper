@@ -11,6 +11,7 @@
 	},
 	"devDependencies": {
 		"@types/detect-browser": "^3.0.0",
+		"@types/he": "^1.1.1",
 		"@types/isomorphic-fetch": "0.0.34",
 		"@types/leaflet": "^1.7.0",
 		"@types/query-string": "~6.1.0",
@@ -23,17 +24,19 @@
 		"webpack": "^4.42.1"
 	},
 	"dependencies": {
+		"@2creek/leaflet-wms": "^0.2.0",
 		"@material-ui/core": "^4.11.3",
 		"@material-ui/icons": "^4.11.2",
 		"@turf/turf": "^6.3.0",
 		"clsx": "^1.1.1",
 		"date-fns": "^2.16.1",
 		"detect-browser": "^4.0.3",
+		"fast-xml-parser": "^3.19.0",
 		"fetch-retry": "^4.0.1",
 		"fontsource-roboto": "^4.0.0",
+		"he": "^1.2.0",
 		"isomorphic-fetch": "^2.2.1",
 		"leaflet": "^1.7.1",
-		"@2creek/leaflet-wms": "^0.2.0",
 		"mobx": "^6.1.8",
 		"mobx-react": "^7.1.0",
 		"mobx-react-lite": "^3.2.0",
