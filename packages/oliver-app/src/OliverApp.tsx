@@ -100,6 +100,9 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					<Grid style={{maxHeight: 'calc(100vh - 65px)', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<FormControl className={classes.formControl} component="fieldset">
 							<FormGroup>
+								{legendService.enabledLayers.filter(l => l.isLoading).length > 0 && (
+									(<div>loading...</div>)
+								)}
 								{legendService.layers.map((l) => {
 									// Don't show a legend image if we have none.
 									const img = l.legendURL ? (
@@ -124,7 +127,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 											) : image;
 										}
 										else {
-											status = 
+											status =
 												<Tooltip title="Out of scale">
 													<ErrorOutline fontSize="small"/>
 												</Tooltip>;

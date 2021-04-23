@@ -147,7 +147,7 @@ class MapService {
 			});
 
 			toAdd.forEach((l) => {
-				const { id, type } = l;
+				const { id, layerType: type  } = l;
 				this._map?.createPane(id);
 
 				if (type === 'tile') {
