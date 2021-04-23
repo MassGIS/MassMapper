@@ -5,28 +5,36 @@ import parser from 'fast-xml-parser';
 import he from 'he';
 
 
-type CatalogServiceAnnotations = '_layers' | '_ready' | 'setReady';
+type CatalogServiceAnnotations = '_layerTree' | '_ready' | 'setReady';
 
+type CatalogTreeNode = {
+	title: string;
+	style?: string;
+	name?: string;
+	type?: 'tiled_overlay' | 'pt' | 'line' | 'poly';
+	Layer?: CatalogTreeNode[];
+	Folder?: CatalogTreeNode[];
+}
 @Service()
 class CatalogService {
-	get layers(): Layer[] {
-		return this._layers;
+	get layerTree(): CatalogTreeNode[] {
+		return this._layerTree;
 	}
 
 	get ready(): boolean {
 		return this._ready;
 	}
 
-	private readonly _layers: Layer[];
+	private _layerTree: CatalogTreeNode[];
 	private _ready: boolean = false;
 
 	constructor() {
-		this._layers = [];
+		this._layerTree = [];
 
 		makeObservable<CatalogService, CatalogServiceAnnotations>(
 			this,
 			{
-				_layers: observable,
+				_layerTree: observable,
 				_ready: observable,
 				setReady: action
 			}
@@ -50,8 +58,8 @@ class CatalogService {
 				// I don't know how many of these are important!
 				var options = {
 					attributeNamePrefix : "",
-					attrNodeName: "attr", //default is 'false'
-					textNodeName : "#text",
+					// attrNodeName: "attrs", //default is 'false'
+					// textNodeName : "#text",
 					ignoreAttributes : false,
 					ignoreNameSpace : true,
 					allowBooleanAttributes : false,
@@ -67,6 +75,7 @@ class CatalogService {
 				};
 
 				const xml = parser.parse(text, options);
+				this._layerTree = xml.FolderSet.Folder as CatalogTreeNode[];
 			})
 
 		// TODO:  Fetch layers from folderset xml
@@ -74,4 +83,4 @@ class CatalogService {
 	}
 }
 
-export { CatalogService };
+export { CatalogService, CatalogTreeNode };

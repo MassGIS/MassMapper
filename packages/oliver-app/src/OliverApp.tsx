@@ -57,11 +57,12 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 
 	const classes = useStyles();
 	const [ legendService, mapService, catalogService ] = useService([ LegendService, MapService, CatalogService ]);
+
 	window['legendService'] = legendService;
 	window['mapService'] = mapService;
 	window['catalogService'] = catalogService;
 
-	if (!legendService.ready) {
+	if (!legendService.ready || !catalogService.ready) {
 		return (<>Loading...</>);
 	}
 
