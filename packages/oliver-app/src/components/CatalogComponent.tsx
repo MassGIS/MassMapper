@@ -61,7 +61,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 	if (!catalogService.ready) {
 		return (<div>loading...</div>);
 	}
-debugger;
+
 	return (
 		<TreeView
 			classes={classes}
