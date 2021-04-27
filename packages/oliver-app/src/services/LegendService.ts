@@ -22,7 +22,7 @@ class LegendService {
 	private readonly _layers: Layer[];
 	private _ready: boolean = false;
 
-	constructor(services: ContainerInstance) {
+	constructor(private readonly _services: ContainerInstance) {
 		this._layers = [];
 
 		makeObservable<LegendService, LegendServiceAnnotations>(
@@ -40,7 +40,14 @@ class LegendService {
 		})();
 	}
 
-	public addLayer(l: Layer): void {
+	public async addLayer(l: Layer): Promise<void> {
+		if (this._layers.filter((layer) => layer.name === l.name && layer.style === l.style).length > 0) {
+			// already added
+			return;
+		}
+
+		const mapService = this._services.get(MapService);
+		await l.makeMappable(mapService);
 		this._layers.push(l);
 	}
 

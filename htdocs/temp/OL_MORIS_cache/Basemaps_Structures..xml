@@ -1,0 +1,12 @@
+<?xml version='1.0' standalone='yes'?>
+<Layer queryable="0">
+  <BoundingBox SRS="EPSG:26986" maxx="334279.393" maxy="961705.21" minx="29517.435" miny="775607.662" />
+  <KeywordList>
+    <Keyword>MassgisMetadataUrl=http://www.mass.gov/service-details/massgis-base-map</Keyword>
+  </KeywordList>
+  <LatLonBoundingBox maxx="-69.85598707440859" maxy="42.90575948520038" minx="-73.58706326502185" miny="41.212256335503035" />
+  <Name>Basemaps_Structures</Name>
+  <SRS>EPSG:900913</SRS>
+  <Title>MA Statewide Structures (buildings)</Title>
+  <Scale maxScaleDenominator="9029" minScaleDenominator="1128" />
+</Layer>

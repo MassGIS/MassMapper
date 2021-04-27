@@ -7,15 +7,14 @@ import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useService } from '../services/useService';
-import 'leaflet/dist/leaflet.css';
-import { ClassNameMap } from '@material-ui/styles';
 import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
-
+import PanoramaHorizontal from '@material-ui/icons/PanoramaHorizontal';
+import { Layer } from '../models/Layer';
+import { LegendService } from '../services/LegendService';
 interface CatalogComponentProps extends RouteComponentProps<any> {
-	classes: ClassNameMap;
 }
 
-const renderTree = (nodes: CatalogTreeNode[]) => {
+const renderTree = (nodes: CatalogTreeNode[], addLayer: (l:Layer) => Promise<void>) => {
 	let items: JSX.Element[] = [];
 
 	if (nodes.length === 1) {
@@ -28,7 +27,7 @@ const renderTree = (nodes: CatalogTreeNode[]) => {
 					nodeId={node.title + '::' + node.style}
 					label={node.title}
 				>
-					{renderTree([ node ])}
+					{renderTree([ node ], addLayer)}
 				</TreeItem>
 			)));
 		}
@@ -36,9 +35,19 @@ const renderTree = (nodes: CatalogTreeNode[]) => {
 		if (Array.isArray(node.Layer)) {
 			items = items.concat(node.Layer.map((node) => (
 				<TreeItem
+					icon={<PanoramaHorizontal />}
 					key={node.title + '::' + node.style}
 					nodeId={node.title + '::' + node.style}
 					label={node.title}
+					onClick={() => {
+						const l = new Layer(
+							node.name!,
+							node.style!,
+							node.title!,
+							node.type!
+						);
+						addLayer(l);
+					}}
 				/>
 			)));
 		}
@@ -55,12 +64,11 @@ const useStyles = makeStyles({
 	}
 });
 
-
 const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({}) => {
 
 	const classes = useStyles();
 
-	const [ catalogService ] = useService([ CatalogService ]);
+	const [ catalogService, legendService ] = useService([ CatalogService, LegendService ]);
 
 	if (!catalogService.ready) {
 		return (<div>loading...</div>);
@@ -74,7 +82,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 			defaultExpandIcon={<ChevronRightIcon/>}
 		>
 			{
-				renderTree(catalogService.layerTree)
+				renderTree(catalogService.layerTree, legendService.addLayer.bind(legendService))
 			}
 		</TreeView>
 	);

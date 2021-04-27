@@ -1,5 +1,5 @@
 import { action, makeObservable, observable } from "mobx";
-import { Service } from "typedi";
+import { ContainerInstance, Service } from "typedi";
 import parser from 'fast-xml-parser';
 import he from 'he';
 
@@ -28,7 +28,7 @@ class CatalogService {
 	private _layerTree: CatalogTreeNode[];
 	private _ready: boolean = false;
 
-	constructor() {
+	constructor(private readonly _services: ContainerInstance) {
 		this._layerTree = [];
 
 		makeObservable<CatalogService, CatalogServiceAnnotations>(
@@ -76,10 +76,8 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
+
 			});
-
-		// TODO:  Fetch layers from folderset xml
-
 	}
 }
 

@@ -96,7 +96,7 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 					<Grid style={{maxHeight: 'calc(100vh - 65px)', overflow: 'auto'}} component={Paper} item square xs={3}>
 						<Grid container style={{height: '100%'}} direction="column">
 							<Grid item style={{minHeight: '50%', overflow: 'auto'}}>
-								<CatalogComponent classes={classes} />
+								<CatalogComponent />
 							</Grid>
 							<Grid item style={{minHeight: '50%', overflow: 'auto'}}>
 								<LegendComponent classes={classes} />

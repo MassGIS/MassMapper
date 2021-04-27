@@ -70,12 +70,11 @@ class MapService {
 	}
 
 	private _leafletLayers: Map<string, TileLayer>;
-	private _legendService: LegendService;
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
 
-	constructor(services: ContainerInstance) {
+	constructor(private readonly _services: ContainerInstance) {
 		makeObservable<MapService, '_map' | '_ready' | '_mapZoom'>(
 			this,
 			{
@@ -86,7 +85,6 @@ class MapService {
 			}
 		);
 
-		this._legendService = services.get(LegendService);
 		this._leafletLayers = new Map<string, TileLayer>();
 
 		(async () => {
@@ -116,7 +114,8 @@ class MapService {
 			const toAdd: Layer[] = [];
 			const toDelete: string[] = [];
 
-			const els = this._legendService.enabledLayers;
+			const legendService = this._services.get(LegendService);
+			const els = legendService.enabledLayers;
 			els.forEach((l) => {
 				if (!this._leafletLayers.has(l.id)) {
 					// add layer
@@ -150,7 +149,7 @@ class MapService {
 				const { id, layerType: type  } = l;
 				this._map?.createPane(id);
 
-				if (type === 'tile') {
+				if (type === 'tiled_overlay') {
 					const newLayer = MapService.createLeafletTileLayer(l);
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);

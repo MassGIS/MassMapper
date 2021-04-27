@@ -1,0 +1,19 @@
+<?xml version='1.0' standalone='yes'?>
+<Layer queryable="1">
+  <BoundingBox SRS="EPSG:26986" maxx="330846.2" maxy="959744.87" minx="33869.63" miny="777211.92" />
+  <KeywordList>
+    <Keyword>Roads</Keyword>
+    <Keyword>ExtractDoc=http://maps.massgis.state.ma.us/metadata/CENSUS1990TIGER_ARC.shp.xml</Keyword>
+    <Keyword>TIGER</Keyword>
+    <Keyword>Census</Keyword>
+    <Keyword>1990</Keyword>
+    <Keyword>GISDATA.CENSUS1990TIGER_ARC</Keyword>
+    <Keyword>massgis_sde</Keyword>
+    <Keyword>MassgisMetadataUrl=http://docs.digital.mass.gov/dataset/massgis-data-1990-us-census-tiger-linework</Keyword>
+  </KeywordList>
+  <LatLonBoundingBox maxx="-69.862" maxy="43.912" minx="-73.569" miny="40.204" />
+  <Name>massgis:GISDATA.CENSUS1990TIGER_ARC</Name>
+  <SRS>EPSG:26986</SRS>
+  <Scale maxScaleDenominator="400000.0" minScaleDenominator="0.0" />
+  <Title>Census 1990 TIGER Roads</Title>
+</Layer>
