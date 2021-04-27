@@ -1,6 +1,5 @@
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { Service } from "typedi";
-import { Layer } from '../models/Layer';
 import parser from 'fast-xml-parser';
 import he from 'he';
 
@@ -15,6 +14,7 @@ type CatalogTreeNode = {
 	Layer?: CatalogTreeNode[];
 	Folder?: CatalogTreeNode[];
 }
+
 @Service()
 class CatalogService {
 	get layerTree(): CatalogTreeNode[] {
@@ -52,31 +52,31 @@ class CatalogService {
 
 	private async init(): Promise<void> {
 		// Stack order:  bottom-to-top.
-		fetch('oliver_folderset.xml', {cache: "no-store"})
+		fetch('oliver_folderset.xml', { cache: "no-store" })
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
-				var options = {
-					attributeNamePrefix : "",
+				const options = {
+					attributeNamePrefix: "",
 					// attrNodeName: "attrs", //default is 'false'
 					// textNodeName : "#text",
-					ignoreAttributes : false,
-					ignoreNameSpace : true,
-					allowBooleanAttributes : false,
-					parseNodeValue : false,
-					parseAttributeValue : true,
+					ignoreAttributes: false,
+					ignoreNameSpace: true,
+					allowBooleanAttributes: false,
+					parseNodeValue: false,
+					parseAttributeValue: true,
 					trimValues: true,
 					cdataTagName: "__cdata", //default is 'false'
 					cdataPositionChar: "\\c",
 					parseTrueNumberOnly: false,
 					arrayMode: true, //"strict"
-					attrValueProcessor: (val:string, attrName:string) => he.decode(val, {isAttributeValue: true}),//default is a=>a
-					tagValueProcessor : (val:string, attrName:string) => he.decode(val), //default is a=>a
+					attrValueProcessor: (val: string, attrName: string) => he.decode(val, { isAttributeValue: true }),//default is a=>a
+					tagValueProcessor: (val: string, attrName: string) => he.decode(val) //default is a=>a
 				};
 
 				const xml = parser.parse(text, options);
-				this._layerTree = xml.FolderSet[0] as CatalogTreeNode[];
-			})
+				this._layerTree = [ xml.FolderSet[0] ];
+			});
 
 		// TODO:  Fetch layers from folderset xml
 

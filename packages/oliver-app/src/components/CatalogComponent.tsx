@@ -12,32 +12,36 @@ import { ClassNameMap } from '@material-ui/styles';
 import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
 
 interface CatalogComponentProps extends RouteComponentProps<any> {
-	classes:ClassNameMap;
+	classes: ClassNameMap;
 }
 
-const renderTree = (node:CatalogTreeNode) =>  {
-	const id = `id-${Math.random()}`;
+const renderTree = (nodes: CatalogTreeNode[]) => {
+	let items: JSX.Element[] = [];
 
-	let items = [];
-	if (Array.isArray(node.Folder)) {
-		items = items.concat(node.Folder.map((node) => (
-			<TreeItem
-				key={node.title + '::' + node.style}
-				nodeId={node.title + '::' + node.style}
-				label={node.title}
-			>
-					{renderTree(node)}
-			</TreeItem>
-		)));
-	}
-	if (Array.isArray(node.Layer)) {
-		items = items.concat(node.Layer.map((node) => (
-			<TreeItem
-				key={node.title + '::' + node.style}
-				nodeId={node.title + '::' + node.style}
-				label={node.title}
-			/>
-		)));
+	if (nodes.length === 1) {
+		const node = nodes[0];
+
+		if (Array.isArray(node.Folder)) {
+			items = items.concat(node.Folder.map((node) => (
+				<TreeItem
+					key={node.title + '::' + node.style}
+					nodeId={node.title + '::' + node.style}
+					label={node.title}
+				>
+					{renderTree([ node ])}
+				</TreeItem>
+			)));
+		}
+
+		if (Array.isArray(node.Layer)) {
+			items = items.concat(node.Layer.map((node) => (
+				<TreeItem
+					key={node.title + '::' + node.style}
+					nodeId={node.title + '::' + node.style}
+					label={node.title}
+				/>
+			)));
+		}
 	}
 
 	return (items);
@@ -45,11 +49,11 @@ const renderTree = (node:CatalogTreeNode) =>  {
 
 const useStyles = makeStyles({
 	root: {
-	  height: 110,
-	  flexGrow: 1,
-	  maxWidth: 400,
-	},
-  });
+		height: 110,
+		flexGrow: 1,
+		maxWidth: 400
+	}
+});
 
 
 const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({}) => {
@@ -65,17 +69,15 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 	return (
 		<TreeView
 			classes={classes}
-			defaultCollapseIcon={<ExpandMoreIcon />}
-			defaultExpanded={['root']}
-			defaultExpandIcon={<ChevronRightIcon />}
+			defaultCollapseIcon={<ExpandMoreIcon/>}
+			defaultExpanded={[ 'root' ]}
+			defaultExpandIcon={<ChevronRightIcon/>}
 		>
 			{
 				renderTree(catalogService.layerTree)
 			}
 		</TreeView>
 	);
-
-
 });
 
 export default withRouter(CatalogComponent);
