@@ -11,10 +11,11 @@ import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
 import PanoramaHorizontal from '@material-ui/icons/PanoramaHorizontal';
 import { Layer } from '../models/Layer';
 import { LegendService } from '../services/LegendService';
+import { ClassNameMap } from '@material-ui/styles';
 interface CatalogComponentProps extends RouteComponentProps<any> {
 }
 
-const renderTree = (nodes: CatalogTreeNode[], addLayer: (l:Layer) => Promise<void>) => {
+const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l:Layer) => Promise<void>) => {
 	let items: JSX.Element[] = [];
 
 	if (nodes.length === 1) {
@@ -23,11 +24,12 @@ const renderTree = (nodes: CatalogTreeNode[], addLayer: (l:Layer) => Promise<voi
 		if (Array.isArray(node.Folder)) {
 			items = items.concat(node.Folder.map((node) => (
 				<TreeItem
+					classes={classes}
 					key={node.title + '::' + node.style}
 					nodeId={node.title + '::' + node.style}
 					label={node.title}
 				>
-					{renderTree([ node ], addLayer)}
+					{renderTree([ node ], classes, addLayer)}
 				</TreeItem>
 			)));
 		}
@@ -35,6 +37,7 @@ const renderTree = (nodes: CatalogTreeNode[], addLayer: (l:Layer) => Promise<voi
 		if (Array.isArray(node.Layer)) {
 			items = items.concat(node.Layer.map((node) => (
 				<TreeItem
+					classes={classes}
 					icon={<PanoramaHorizontal />}
 					key={node.title + '::' + node.style}
 					nodeId={node.title + '::' + node.style}
@@ -58,9 +61,11 @@ const renderTree = (nodes: CatalogTreeNode[], addLayer: (l:Layer) => Promise<voi
 
 const useStyles = makeStyles({
 	root: {
-		height: 110,
 		flexGrow: 1,
-		maxWidth: 400
+		maxWidth: 400,
+	},
+	content : {
+		alignItems: 'start',
 	}
 });
 
@@ -82,7 +87,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 			defaultExpandIcon={<ChevronRightIcon/>}
 		>
 			{
-				renderTree(catalogService.layerTree, legendService.addLayer.bind(legendService))
+				renderTree(catalogService.layerTree, classes, legendService.addLayer.bind(legendService))
 			}
 		</TreeView>
 	);

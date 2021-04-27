@@ -51,6 +51,11 @@ class LegendService {
 		this._layers.push(l);
 	}
 
+	public removeLayer(l: Layer): void {
+		const toRemove = this._layers.findIndex((ly) => ly.name === l.name && ly.style === l.style);
+		this._layers.splice(toRemove, 1)
+	}
+
 	private setReady(isReady: boolean) {
 		this._ready = isReady;
 	}

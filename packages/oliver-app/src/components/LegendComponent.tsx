@@ -9,9 +9,12 @@ import {
 	Toolbar,
 	Typography,
 	Tooltip,
-	CircularProgress
+	CircularProgress,
+	Button,
+	IconButton
 } from '@material-ui/core';
 import {
+	DeleteOutline,
 	ErrorOutline
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -26,12 +29,21 @@ import 'leaflet/dist/leaflet.css';
 import { ClassNameMap } from '@material-ui/styles';
 
 interface LegendComponentProps extends RouteComponentProps<any> {
-	classes:ClassNameMap;
 }
 
-const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({classes}) => {
+const useStyles = makeStyles((theme) => ({
+	formControl: {
+		margin: theme.spacing(3)
+	},
+	button: {
+		padding: '0',
+	}
+}));
+
+const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) => {
 
 	const [ legendService ] = useService([ LegendService ]);
+	const classes = useStyles();
 
 	return (
 		<FormControl className={classes.formControl} component="fieldset">
@@ -74,21 +86,38 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({clas
 						<FormControlLabel
 							style={{display: 'table'}}
 							control={
-								<div style={{display: 'table-cell', width: 42}}>
-									<Checkbox
-										onChange={(e) => {
-											l.enabled = e.target.checked;
-										}}
-										checked={l.enabled}
-										color="default"
-									/>
+								<div style={{display: 'table-cell', whiteSpace: 'nowrap'}}>
+									<Tooltip
+										title="enable/disable layer"
+									>
+										<Checkbox
+											className={classes.button}
+											onChange={(e) => {
+												l.enabled = e.target.checked;
+											}}
+											checked={l.enabled}
+											color="default"
+										/>
+									</Tooltip>
+									<Tooltip
+										title="remove layer"
+									>
+										<IconButton
+											className={classes.button}
+											onClick={() => {
+												legendService.removeLayer(l);
+											}}
+										>
+											<DeleteOutline />
+										</IconButton>
+									</Tooltip>
 								</div>
 							}
 							key={`layer-${l.id}`}
 							label={
-								<div>
-									{l.name}&nbsp;&nbsp;{status}<br/>
+								<div style={{whiteSpace: 'nowrap' }}>
 									{image}
+									{l.title}&nbsp;&nbsp;{status}<br/>
 								</div>
 							}
 						/>
