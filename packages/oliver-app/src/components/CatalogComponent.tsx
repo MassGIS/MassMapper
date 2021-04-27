@@ -18,21 +18,29 @@ interface CatalogComponentProps extends RouteComponentProps<any> {
 const renderTree = (node:CatalogTreeNode) =>  {
 	const id = `id-${Math.random()}`;
 
-	return (
-		<TreeItem key={id} nodeId={id} label={node.title}>
-			{
-				Array.isArray(node.Folder) ?
-					node.Folder.map((node) => renderTree(node)) :
-					(
-						<TreeItem
-							key={node.title + '::' + node.style}
-							nodeId={node.title + '::' + node.style}
-							label={node.title}
-						/>
-					)
-			}
-		</TreeItem>
-	);
+	let items = [];
+	if (Array.isArray(node.Folder)) {
+		items = items.concat(node.Folder.map((node) => (
+			<TreeItem
+				key={node.title + '::' + node.style}
+				nodeId={node.title + '::' + node.style}
+				label={node.title}
+			>
+					{renderTree(node)}
+			</TreeItem>
+		)));
+	}
+	if (Array.isArray(node.Layer)) {
+		items = items.concat(node.Layer.map((node) => (
+			<TreeItem
+				key={node.title + '::' + node.style}
+				nodeId={node.title + '::' + node.style}
+				label={node.title}
+			/>
+		)));
+	}
+
+	return (items);
 };
 
 const useStyles = makeStyles({
@@ -53,7 +61,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 	if (!catalogService.ready) {
 		return (<div>loading...</div>);
 	}
-
+debugger;
 	return (
 		<TreeView
 			classes={classes}
@@ -61,7 +69,9 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 			defaultExpanded={['root']}
 			defaultExpandIcon={<ChevronRightIcon />}
 		>
-			{catalogService.layerTree.map((node) => renderTree(node))}
+			{
+				renderTree(catalogService.layerTree)
+			}
 		</TreeView>
 	);
 

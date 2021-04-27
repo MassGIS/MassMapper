@@ -69,13 +69,13 @@ class CatalogService {
 					cdataTagName: "__cdata", //default is 'false'
 					cdataPositionChar: "\\c",
 					parseTrueNumberOnly: false,
-					arrayMode: false, //"strict"
+					arrayMode: true, //"strict"
 					attrValueProcessor: (val:string, attrName:string) => he.decode(val, {isAttributeValue: true}),//default is a=>a
 					tagValueProcessor : (val:string, attrName:string) => he.decode(val), //default is a=>a
 				};
 
 				const xml = parser.parse(text, options);
-				this._layerTree = xml.FolderSet.Folder as CatalogTreeNode[];
+				this._layerTree = xml.FolderSet[0] as CatalogTreeNode[];
 			})
 
 		// TODO:  Fetch layers from folderset xml
