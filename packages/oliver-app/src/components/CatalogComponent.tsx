@@ -21,7 +21,7 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 	if (nodes.length === 1) {
 		const node = nodes[0];
 
-		if (Array.isArray(node.Folder)) {
+		if (node.Folder) {
 			items = items.concat(node.Folder.map((node) => (
 				<TreeItem
 					classes={classes}
@@ -34,7 +34,7 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 			)));
 		}
 
-		if (Array.isArray(node.Layer)) {
+		if (node.Layer) {
 			items = items.concat(node.Layer.map((node) => (
 				<TreeItem
 					classes={classes}
@@ -47,7 +47,8 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 							node.name!,
 							node.style!,
 							node.title!,
-							node.type!
+							node.type!,
+							node.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
 						);
 						addLayer(l);
 					}}

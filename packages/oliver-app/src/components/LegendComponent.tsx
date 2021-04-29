@@ -48,9 +48,6 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 	return (
 		<FormControl className={classes.formControl} component="fieldset">
 			<FormGroup>
-				{legendService.enabledLayers.filter(l => l.isLoading).length > 0 && (
-					(<div>loading...</div>)
-				)}
 				{legendService.layers.map((l) => {
 					// Don't show a legend image if we have none.
 					const img = l.legendURL ? (
@@ -71,6 +68,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 									src={l.legendURL}
 									className='img-fluid'
 									alt={l.name}
+									style={{maxWidth: 200}}
 								/>
 							) : image;
 						}
@@ -86,7 +84,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 						<FormControlLabel
 							style={{display: 'table'}}
 							control={
-								<div style={{display: 'table-cell', whiteSpace: 'nowrap'}}>
+								<div style={{display: 'table-cell', width: 55}}>
 									<Tooltip
 										title="enable/disable layer"
 									>
@@ -116,8 +114,8 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 							key={`layer-${l.id}`}
 							label={
 								<div style={{whiteSpace: 'nowrap' }}>
-									{image}
 									{l.title}&nbsp;&nbsp;{status}<br/>
+									{image}
 								</div>
 							}
 						/>

@@ -48,6 +48,7 @@ class LegendService {
 
 		const mapService = this._services.get(MapService);
 		await l.makeMappable(mapService);
+		l.enabled = true;
 		this._layers.push(l);
 	}
 

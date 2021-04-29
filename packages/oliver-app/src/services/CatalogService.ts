@@ -11,6 +11,7 @@ type CatalogTreeNode = {
 	style?: string;
 	name?: string;
 	type?: 'tiled_overlay' | 'pt' | 'line' | 'poly';
+	agol?: string;
 	Layer?: CatalogTreeNode[];
 	Folder?: CatalogTreeNode[];
 }
@@ -76,7 +77,6 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
-
 			});
 	}
 }
