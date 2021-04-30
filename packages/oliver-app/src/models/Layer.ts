@@ -76,7 +76,7 @@ class Layer {
 		(
 			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
 		);
-		await fetch(`/temp/OL_MORIS_cache/${layerId}.xml`)
+		await fetch(`http://massgis.2creek.com/oliver-data/temp/OL_MORIS_cache/${layerId}.xml`)
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
@@ -116,7 +116,7 @@ class Layer {
 		// If we are type tiled_overlay, the incoming srcUrl points to some metadata we need to fetch to get the srcUrl we really need.
 		if (this.layerType === 'tiled_overlay') {
 			// Until MassGIS gets CORS.
-			await fetch('/temp/OL_MORIS_cache/' + this.src.substr(this.src.lastIndexOf('/')))
+			await fetch('http://massgis.2creek.com/oliver-data/map_ol/' + this.src.substr(this.src.lastIndexOf('/')))
 				.then(response => response.json())
 				.then(json => {
 					this._layerData.srcUrl = json.tileServers[0] + '/tile/{z}/{y}/{x}';
