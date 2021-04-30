@@ -1,16 +1,10 @@
 import {
-	AppBar,
 	Checkbox,
 	FormControl,
 	FormControlLabel,
 	FormGroup,
-	Grid,
-	Paper,
-	Toolbar,
-	Typography,
 	Tooltip,
 	CircularProgress,
-	Button,
 	IconButton
 } from '@material-ui/core';
 import {
@@ -18,15 +12,12 @@ import {
 	ErrorOutline
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
-import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
 import 'leaflet/dist/leaflet.css';
-import { ClassNameMap } from '@material-ui/styles';
 
 interface LegendComponentProps extends RouteComponentProps<any> {
 }

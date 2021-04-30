@@ -22,6 +22,8 @@ class LegendService {
 	private readonly _layers: Layer[];
 	private _ready: boolean = false;
 
+	public isSplashPageVisible: boolean = true;
+
 	constructor(private readonly _services: ContainerInstance) {
 		this._layers = [];
 
@@ -30,7 +32,8 @@ class LegendService {
 			{
 				_layers: observable,
 				_ready: observable,
-				setReady: action
+				isSplashPageVisible: observable,
+				setReady: action,
 			}
 		);
 

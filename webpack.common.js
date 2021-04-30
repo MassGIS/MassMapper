@@ -76,7 +76,14 @@ module.exports = {
 			},
 			{
 				test: /\.jpe?g$|\.gif$|\.ico$|\.png$|\.svg$/,
-				use: 'file-loader?name=[name].[ext]?[hash]',
+				use: [
+					{
+						loader: 'file-loader?name=[name].[ext]?[hash]',
+						options: {
+							outputPath: 'dist'
+						},
+					},
+				],
 			},
 			{
 				test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
