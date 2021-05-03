@@ -11,6 +11,7 @@ type CatalogTreeNode = {
 	style?: string;
 	name?: string;
 	type?: 'tiled_overlay' | 'pt' | 'line' | 'poly';
+	agol?: string;
 	Layer?: CatalogTreeNode[];
 	Folder?: CatalogTreeNode[];
 }
@@ -52,7 +53,7 @@ class CatalogService {
 
 	private async init(): Promise<void> {
 		// Stack order:  bottom-to-top.
-		fetch('oliver_folderset.xml', { cache: "no-store" })
+		fetch('http://massgis.2creek.com/oliver-data/temp/oliver_folderset.xml', { cache: "no-store" })
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
@@ -76,7 +77,6 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
-
 			});
 	}
 }

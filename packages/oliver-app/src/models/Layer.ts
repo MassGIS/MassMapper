@@ -25,13 +25,10 @@ class Layer {
 		return this._layerData.srcUrl;
 	}
 	get legendURL(): string {
-		// http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&STYLE=GISDATA.LANDUSE2005_POLY%3A%3ADefault&FOO=Land%20Use%202005&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&LAYER=massgis%3AGISDATA.LANDUSE2005_POLY&SCALE=36111.90964299998&FORMAT=image%2Fgif
-		return 'http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&' +
-			`STYLE=${this.style}` +
-			'&VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&' +
-			`LAYER=${this.name}&SCALE=${this._mapService.currentScale}` +
-			'&FORMAT=image%2Fgif';
-		// return this._layerData.legendURL;
+		return this.layerType === 'tiled_overlay' ? '' :
+			'http://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&' +
+			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&' +
+			`LAYER=${this.name}&STYLE=${this.style}`;
 	}
 	get minScale(): number {
 		return this._layerData.minScale;
@@ -43,7 +40,6 @@ class Layer {
 		const scale = this._mapService.currentScale;
 		return (this.minScale || 0) <= scale && scale <= (this.maxScale || 999999999);
 	}
-
 
 	private _mapService:MapService;
 	private _isLoading = false;
@@ -57,7 +53,8 @@ class Layer {
 		public readonly name:string,
 		public readonly style:string,
 		public readonly title:string,
-		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly'
+		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly',
+		public readonly src:string
 	) {
 		makeObservable<Layer, LayerAnnotations>(
 			this,
@@ -79,7 +76,7 @@ class Layer {
 		(
 			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
 		);
-		await fetch(`/temp/OL_MORIS_cache/${layerId}.xml`)
+		await fetch(`http://massgis.2creek.com/oliver-data/temp/OL_MORIS_cache/${layerId}.xml`)
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
@@ -101,14 +98,30 @@ class Layer {
 					tagValueProcessor: (val: string, attrName: string) => he.decode(val) //default is a=>a
 				};
 
-				const xmlData = parser.parse(text, options).Layer[0];;
+				const xmlData = parser.parse(text, options).Layer[0];
+				
+				// Assume WMS.
 				this._layerData = {
-					minScale: xmlData.Scale[0].minScaleDenominator,
-					maxScale: xmlData.Scale[0].maxScaleDenominator,
-					srcUrl: 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
-				}
+					minScale: xmlData.Scale && xmlData.Scale[0].minScaleDenominator,
+					maxScale: xmlData.Scale && xmlData.Scale[0].maxScaleDenominator,
+					srcUrl: this.src
+				};
 
+				this.options = {
+					layers: this.name,
+					styles: this.style
+				};
 			});
+
+		// If we are type tiled_overlay, the incoming srcUrl points to some metadata we need to fetch to get the srcUrl we really need.
+		if (this.layerType === 'tiled_overlay') {
+			// Until MassGIS gets CORS.
+			await fetch('http://massgis.2creek.com/oliver-data/map_ol/' + this.src.substr(this.src.lastIndexOf('/')))
+				.then(response => response.json())
+				.then(json => {
+					this._layerData.srcUrl = json.tileServers[0] + '/tile/{z}/{y}/{x}';
+				})
+		}
 	}
 }
 

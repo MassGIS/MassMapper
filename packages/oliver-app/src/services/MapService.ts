@@ -7,7 +7,7 @@ import * as wms from '@2creek/leaflet-wms';
 @Service()
 class MapService {
 	private static createLeafletTileLayer(uiLayer: Layer): TileLayer {
-		const { id, srcURL} = uiLayer;
+		const { id, srcURL } = uiLayer;
 		const lyr = new TileLayer(
 			srcURL,
 			{
@@ -109,6 +109,11 @@ class MapService {
 			this._mapZoom = this._map?.getZoom() || 0;
 		});
 
+		// TODO:  Unhardcode this?
+		m.addLayer(new TileLayer(
+			'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+		));
+
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
 			const toAdd: Layer[] = [];
@@ -116,6 +121,7 @@ class MapService {
 
 			const legendService = this._services.get(LegendService);
 			const els = legendService.enabledLayers;
+
 			els.forEach((l) => {
 				if (!this._leafletLayers.has(l.id)) {
 					// add layer
@@ -154,7 +160,7 @@ class MapService {
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
 				}
-				else if (type === 'wms') {
+				else if (['wms', 'pt', 'line', 'poly'].indexOf(type) >= 0) {
 					const newLayer = MapService.createLeafletWMSLayer(l);
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
