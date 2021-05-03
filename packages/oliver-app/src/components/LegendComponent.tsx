@@ -41,11 +41,16 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 	return (
 		<DragDropContext
 			onDragEnd={(result) => {
-				console.dir(result);
+				console.log("dragend",result);
+			}}
+			onDragUpdate={(result) => {
+				console.log("dragupdate",result);
+				const layer = legendService.getLayerById(result.draggableId);
+				result.destination && legendService.moveLayer(layer, result.destination.index);
 			}}
 		>
 			<FormControl className={classes.formControl} component="fieldset">
-				<Droppable droppableId="foo">
+				<Droppable droppableId="layer-list">
 					{(provided) => (
 							<Observer>{(): JSX.Element => {
 								return (<FormGroup
@@ -53,7 +58,6 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 									{...provided.droppableProps}
 								>
 									{legendService.layers.map((l, i) => {
-										console.log(i);
 										// Don't show a legend image if we have none.
 										const img = l.legendURL ? (
 											<img

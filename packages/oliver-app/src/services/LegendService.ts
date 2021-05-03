@@ -43,6 +43,15 @@ class LegendService {
 		})();
 	}
 
+	public getLayerById(id:string) {
+		return this._layers.filter(l => l.id === id)[0]
+	}
+
+	public moveLayer(l:Layer, newIndex:number): void {
+		const oldIndex = this._layers.indexOf(l);
+		array_move(this._layers, oldIndex, newIndex);
+	}
+
 	public async addLayer(l: Layer): Promise<void> {
 		if (this._layers.filter((layer) => layer.name === l.name && layer.style === l.style).length > 0) {
 			// already added
@@ -64,5 +73,16 @@ class LegendService {
 		this._ready = isReady;
 	}
 }
+
+function array_move(arr:Array<unknown>, old_index: number, new_index: number) {
+    if (new_index >= arr.length) {
+        var k = new_index - arr.length + 1;
+        while (k--) {
+            arr.push(undefined);
+        }
+    }
+    arr.splice(new_index, 0, arr.splice(old_index, 1)[0]);
+};
+
 
 export { Layer, LegendService };
