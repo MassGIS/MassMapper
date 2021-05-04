@@ -64,10 +64,10 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 													style={{opacity: l.isLoading ? 0.5 : 1}}
 												/>
 											) : image;
-											status = l.isLoading ? 
-												<CircularProgress 
+											status = l.isLoading ?
+												<CircularProgress
 													size="24px"
-													thickness={8} 
+													thickness={8}
 													color="secondary"
 													style={{position: 'absolute', left: 'calc(50% - 12px)'}}
 												/> : status;
@@ -75,7 +75,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 										}
 										else {
 											status =
-												<Tooltip title="Only available at closer zooms.">
+												<Tooltip title="Zoom in closer to see this layer">
 													<ErrorOutline fontSize="small"/>
 												</Tooltip>;
 										}
