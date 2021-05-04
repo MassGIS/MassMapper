@@ -1,8 +1,5 @@
 import {
 	Checkbox,
-	FormControl,
-	FormControlLabel,
-	FormGroup,
 	Tooltip,
 	CircularProgress,
 	IconButton
@@ -25,9 +22,6 @@ interface LegendComponentProps extends RouteComponentProps<any> {
 }
 
 const useStyles = makeStyles((theme) => ({
-	formControl: {
-		margin: theme.spacing(3)
-	},
 	button: {
 		padding: '0',
 	}
@@ -41,110 +35,106 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 	return (
 		<DragDropContext
 			onDragEnd={(result) => {
-				console.log("dragend",result);
+				return;
 			}}
 			onDragUpdate={(result) => {
-				console.log("dragupdate",result);
 				const layer = legendService.getLayerById(result.draggableId);
 				result.destination && legendService.moveLayer(layer, result.destination.index);
 			}}
 		>
-			<FormControl className={classes.formControl} component="fieldset">
-				<Droppable droppableId="layer-list">
-					{(provided) => (
-							<Observer>{(): JSX.Element => {
-								return (<FormGroup
-									ref={provided.innerRef}
-									{...provided.droppableProps}
-								>
-									{legendService.layers.map((l, i) => {
-										// Don't show a legend image if we have none.
-										const img = l.legendURL ? (
-											<img
-												src={l.legendURL}
-												className='img-fluid'
-												alt={l.name}
-											/>
-										) : '';
+			<Droppable droppableId="layer-list">
+				{(provided) => (
+					<Observer>{(): JSX.Element => {
+						return (
+							<div
+								ref={provided.innerRef}
+								{...provided.droppableProps}
+							>
+								{legendService.layers.map((l, i) => {
+									let status = <span/>;
+									let image = <span/>;
 
-										let status = <span/>;
-										let image = <span/>;
-										if (l.enabled) {
-											if (l.scaleOk) {
-												status = l.isLoading ? <CircularProgress size="20px"/> : status;
-												image = l.legendURL ? (
-													<img
-														src={l.legendURL}
-														className='img-fluid'
-														alt={l.name}
-														style={{maxWidth: 200}}
-													/>
-												) : image;
-											}
-											else {
-												status =
-													<Tooltip title="Out of scale">
-														<ErrorOutline fontSize="small"/>
-													</Tooltip>;
-											}
+									if (l.enabled) {
+										if (l.scaleOk) {
+											image = l.legendURL ? (
+												<img
+													src={l.legendURL}
+													className='img-fluid'
+													alt={l.name}
+													style={{opacity: l.isLoading ? 0.5 : 1}}
+												/>
+											) : image;
+											status = l.isLoading ? 
+												<CircularProgress 
+													size="24px"
+													thickness={8} 
+													color="secondary"
+													style={{position: 'absolute', left: 'calc(50% - 12px)'}}
+												/> : status;
+
 										}
+										else {
+											status =
+												<Tooltip title="Only available at closer zooms.">
+													<ErrorOutline fontSize="small"/>
+												</Tooltip>;
+										}
+									}
 
-										return (
-											<Draggable key={l.id} draggableId={l.id} index={i}>
-												{(provided) => (
-													<FormControlLabel
-														{...provided.draggableProps}
-														{...provided.dragHandleProps}
-														ref={provided.innerRef}
-														style={{display: 'table'}}
-														control={
-															<div style={{display: 'table-cell', width: 55}}>
-																<Tooltip
-																	title="enable/disable layer"
-																>
-																	<Checkbox
-																		className={classes.button}
-																		onChange={(e) => {
-																			l.enabled = e.target.checked;
-																		}}
-																		checked={l.enabled}
-																		color="default"
-																	/>
-																</Tooltip>
-																<Tooltip
-																	title="remove layer"
-																>
-																	<IconButton
-																		className={classes.button}
-																		onClick={() => {
-																			legendService.removeLayer(l);
-																		}}
-																	>
-																		<DeleteOutline />
-																	</IconButton>
-																</Tooltip>
-															</div>
-														}
-														key={`layer-${l.id}`}
-														label={
-															<div style={{whiteSpace: 'nowrap' }}>
-																{l.title}&nbsp;&nbsp;{status}<br/>
-																{image}
-															</div>
-														}
-													/>
-												)}
-											</Draggable>
-										);
-									})}
-									{provided.placeholder}
-								</FormGroup>)
+									return (
+										<Draggable key={l.id} draggableId={l.id} index={i}>
+											{(provided) => (
+												<div
+													{...provided.draggableProps}
+													{...provided.dragHandleProps}
+													ref={provided.innerRef}
+													key={`layer-${l.id}`}
+												>
+													<div style={{whiteSpace: 'pre'}}>
+														<div style={{
+															display: 'inline-block'
+														}}>
+															<Checkbox
+																className={classes.button}
+																onChange={(e) => {
+																	l.enabled = e.target.checked;
+																}}
+																checked={l.enabled}
+																color="default"
+															/>
 
-							}}</Observer>
+															<IconButton
+																className={classes.button}
+																onClick={() => {
+																	legendService.removeLayer(l);
+																}}
+															>
+																<DeleteOutline />
+															</IconButton>
+														</div>
 
-					)}
-				</Droppable>
-			</FormControl>
+														<div style={{
+															display: 'inline-block'
+														}}>
+															{l.title}
+														</div>
+
+														<div style={{position: 'relative', textAlign: 'center'}}>
+															{image}
+															{status}
+														</div>
+													</div>
+												</div>
+											)}
+										</Draggable>
+									);
+								})}
+								{provided.placeholder}
+							</div>
+						)
+					}}</Observer>
+				)}
+			</Droppable>
 		</DragDropContext>
 	);
 });
