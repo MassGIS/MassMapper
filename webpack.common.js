@@ -80,7 +80,7 @@ module.exports = {
 					{
 						loader: 'file-loader?name=[name].[ext]?[hash]',
 						options: {
-							outputPath: 'dist'
+							outputPath: './dist'
 						},
 					},
 				],
