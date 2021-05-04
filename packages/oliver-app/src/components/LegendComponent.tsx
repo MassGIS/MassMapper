@@ -76,7 +76,11 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 										else {
 											status =
 												<Tooltip title="Zoom in closer to see this layer">
-													<ErrorOutline fontSize="small"/>
+													<IconButton
+														className={classes.button}
+													>
+														<ErrorOutline fontSize="small"/>
+													</IconButton>
 												</Tooltip>;
 										}
 									}
@@ -111,6 +115,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 															>
 																<DeleteOutline />
 															</IconButton>
+															{status}
 														</div>
 
 														<div style={{
@@ -121,7 +126,6 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 
 														<div style={{position: 'relative', textAlign: 'center'}}>
 															{image}
-															{status}
 														</div>
 													</div>
 												</div>

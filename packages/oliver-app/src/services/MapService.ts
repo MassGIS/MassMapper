@@ -1,8 +1,9 @@
-import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap, Control, LeafletMouseEvent } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
 import * as wms from '@2creek/leaflet-wms';
+import { ToolService } from './ToolService';
 
 @Service()
 class MapService {
@@ -69,6 +70,10 @@ class MapService {
 		return this._ready;
 	}
 
+	get leafletMap(): LeafletMap | null {
+		return this._map;
+	}
+
 	private _leafletLayers: Map<string, TileLayer>;
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
@@ -86,11 +91,6 @@ class MapService {
 		);
 
 		this._leafletLayers = new Map<string, TileLayer>();
-
-		(async () => {
-			await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
-			this._ready = true;
-		})();
 	}
 
 	public async initLeafletMap(m: LeafletMap): Promise<void> {
@@ -181,6 +181,8 @@ class MapService {
 			// Line up ancillary scale info.
 			this._map?.fireEvent('moveend');
 		});
+
+		this._ready = true;
 	}
 }
 
