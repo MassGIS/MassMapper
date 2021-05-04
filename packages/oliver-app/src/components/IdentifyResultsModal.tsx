@@ -80,13 +80,12 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						height: '90%',
 						textAlign: 'center'
 					}}>
-						IDENTIFY RESULTS GO HERE
-						<br/>
+						<span>IDENTIFY RESULTS GO HERE</span>
 						{selectionService.identifyResults.map((result) => (
 							<Observer>{
 								() => (<div key={result.layer.id}>{result.layer.title} - {result.numFeaturesDisplay}</div>)
 							}</Observer>
-						)}
+						))}
 					</Grid>
 					<Grid item xs={12} style={{
 						textAlign: 'center'
