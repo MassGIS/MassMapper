@@ -8,9 +8,9 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const bundles = {
 	entry: {
-		oliverApp: [
+		massmapperApp: [
 			'@babel/polyfill',
-			path.resolve(__dirname, './src/OliverApp.entry.tsx')
+			path.resolve(__dirname, './src/MassMapperApp.entry.tsx')
 		],
 	},
 	node: {
@@ -19,13 +19,13 @@ const bundles = {
 	plugins: [
 		// HTML Generation: Snowops Staff Manager (non-admin)
 		new HtmlWebpackPlugin({
-			title: 'OLIVER App',
+			title: 'MassMapper',
 			template: path.join(__dirname, '../../static/basic.template.html'),
-			filename: '../../htdocs/oliver.html', // relative to webpack.config.output.path
+			filename: '../../htdocs/MassMapper.html', // relative to webpack.config.output.path
 			hash: true,
 			inject: 'head',
 			// favicon: path.join(__dirname, '../../static/favicon.ico'),
-			chunks: ['oliverApp'],
+			chunks: ['massmapperApp'],
 			scriptLoading: 'defer'
 		}),
 	]
