@@ -118,13 +118,19 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 															{status}
 														</div>
 
-														<div style={{
-															display: 'inline-block'
-														}}>
-															{l.title}
-														</div>
+														<Tooltip title={l.title}>
+															<div style={{
+																display: 'inline-block'
+															}}>
+																{l.title}
+															</div>
+														</Tooltip>
 
-														<div style={{position: 'relative', textAlign: 'center'}}>
+														<div style={{
+															position: 'relative',
+															textAlign: 'left',
+															marginLeft: '3em'
+														}}>
 															{image}
 														</div>
 													</div>
