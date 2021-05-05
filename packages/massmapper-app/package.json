@@ -1,7 +1,7 @@
 {
-	"name": "@massgis/oliver-app",
+	"name": "@massgis/massmapper",
 	"version": "1.0.0",
-	"description": "OLIVER App",
+	"description": "MassMapper",
 	"scripts": {
 		"build:dev": "npm run clean && NODE_ENV=development node --max_old_space_size=8192 ../../node_modules/webpack/bin/webpack.js --progress --config webpack.config.js",
 		"build:dev:watch": "npm run clean && NODE_ENV=development node --max_old_space_size=8192 ../../node_modules/webpack/bin/webpack.js --progress --config webpack.config.js --watch",

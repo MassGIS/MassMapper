@@ -69,10 +69,10 @@ const useStyles = makeStyles((theme) => ({
 		}
 	}));
 
-interface OliverAppProps extends RouteComponentProps<any> {
+interface MassMapperAppProps extends RouteComponentProps<any> {
 }
 
-const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
+const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	const classes = useStyles();
 	const [ legendService, mapService, catalogService, toolService ] = useService([ LegendService, MapService, CatalogService, ToolService]);
@@ -128,4 +128,4 @@ const OliverApp: FunctionComponent<OliverAppProps> = observer(() => {
 	);
 });
 
-export default withRouter(OliverApp);
+export default withRouter(MassMapperApp);

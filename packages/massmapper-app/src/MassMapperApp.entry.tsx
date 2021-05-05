@@ -5,7 +5,7 @@ import React, { FunctionComponent } from 'react';
 import { render } from 'react-dom';
 import { Router, Switch, Route } from 'react-router-dom';
 import 'reflect-metadata';
-import OliverApp from './OliverApp';
+import OliverApp from './MassMapperApp';
 import { ServiceProvider } from './services/ServiceProvider';
 import { history } from './services/HistoryService';
 import theme from './theme';
