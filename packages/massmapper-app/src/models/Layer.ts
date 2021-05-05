@@ -2,6 +2,8 @@ import { computed, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
 import parser from 'fast-xml-parser';
 import he from 'he';
+import { TileLayer } from 'leaflet';
+import wms from '@2creek/leaflet-wms';
 
 type LayerAnnotations = '_isLoading' | '_layerData';
 
@@ -14,11 +16,14 @@ type LayerMetadata = {
 class Layer {
 	public readonly id:string;
 	public enabled: boolean = false;
-	public isLoading: boolean = false;
 	public options?: {
 		"layers": string,
 		"styles": string
 	};
+
+	get isLoading(): boolean {
+		return this._isLoading;
+	}
 
 	get srcURL(): string {
 		//TODO: calculate the source url from the known data
@@ -61,7 +66,6 @@ class Layer {
 			{
 				_isLoading: observable,
 				_layerData: observable,
-				isLoading: observable,
 				scaleOk: computed,
 				enabled: observable
 			}
@@ -99,7 +103,7 @@ class Layer {
 				};
 
 				const xmlData = parser.parse(text, options).Layer[0];
-				
+
 				// Assume WMS.
 				this._layerData = {
 					minScale: xmlData.Scale && xmlData.Scale[0].minScaleDenominator,
@@ -122,6 +126,50 @@ class Layer {
 					this._layerData.srcUrl = json.tileServers[0] + '/tile/{z}/{y}/{x}';
 				})
 		}
+	}
+
+	public createLeafletTileLayer(): TileLayer {
+		const lyr = new TileLayer(
+			this.srcURL,
+			{
+				id: this.id,
+				pane: this.id
+			}
+		);
+
+		lyr.addEventListener('loading', () => {
+			this._isLoading = true;
+		});
+		lyr.addEventListener('load', () => {
+			this._isLoading = false;
+		});
+
+		return lyr;
+	}
+
+	public createLeafletWMSLayer() {
+		let lyr = wms.overlay(
+			this.srcURL,
+			{
+					pane: this.id,
+					layers: this.options!.layers,
+					styles: this.options!.styles,
+					transparent: true,
+					format: "image/png"
+			}
+		);
+
+		// Explicitly set the id since wms.overlay doesn't do this free of charge.
+		lyr.options.id = this.id;
+
+		lyr.onLoadStart = function() {
+			this._isLoading = true;
+		}
+		lyr.onLoadEnd = function() {
+			this._isLoading = false;
+		}
+
+		return lyr;
 	}
 }
 

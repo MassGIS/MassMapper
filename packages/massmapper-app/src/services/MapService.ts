@@ -2,57 +2,9 @@ import { DomUtil, TileLayer, Map as LeafletMap, Control, LeafletMouseEvent } fro
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';
-import * as wms from '@2creek/leaflet-wms';
-import { ToolService } from './ToolService';
 
 @Service()
 class MapService {
-	private static createLeafletTileLayer(uiLayer: Layer): TileLayer {
-		const { id, srcURL } = uiLayer;
-		const lyr = new TileLayer(
-			srcURL,
-			{
-				id,
-				pane: id
-			}
-		);
-
-		lyr.addEventListener('loading', () => {
-			uiLayer.isLoading = true;
-		});
-		lyr.addEventListener('load', () => {
-			uiLayer.isLoading = false;
-		});
-
-		return lyr;
-	}
-
-	private static createLeafletWMSLayer(uiLayer: Layer) {
-		const { id, srcURL, options} = uiLayer;
-		let lyr = wms.overlay(
-			srcURL,
-			{
-					pane: id,
-					layers: options!.layers,
-					styles: options!.styles,
-					transparent: true,
-					format: "image/png"
-			}
-		);
-
-		// Explicitly set the id since wms.overlay doesn't do this free of charge.
-		lyr.options.id = id;
-
-		lyr.onLoadStart = function() {
-			uiLayer.isLoading = true;
-		}
-		lyr.onLoadEnd = function() {
-			uiLayer.isLoading = false;
-		}
-
-		return lyr;
-	}
-
 	get currentScale(): number {
 		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
 		const EARTH_RADIUS = 6378137;
@@ -156,12 +108,12 @@ class MapService {
 				this._map?.createPane(id);
 
 				if (type === 'tiled_overlay') {
-					const newLayer = MapService.createLeafletTileLayer(l);
+					const newLayer = l.createLeafletTileLayer();
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
 				}
 				else if (['wms', 'pt', 'line', 'poly'].indexOf(type) >= 0) {
-					const newLayer = MapService.createLeafletWMSLayer(l);
+					const newLayer = l.createLeafletWMSLayer();
 					this._map?.addLayer(newLayer);
 					this._leafletLayers.set(id, newLayer);
 				}

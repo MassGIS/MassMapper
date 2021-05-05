@@ -44,7 +44,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 		>
 			<Droppable droppableId="layer-list">
 				{(provided) => (
-					<Observer>{(): JSX.Element => {
+					<Observer>{() => {
 						return (
 							<div
 								ref={provided.innerRef}
