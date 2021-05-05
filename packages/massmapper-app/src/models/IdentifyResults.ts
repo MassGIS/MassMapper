@@ -14,8 +14,12 @@ class IdentifyResult {
 	private _selectedFeatures?: SelectedFeature[];
 	private _numFeatures: number;
 
+	get isLoading(): boolean {
+		return this._isLoading;
+	}
+
 	get numFeaturesDisplay():string {
-		return this._numFeatures === -1 ? '' : this._numFeatures + "";
+		return this.isLoading ? 'loading...' : this._numFeatures + "";
 	}
 
 	constructor(
@@ -55,6 +59,7 @@ class IdentifyResult {
 			});
 		const respBody = await res.text();
 		this._numFeatures = getNumFeaturesFromHitsResponse(respBody);
+		this._isLoading = false;
 		return this._numFeatures;
 	}
 };

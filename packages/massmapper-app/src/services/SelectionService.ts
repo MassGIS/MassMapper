@@ -1,6 +1,6 @@
 import { makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
-import { IdentifyResult } from "../models/FeatureSet";
+import { IdentifyResult } from "../models/IdentifyResults";
 import { LatLngBounds } from "leaflet";
 import { Layer } from "../models/Layer";
 
