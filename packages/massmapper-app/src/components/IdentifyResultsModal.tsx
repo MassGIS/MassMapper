@@ -113,7 +113,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						variant="contained"
 						onClick={() => {
 							selectionService.clearIdentifyResults()
-							myState.selectedIdentifyResultId = undefined;
+							myState.selectedIdentifyResult = undefined;
 						}}
 					>
 						<Close /> Back to Map
