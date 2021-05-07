@@ -11,7 +11,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
-import { MapContainer } from 'react-leaflet';
+import { MapContainer, useMap } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
 import { CatalogService } from './services/CatalogService';
@@ -86,6 +86,12 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 		[42.886589, -69.928393]
 	] as LatLngBoundsExpression;
 
+	function MyComponent() {
+		const map = useMap()
+		console.log('map center:', map.getCenter())
+		return null
+	}
+
 	return (
 		<div className={classes.root}>
 			<AppBar position="absolute">
@@ -110,7 +116,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map);
 							}}
-						/>
+						>
+							<MyComponent/>
+						</MapContainer>
 					</Grid>
 					<Grid style={{maxHeight: 'calc(100vh - 65px)'}} component={Paper} item square xs={3}>
 						<Grid container style={{height: '100%'}} direction="column">
