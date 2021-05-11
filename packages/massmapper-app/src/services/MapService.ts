@@ -1,4 +1,4 @@
-import { DomUtil, TileLayer, Map as LeafletMap, Control, LeafletMouseEvent } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { LegendService, Layer } from './LegendService';

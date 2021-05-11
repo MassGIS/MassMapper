@@ -21,12 +21,8 @@ import LegendComponent from './components/LegendComponent';
 import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
 
-import measure from '@tristanhoffmann/leaflet-measure';
-const m = measure; // leaflet-measure decorates l.Control, so we need to *force* webpack to include it, even though it's unused
-
 import 'leaflet/dist/leaflet.css';
 
-import { Close } from '@material-ui/icons';
 import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
