@@ -4,6 +4,7 @@ import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
+import { FunctionComponent } from "react";
 
 class IdentifyTool extends Tool {
 
@@ -20,6 +21,11 @@ class IdentifyTool extends Tool {
 			);
 			disposer();
 		})
+	}
+
+	// no component for this tool
+	public component():FunctionComponent {
+		return () => { return null; }
 	}
 
 	public async deactivate() {

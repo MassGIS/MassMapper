@@ -1,11 +1,15 @@
-import { action, makeObservable, observable } from "mobx";
+import { makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
-import { MapService } from "./MapService";
-import { Tool } from '../models/Tool';
+import { Tool, ToolComponentProps, ToolPosition } from '../models/Tool';
 import { IdentifyTool } from "../models/IdentifyTool";
+import { FunctionComponent } from "react";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
-
+interface ToolDefinition {
+	id: string;
+	position: ToolPosition;
+	class: typeof Tool;
+}
 @Service()
 class ToolService {
 
@@ -40,13 +44,23 @@ class ToolService {
 			const identifyTool = new IdentifyTool(
 				_services,
 				'identify-tool',
-				'Click on the map to identify features'
+				ToolPosition.none
 			);
 			this.addTool(identifyTool);
 			this.activateTool(identifyTool.id);
 
 			this._ready = true;
 		})();
+	}
+
+	public addToolFromDefinition(def:ToolDefinition) {
+		const t = new (def.class as any)(this._services, def.id, def.position) as Tool;
+		this.addTool(t);
+	}
+
+	public getTools(p:ToolPosition): Array<Tool> {
+		return Array.from(this._tools.values())
+			.filter((t) => t.position === p);
 	}
 
 	public activateTool(id:string) {
@@ -60,7 +74,6 @@ class ToolService {
 			return;
 		}
 
-		t.enabled = true;
 		this._tools.set(t.id, t);
 	}
 
@@ -69,4 +82,4 @@ class ToolService {
 	}
 }
 
-export { ToolService };
+export { ToolService, ToolDefinition };

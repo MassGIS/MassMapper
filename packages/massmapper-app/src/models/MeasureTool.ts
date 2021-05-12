@@ -2,40 +2,42 @@ import { Control, LeafletMouseEvent } from 'leaflet';
 import { autorun } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
+import { MeasureToolComponent } from '../components/MeasureToolComponent';
 
 import measure from '@tristanhoffmann/leaflet-measure';
-const m = measure; // leaflet-measure decorates l.Control, so we need to *force* webpack to include it, even though it's unused
-
+const m = measure;
 class MeasureTool extends Tool {
 
 	private _measureControl:Control;
 
 	public async activate() {
+		super.activate();
+
 		const ms = this._services.get(MapService);
 		const disposer = autorun(() => {
 			if (!ms.leafletMap) {
 				return;
 			}
 
-			const options = {
-				position: 'topright'
-			}
+			ms.leafletMap.on('click',() => {
+				// add a measure point to the map and keep going
+			});
 
-			this._measureControl = (Control as any).measure(options) as Control;
+			ms.leafletMap.on('mousemove', () => {
 
-			this._measureControl.addTo(ms.leafletMap);
+			});
 
 			disposer();
 		})
 	}
 
-	public async deactivate() {
-		this._measureControl.remove();
+	public component() {
+		return MeasureToolComponent;
 	}
 
-	public async handleMeasureClick(ev:LeafletMouseEvent) {
-		// do the Measure here
 
+	public async deactivate() {
+		this._measureControl.remove();
 	}
 }
 

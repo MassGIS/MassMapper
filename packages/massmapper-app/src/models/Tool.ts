@@ -1,30 +1,52 @@
 import { makeObservable, observable } from "mobx";
+import { FunctionComponent } from "react";
+import { RouteComponentProps } from "react-router";
 import { ContainerInstance } from "typedi";
-import { MapService } from "../services/MapService";
+import { ToolService } from "../services/ToolService";
 
-// type ToolAnnotations = '_isLoading' | '_toolData';
+enum ToolPosition {
+	topright,
+	bottomright,
+	topleft,
+	bottomleft,
+	none
+}
+
+interface ToolComponentProps {
+	tool: Tool;
+}
 
 abstract class Tool {
-	public enabled: boolean = false;
+	private _active: boolean = false;
+
+	get isActive():boolean {
+		return this._active;
+	}
 
 	constructor(
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
-		public tooltip:string
+		public position: ToolPosition
 	) {
 		// makeObservable<Tool, ToolAnnotations>(
-		makeObservable<Tool>(
+		makeObservable<Tool, '_active'>(
 			this,
 			{
-				enabled: observable,
-				tooltip: observable
+				_active: observable,
+				position: observable
 			}
 		);
 	}
 
-	public abstract activate(): Promise<void>;
+	public async activate(): Promise<void> {
+		const toolService = this._services.get(ToolService);
+		// toolService.deactivateTools
+		this._active = true;
+	};
 
 	public abstract deactivate(): Promise<void>;
+
+	public abstract component(): FunctionComponent<ToolComponentProps>;
 }
 
-export { Tool };
+export { Tool, ToolPosition, ToolComponentProps };

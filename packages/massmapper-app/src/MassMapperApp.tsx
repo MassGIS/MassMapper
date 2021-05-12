@@ -4,8 +4,6 @@ import {
 	Paper,
 	Toolbar,
 	Typography,
-	Modal,
-	Button
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
@@ -16,7 +14,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
 import { CatalogService } from './services/CatalogService';
 import { MapService } from './services/MapService';
-import { ToolService } from './services/ToolService';
+import { ToolDefinition, ToolService } from './services/ToolService';
 import LegendComponent from './components/LegendComponent';
 import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
@@ -26,6 +24,9 @@ import 'leaflet/dist/leaflet.css';
 import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
+import { MeasureTool } from './models/MeasureTool';
+import { ToolPosition } from './models/Tool';
+import ToolsOverlayComponent from './components/ToolsOverlayComponent';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -44,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
 			height: '100%'
 		},
 		mapContainer: {
+			position: 'relative',
 			flexGrow: 1
 		},
 		root: {
@@ -77,7 +79,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 	const classes = useStyles();
 	const [ legendService, mapService, catalogService, toolService ] = useService([ LegendService, MapService, CatalogService, ToolService]);
 
-	if (!legendService.ready || !catalogService.ready) {
+	if (!legendService.ready || !catalogService.ready || !toolService.ready) {
 		return (<>Loading...</>);
 	}
 
@@ -86,11 +88,16 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 		[42.886589, -69.928393]
 	] as LatLngBoundsExpression;
 
-	function MyComponent() {
-		const map = useMap()
-		console.log('map center:', map.getCenter())
-		return null
-	}
+	const tools:Array<ToolDefinition> = [
+		{
+			id: 'measure-tool',
+			position: ToolPosition.topleft,
+			class: MeasureTool
+		}
+	];
+	tools.forEach((toolDef) => {
+		toolService.addToolFromDefinition(toolDef);
+	});
 
 	return (
 		<div className={classes.root}>
@@ -109,6 +116,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 				<IdentifyResultsModal />
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
+						<ToolsOverlayComponent />
 						<MapContainer
 							bounds={bbox}
 							className={classes.map}
@@ -116,9 +124,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map);
 							}}
-						>
-							<MyComponent/>
-						</MapContainer>
+						/>
 					</Grid>
 					<Grid style={{maxHeight: 'calc(100vh - 65px)'}} component={Paper} item square xs={3}>
 						<Grid container style={{height: '100%'}} direction="column">
