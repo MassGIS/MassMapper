@@ -1,6 +1,5 @@
-import { makeObservable, observable } from "mobx";
+import { makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
-import { RouteComponentProps } from "react-router";
 import { ContainerInstance } from "typedi";
 import { ToolService } from "../services/ToolService";
 
@@ -23,28 +22,55 @@ abstract class Tool {
 		return this._active;
 	}
 
+	get isDefault():boolean {
+		return this._default;
+	}
+
 	constructor(
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
-		public position: ToolPosition
+		public position: ToolPosition,
+		protected _default: boolean = false
 	) {
 		// makeObservable<Tool, ToolAnnotations>(
 		makeObservable<Tool, '_active'>(
 			this,
 			{
 				_active: observable,
-				position: observable
+				position: observable,
+				isActive: computed
 			}
 		);
 	}
 
+	protected abstract _activate(): Promise<void>;
+	protected abstract _deactivate(): Promise<void>;
+
 	public async activate(): Promise<void> {
 		const toolService = this._services.get(ToolService);
-		// toolService.deactivateTools
+		toolService.tools.forEach((t) => {
+			if (t !== this) {
+				t.deactivate();
+			}
+		});
+
+		if (this._active) {
+			return;
+		}
+
+		await this._activate();
 		this._active = true;
 	};
 
-	public abstract deactivate(): Promise<void>;
+	public async deactivate(restoreDefaultTool:boolean = false): Promise<void> {
+		await this._deactivate();
+		this._active = false;
+		if (restoreDefaultTool) {
+			const toolService = this._services.get(ToolService);
+			const defaultTool = toolService.tools.filter((t) => t.isDefault)[0];
+			defaultTool.activate();
+		}
+	};
 
 	public abstract component(): FunctionComponent<ToolComponentProps>;
 }

@@ -8,7 +8,7 @@ import {
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
@@ -27,6 +27,7 @@ import IdentifyResultsModal from './components/IdentifyResultsModal';
 import { MeasureTool } from './models/MeasureTool';
 import { ToolPosition } from './models/Tool';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
+import { IdentifyTool } from './models/IdentifyTool';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -87,17 +88,6 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 		[41.237964, -73.508142],
 		[42.886589, -69.928393]
 	] as LatLngBoundsExpression;
-
-	const tools:Array<ToolDefinition> = [
-		{
-			id: 'measure-tool',
-			position: ToolPosition.topleft,
-			class: MeasureTool
-		}
-	];
-	tools.forEach((toolDef) => {
-		toolService.addToolFromDefinition(toolDef);
-	});
 
 	return (
 		<div className={classes.root}>

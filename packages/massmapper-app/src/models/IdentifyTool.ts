@@ -1,5 +1,5 @@
-import { LatLngBounds, LeafletMouseEvent } from "leaflet";
-import { autorun } from "mobx";
+import { LatLngBounds, LeafletEventHandlerFn, LeafletMouseEvent } from "leaflet";
+import { autorun, IReactionPublic } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
@@ -8,32 +8,34 @@ import { FunctionComponent } from "react";
 
 class IdentifyTool extends Tool {
 
-	public async activate() {
+	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
+	protected async _activate() {
 		const ms = this._services.get(MapService);
-		const disposer = autorun(() => {
+		autorun((r:IReactionPublic) => {
 			if (!ms.leafletMap) {
 				return;
 			}
 
 			ms.leafletMap.on(
 				'click',
-				this.handleIdentifyClick.bind(this)
+				this._handleIdentifyClick
 			);
-			disposer();
+			r.dispose();
 		})
+	}
+
+
+	protected async _deactivate() {
+		const ms = this._services.get(MapService);
+		ms.leafletMap?.off(
+			'click',
+			this._handleIdentifyClick
+		);
 	}
 
 	// no component for this tool
 	public component():FunctionComponent {
 		return () => { return null; }
-	}
-
-	public async deactivate() {
-		const ms = this._services.get(MapService);
-		ms.leafletMap?.off(
-			'click',
-			this.handleIdentifyClick
-		);
 	}
 
 	public async handleIdentifyClick(ev:LeafletMouseEvent) {

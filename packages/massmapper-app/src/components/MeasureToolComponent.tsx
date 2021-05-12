@@ -3,18 +3,21 @@ import React, { FunctionComponent } from 'react';
 import { ToolComponentProps } from "../models/Tool";
 import { Button } from '@material-ui/core';
 import ruler from '../images/ruler.png';
+import { MeasureTool } from "../models/MeasureTool";
 
 const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
+	const measureTool = tool as MeasureTool;
 	return (
 		<>
 			<Button
 				style={{
-					backgroundColor: 'white'
+					backgroundColor: tool.isActive ? '' : 'white'
 				}}
+				color="default"
 				title="Click to measure distances"
-				variant="outlined"
+				variant="contained"
 				onClick={() => {
-					tool.activate();
+					tool.isActive ? tool.deactivate(true) : tool.activate();
 				}}
 			>
 				<img
@@ -24,26 +27,30 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 					src={ruler}
 				/>
 			</Button>
-			{tool.isActive && (<MeasureToolDialog tool={tool} />)}
+			{tool.isActive && measureTool.totalLength && (<MeasureToolDialog tool={tool} />)}
 		</>
 	);
 });
 
 const MeasureToolDialog: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
+	const measureTool = tool as MeasureTool
 	return (
 		<div
 			style={{
 				position: 'absolute',
-				width: '250px',
-				height: '200px',
+				// width: '250px',
+				// height: '200px',
 				backgroundColor: 'white',
 				top: '50px',
-				padding: '3px',
+				left: '0',
+				padding: '1em',
 				borderRadius: '5px',
 				border: '1px solid gray'
 			}}
 		>
-			Length:
+			<p style={{
+				whiteSpace: 'nowrap'
+			}}>{measureTool.totalLength}</p>
 		</div>
 	);
 });
