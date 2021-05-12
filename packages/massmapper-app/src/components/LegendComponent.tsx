@@ -69,18 +69,14 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 													size="24px"
 													thickness={8}
 													color="secondary"
-													style={{position: 'absolute', left: 'calc(50% - 12px)'}}
+													style={{position: 'absolute', left: '0px'}}
 												/> : status;
 
 										}
 										else {
 											status =
 												<Tooltip title="Zoom in closer to see this layer">
-													<IconButton
-														className={classes.button}
-													>
-														<ErrorOutline fontSize="small"/>
-													</IconButton>
+													<ErrorOutline fontSize="small"/>
 												</Tooltip>;
 										}
 									}
@@ -96,7 +92,8 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 												>
 													<div style={{whiteSpace: 'pre'}}>
 														<div style={{
-															display: 'inline-block'
+															display: 'inline-block',
+															position: 'relative'
 														}}>
 															<Checkbox
 																className={classes.button}

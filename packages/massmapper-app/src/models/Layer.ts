@@ -67,7 +67,8 @@ class Layer {
 				_isLoading: observable,
 				_layerData: observable,
 				scaleOk: computed,
-				enabled: observable
+				enabled: observable,
+				isLoading: computed
 			}
 		);
 		this.id = 'layer-' + Math.random();
@@ -162,10 +163,10 @@ class Layer {
 		// Explicitly set the id since wms.overlay doesn't do this free of charge.
 		lyr.options.id = this.id;
 
-		lyr.onLoadStart = function() {
+		lyr.onLoadStart = () => {
 			this._isLoading = true;
 		}
-		lyr.onLoadEnd = function() {
+		lyr.onLoadEnd = () => {
 			this._isLoading = false;
 		}
 
