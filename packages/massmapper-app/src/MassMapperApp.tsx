@@ -9,7 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
-import { MapContainer, useMap } from 'react-leaflet';
+import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
 import { CatalogService } from './services/CatalogService';

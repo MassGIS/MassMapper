@@ -17,7 +17,7 @@ interface ToolComponentProps {
 }
 
 abstract class Tool {
-	private _active: boolean = false;
+	protected _active: boolean = false;
 
 	get isActive():boolean {
 		return this._active;
