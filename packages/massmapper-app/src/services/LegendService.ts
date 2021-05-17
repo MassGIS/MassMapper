@@ -21,6 +21,10 @@ class LegendService {
 
 	private readonly _layers: Layer[];
 	private _ready: boolean = false;
+	private _splashPageContent: string;
+	get splashPageContent() : string {
+		return this._splashPageContent;
+	}
 
 	public isSplashPageVisible: boolean = true;
 
@@ -38,8 +42,19 @@ class LegendService {
 		);
 
 		(async () => {
-			// await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1 second
-			this.setReady(true);
+			fetch(`splashpage.txt?${Math.random()}`).then(async (r) =>  {
+				this._splashPageContent = await r.text();
+				const lastSplashPageHash = localStorage.getItem('massmapper.splashPageSize');
+				const userSaysSkip = localStorage.getItem('massmapper.skipSplashPage') === 'yes';
+				if (lastSplashPageHash === ("" + this._splashPageContent.length) && userSaysSkip) {
+					this.isSplashPageVisible = false;
+				} else {
+					localStorage.removeItem('massmapper.skipSplashPage');
+					localStorage.setItem('massmapper.splashPageSize', this._splashPageContent.length + "");
+				}
+
+				this.setReady(true);
+			});
 		})();
 	}
 

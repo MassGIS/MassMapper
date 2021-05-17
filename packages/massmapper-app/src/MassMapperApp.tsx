@@ -86,8 +86,6 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 		[42.886589, -69.928393]
 	] as LatLngBoundsExpression;
 
-	const showSplashPageModal = localStorage.getItem('massmapper.skipSplashPage') !== 'yes';
-
 	return (
 		<div className={classes.root}>
 			<AppBar position="absolute">
@@ -101,7 +99,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 				</Toolbar>
 			</AppBar>
 			<Grid style={{paddingTop: 65}} className={classes.content} component="main" container direction="column">
-				{showSplashPageModal && (<SplashPageModal />)}
+				<SplashPageModal />
 				<IdentifyResultsModal />
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>

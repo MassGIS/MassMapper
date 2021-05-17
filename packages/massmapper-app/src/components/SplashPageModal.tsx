@@ -64,7 +64,7 @@ interface SplashPageModalProps extends RouteComponentProps<any> {
 const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => {
 
 	const classes = useStyles();
-	const [ legendService ] = useService([ LegendService]);
+	const [ legendService ] = useService([ LegendService ]);
 
 	return (
 		<Modal
@@ -84,8 +84,9 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 						textAlign: 'center'
 					}}>
 						<img src={massmapper} />
-						<h2>Welcome to the new MassMapper</h2>
-						<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus consectetur tempor urna, ac viverra neque cursus eget. Ut sed laoreet tortor. Phasellus sit amet orci lectus. Phasellus quis sapien ipsum. Ut eu vulputate dolor, eget faucibus erat. Morbi vestibulum leo id nunc laoreet sagittis. Donec dapibus pellentesque erat, sed maximus dolor hendrerit vitae. Nunc at ex eget ipsum vulputate imperdiet in id neque. Curabitur molestie mattis ornare. Vivamus pellentesque ipsum eu sagittis tincidunt. Phasellus vitae urna nec metus cursus porta.</p>
+						<p dangerouslySetInnerHTML={{
+							__html: legendService.splashPageContent
+						}}></p>
 					</Grid>
 					<Grid item xs={12} style={{
 						textAlign: 'center'
