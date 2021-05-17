@@ -4,9 +4,7 @@ import parser from 'fast-xml-parser';
 import he from 'he';
 import XMLParser from 'react-xml-parser';
 
-
-
-type CatalogServiceAnnotations = '_layerTree' | '_ready' | 'setReady';
+type CatalogServiceAnnotations = '_layerTree' | '_ready' | 'setReady' | '_uniqueLayers';
 
 type CatalogTreeNode = {
 	title: string;
@@ -24,20 +22,27 @@ class CatalogService {
 		return this._layerTree;
 	}
 
+	get uniqueLayers(): any[] {
+		return this._uniqueLayers;
+	}
+
 	get ready(): boolean {
 		return this._ready;
 	}
 
 	private _layerTree: CatalogTreeNode[];
+	private _uniqueLayers: any[];
 	private _ready: boolean = false;
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._layerTree = [];
+		this._uniqueLayers = [];
 
 		makeObservable<CatalogService, CatalogServiceAnnotations>(
 			this,
 			{
 				_layerTree: observable,
+				_uniqueLayers: observable,
 				_ready: observable,
 				setReady: action
 			}
@@ -80,9 +85,16 @@ class CatalogService {
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
 
-				const xmlLayers = new XMLParser().parseFromString(text);    // Assume xmlText contains the example XML
-				console.log(xmlLayers);
-				console.log(xmlLayers.getElementsByTagName('Layer'));
+				const xmlLayers = new XMLParser().parseFromString(text);
+				let layers: any[] = [];
+				xmlLayers.getElementsByTagName('Layer').forEach((o: { attributes: { title: any; }; }) => {
+					if (!layers.find(l => l.title === o.attributes.title)) {
+						layers.push(o.attributes);
+					}
+				});
+				this._uniqueLayers = layers.sort((a, b) => {
+					return a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1;
+				});
 			});
 	}
 }

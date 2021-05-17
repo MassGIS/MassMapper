@@ -12,6 +12,9 @@ import PanoramaHorizontal from '@material-ui/icons/PanoramaHorizontal';
 import { Layer } from '../models/Layer';
 import { LegendService } from '../services/LegendService';
 import { ClassNameMap } from '@material-ui/styles';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import { toJS } from 'mobx';
 interface CatalogComponentProps extends RouteComponentProps<any> {
 }
 
@@ -80,17 +83,39 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 		return (<div>loading...</div>);
 	}
 
+	console.dir(toJS(catalogService.uniqueLayers))
+
 	return (
-		<TreeView
-			classes={classes}
-			defaultCollapseIcon={<ExpandMoreIcon/>}
-			defaultExpanded={[ 'root' ]}
-			defaultExpandIcon={<ChevronRightIcon/>}
-		>
-			{
-				renderTree(catalogService.layerTree, classes, legendService.addLayer.bind(legendService))
-			}
-		</TreeView>
+		<div>
+			<Autocomplete
+				id="combo-box-demo"
+				options={catalogService.uniqueLayers}
+				getOptionLabel={(option) => option.title}
+				style={{ width: '100%' }}
+				renderInput={(params) => <TextField {...params} label="Search for a layer" variant="outlined" />}
+				size="small"
+				onChange={(e, v) => {
+					const l = new Layer(
+						v.name!,
+						v.style!,
+						v.title!,
+						v.type!,
+						v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
+					);
+					legendService.addLayer.bind(legendService)(l);
+				}}
+			/>	
+			<TreeView
+				classes={classes}
+				defaultCollapseIcon={<ExpandMoreIcon/>}
+				defaultExpanded={[ 'root' ]}
+				defaultExpandIcon={<ChevronRightIcon/>}
+			>
+				{
+					renderTree(catalogService.layerTree, classes, legendService.addLayer.bind(legendService))
+				}
+			</TreeView>
+		</div>
 	);
 });
 
