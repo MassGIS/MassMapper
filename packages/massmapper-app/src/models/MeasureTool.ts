@@ -4,18 +4,17 @@ const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
-import { MeasureToolComponent } from '../components/MeasureToolComponent';
+import ruler from '../images/ruler.png';
 
 import './MeasureTool.module.css';
 import { ContainerInstance } from 'typedi';
+import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
 
 class MeasureTool extends Tool {
 
-	// private _measureControl:Control;
 	private _measureDisposer:IReactionDisposer;
-
 	private _drawnItems:FeatureGroup;
-	private _drawHandler: Draw.Polyline;
+	private _handler: Draw.Polyline;
 	private _totalLength: string;
 	private _labelPosition: {x:number, y:number};
 
@@ -28,7 +27,7 @@ class MeasureTool extends Tool {
 
 	private _handleMeasureComplete(evt: any) {
 		this._drawnItems.addLayer(evt.layer);
-		const lengthInFeet = parseFloat((this._drawHandler as any)._getMeasurementString());
+		const lengthInFeet = parseFloat((this._handler as any)._getMeasurementString());
 		this._totalLength = lengthInFeet > 6000 ? (lengthInFeet/5280).toFixed(2) + ' mi' : lengthInFeet.toFixed(2) + ' ft';
 
 		// const x = (evt.layer._pxBounds.max.x - evt.layer._pxBounds.min.x)/2 + evt.layer._pxBounds.min.x;
@@ -67,7 +66,7 @@ class MeasureTool extends Tool {
 
 	protected async _deactivate() {
 		this._measureDisposer && this._measureDisposer();
-		this._drawHandler && this._drawHandler.disable();
+		this._handler && this._handler.disable();
 		this._clearExistingShape();
 
 		const ms = this._services.get(MapService);
@@ -90,20 +89,21 @@ class MeasureTool extends Tool {
 			this._drawnItems = new FeatureGroup();
      		ms.leafletMap.addLayer(this._drawnItems);
 
-			this._drawHandler = ms.leafletMap['measure'];
-			this._drawHandler.setOptions({
+			this._handler = ms.leafletMap['measure'];
+			this._handler.setOptions({
 				showLength: true,
 				metric: false,
 				feet: true,
 				repeatMode: true,
 			})
 			ms.leafletMap.on(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
-			this._drawHandler.enable();
+			this._handler.enable();
 		});
 	}
 
 	public component() {
-		return MeasureToolComponent;
+		// return MeasureToolComponent;
+		return MakeToolButtonComponent(ruler, 'Click to measure distances');
 	}
 }
 

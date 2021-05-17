@@ -14,7 +14,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from './services/LegendService';
 import { CatalogService } from './services/CatalogService';
 import { MapService } from './services/MapService';
-import { ToolDefinition, ToolService } from './services/ToolService';
+import { ToolService } from './services/ToolService';
 import LegendComponent from './components/LegendComponent';
 import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
@@ -24,10 +24,7 @@ import 'leaflet/dist/leaflet.css';
 import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
-import { MeasureTool } from './models/MeasureTool';
-import { ToolPosition } from './models/Tool';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
-import { IdentifyTool } from './models/IdentifyTool';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,

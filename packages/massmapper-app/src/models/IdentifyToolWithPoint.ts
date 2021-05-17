@@ -4,9 +4,11 @@ import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
-import { FunctionComponent } from "react";
+import { IdentifyToolWithPointComponent } from "../components/IdentifyToolWithPointComponent";
+import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
+import identify from '../images/identify.png';
 
-class IdentifyTool extends Tool {
+class IdentifyToolWithPoint extends Tool {
 
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
@@ -25,6 +27,7 @@ class IdentifyTool extends Tool {
 	}
 
 
+
 	protected async _deactivate() {
 		const ms = this._services.get(MapService);
 		ms.leafletMap?.off(
@@ -34,8 +37,8 @@ class IdentifyTool extends Tool {
 	}
 
 	// no component for this tool
-	public component():FunctionComponent {
-		return () => { return null; }
+	public component() {
+		return MakeToolButtonComponent(identify, 'Click to identify a feature');
 	}
 
 	public async handleIdentifyClick(ev:LeafletMouseEvent) {
@@ -63,4 +66,4 @@ class IdentifyTool extends Tool {
 	}
 }
 
-export { IdentifyTool };
+export { IdentifyToolWithPoint };

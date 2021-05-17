@@ -12,7 +12,9 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 				position: 'absolute',
 				left: '60px',
 				top: '10px',
-				zIndex: 1000
+				zIndex: 1000,
+				display: 'flex',
+				flexDirection: 'row',
 			}}
 		>
 			{
@@ -20,7 +22,13 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 					.map((tool) => {
 						const ToolComponent = tool.component();
 						return (
-							<div key={tool.id}><ToolComponent tool={tool}/></div>
+							<div
+								style={{
+									marginRight:'1em',
+								}}
+								key={tool.id}><ToolComponent
+								tool={tool}
+							/></div>
 						);
 					})
 			}

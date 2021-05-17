@@ -1,9 +1,9 @@
 import { makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
-import { Tool, ToolComponentProps, ToolPosition } from '../models/Tool';
-import { IdentifyTool } from "../models/IdentifyTool";
-import { FunctionComponent } from "react";
+import { Tool, ToolPosition } from '../models/Tool';
+import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
+import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -48,15 +48,21 @@ class ToolService {
 			await delay(0); // have to wait for the constructor to finish initing, and get added to the service to get registered
 			const tools:Array<ToolDefinition> = [
 				{
+					id: 'identify-tool-point',
+					position: ToolPosition.topleft,
+					class: IdentifyToolWithPoint,
+					isDefault: true
+				},
+				{
+					id: 'identify-tool-box',
+					position: ToolPosition.topleft,
+					class: IdentifyToolWithBox,
+				},
+				{
 					id: 'measure-tool',
 					position: ToolPosition.topleft,
-					class: MeasureTool
-				},{
-					id: 'identify-tool',
-					position: ToolPosition.none,
-					class: IdentifyTool,
-					isDefault: true
-				}
+					class: MeasureTool,
+				},
 			];
 			tools.forEach((toolDef) => {
 				this.addToolFromDefinition(toolDef);
