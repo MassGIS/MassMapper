@@ -2,6 +2,8 @@ import { action, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import parser from 'fast-xml-parser';
 import he from 'he';
+import XMLParser from 'react-xml-parser';
+
 
 
 type CatalogServiceAnnotations = '_layerTree' | '_ready' | 'setReady';
@@ -77,6 +79,10 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
+
+				const xmlLayers = new XMLParser().parseFromString(text);    // Assume xmlText contains the example XML
+				console.log(xmlLayers);
+				console.log(xmlLayers.getElementsByTagName('Layer'));
 			});
 	}
 }

@@ -40,7 +40,7 @@ class MeasureTool extends Tool {
 	}
 
 	private _clearExistingShape() {
-		this._drawnItems.clearLayers();
+		this._drawnItems && this._drawnItems.clearLayers();
 		this._totalLength = '';
 		// this._labelPosition = { x: -1, y: -1};
 	}
@@ -66,8 +66,8 @@ class MeasureTool extends Tool {
 	}
 
 	protected async _deactivate() {
-		this._measureDisposer();
-		this._drawHandler.disable();
+		this._measureDisposer && this._measureDisposer();
+		this._drawHandler && this._drawHandler.disable();
 		this._clearExistingShape();
 
 		const ms = this._services.get(MapService);
