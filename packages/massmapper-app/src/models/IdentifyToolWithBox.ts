@@ -33,19 +33,30 @@ const BoxIdentify = (window.L.Map as any).BoxZoom.extend({
 		this._finish();
 
 		if (!this._moved) { return; }
+
 		// Postpone to next JS tick so internal click event handling
 		// still see it as "moved".
 		this._clearDeferredResetState();
 		this._resetStateTimeout = setTimeout(Util.bind(this._resetState, this), 0);
 
-		// var bounds = new LatLngBounds(
-		//         this._map.containerPointToLatLng(this._startPoint),
-		//         this._map.containerPointToLatLng(this._point));
+		const legendService = this._services.get(LegendService) as LegendService;
+		if (!legendService || legendService.enabledLayers.length === 0) {
+			return;
+		}
 
-		// this._map
-		// 	.fitBounds(bounds)
-		// 	.fire('boxzoomend', {boxZoomBounds: bounds});
-		console.log("identify box-draw ended");
+		const bbox = new LatLngBounds(
+				this._map.containerPointToLatLng(this._startPoint),
+				this._map.containerPointToLatLng(this._point));
+
+		legendService.enabledLayers.forEach(async (l) => {
+			if (!l.scaleOk) {
+				return;
+			}
+
+			const selService = this._services.get(SelectionService);
+			selService.addIdentifyResult(l, bbox);
+		});
+
 	},
 });
 
@@ -64,6 +75,7 @@ class IdentifyToolWithBox extends Tool {
 			if (!ms.leafletMap['identifyBox']) {
 				ms.leafletMap.addHandler('identifyBox', BoxIdentify);
 				this._handler = ms.leafletMap['identifyBox'];
+				this._handler['_services'] = this._services;
 			}
 
 			this._handler.enable();

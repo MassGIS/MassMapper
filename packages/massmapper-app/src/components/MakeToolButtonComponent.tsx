@@ -9,18 +9,19 @@ const MakeToolButtonComponent = (icon:any, tooltip:string): FunctionComponent<To
 			<>
 				<Button
 					style={{
-						backgroundColor: tool.isActive ? '' : 'white'
+						backgroundColor: tool.isActive ? '' : 'white',
 					}}
 					color="default"
 					title={tooltip}
 					variant="contained"
+					size="small"
 					onClick={() => {
 						tool.isActive ? tool.deactivate(true) : tool.activate();
 					}}
 				>
 					<img
 						style={{
-							height: '24px'
+							height: '24px',
 						}}
 						src={icon}
 					/>

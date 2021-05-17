@@ -4,7 +4,6 @@ import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
-import { IdentifyToolWithPointComponent } from "../components/IdentifyToolWithPointComponent";
 import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify.png';
 
