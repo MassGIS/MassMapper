@@ -1,7 +1,9 @@
 import {
 	Grid,
 	Modal,
-	Button
+	Button,
+	Checkbox,
+	FormControlLabel
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer } from 'mobx-react';
@@ -11,7 +13,7 @@ import { LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
 import 'leaflet/dist/leaflet.css';
 
-import { Close } from '@material-ui/icons';
+import { Close, SkipNext, ArrowForward } from '@material-ui/icons';
 import massmapper from '../images/massmapper.png';
 
 const useStyles = makeStyles((theme) => ({
@@ -78,7 +80,7 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 						height: '100%'
 					}}>
 					<Grid item xs={12} style={{
-						height: '90%',
+						height: '80%',
 						textAlign: 'center'
 					}}>
 						<img src={massmapper} />
@@ -94,8 +96,20 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 								legendService.isSplashPageVisible = false;
 							}}
 						>
-							<Close /> Go to MassMapper
+							<ArrowForward /> &nbsp;&nbsp;Go to MassMapper
 						</Button>
+						<br/><br/>
+						<FormControlLabel
+							control={
+								<Checkbox
+								defaultChecked={false}
+								onChange={() => {
+									localStorage.setItem('massmapper.skipSplashPage', 'yes');
+								}}
+								name="noSplash" />
+							}
+							label="Don't show this splash page again, please"
+						/>
 					</Grid>
 				</Grid>
 			</div>
