@@ -35,9 +35,10 @@ class SelectionService {
 
 	public addIdentifyResult(layer: Layer, bbox: LatLngBounds) {
 		const idResult = new IdentifyResult(
-			layer
+			layer,
+			bbox
 		);
-		idResult.getNumFeatures(bbox)
+		idResult.getNumFeatures()
 		this._idResults.set(layer.id, idResult);
 	}
 

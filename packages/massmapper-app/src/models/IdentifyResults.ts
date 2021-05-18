@@ -1,17 +1,22 @@
-import { LatLngBounds } from "leaflet";
+import { LatLng, LatLngBounds } from "leaflet";
 import { makeObservable, observable } from "mobx";
 import { Layer } from "./Layer";
 import he from 'he';
 import parser from 'fast-xml-parser';
 
-interface SelectedFeature {
+interface IdentifyResultFeature {
 	id: string;
-	feature: object;
+	properties: object;
+	geometry_name: "shape",
+	geometry: {
+		type: "Point" | "Line" | "Polygon",
+		coordinates: Array<any>
+	}
 };
 
 class IdentifyResult {
 	private _isLoading: boolean;
-	private _selectedFeatures?: SelectedFeature[];
+	private _features?: IdentifyResultFeature[];
 	private _numFeatures: number;
 
 	get isLoading(): boolean {
@@ -22,24 +27,45 @@ class IdentifyResult {
 		return this.isLoading ? 'loading...' : this._numFeatures + "";
 	}
 
+	get features(): IdentifyResultFeature[] {
+		return this._features || [];
+	}
+
+	get rows(): Array<any> {
+		return this._features?.map(f => {
+			return {
+				id: f.id,
+				...f.properties
+			}
+		}) || [];
+	}
+
+	get properties(): string[] {
+		if (!this._features || this._features.length === 0) {
+			return [];
+		}
+		return Object.keys(this._features[0].properties);
+	}
+
 	constructor(
-		public readonly layer: Layer
+		public readonly layer: Layer,
+		public readonly bbox: LatLngBounds,
 	) {
 		this._isLoading = false;
 		this._numFeatures = -1;
-		this._selectedFeatures = [];
+		this._features = [];
 
-		makeObservable<IdentifyResult, '_isLoading' | '_selectedFeatures' | '_numFeatures'>(
+		makeObservable<IdentifyResult, '_isLoading' | '_features' | '_numFeatures'>(
 			this,
 			{
 				_isLoading: observable,
-				_selectedFeatures: observable,
+				_features: observable,
 				_numFeatures: observable,
 			}
 		);
 	}
 
-	public async getNumFeatures(bbox: LatLngBounds): Promise<number> {
+	public async getNumFeatures(): Promise<number> {
 		this._isLoading = true;
 
 		const params = [
@@ -49,7 +75,7 @@ class IdentifyResult {
 			'typeName=' + this.layer.name,
 			'srsname=EPSG:4326',
 			'resultType=hits',
-			'bbox=' +  bbox.toBBoxString() + ',EPSG:4326'
+			'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
 		];
 		Object.entries(params);
 
@@ -61,6 +87,32 @@ class IdentifyResult {
 		this._numFeatures = getNumFeaturesFromHitsResponse(respBody);
 		this._isLoading = false;
 		return this._numFeatures;
+	}
+
+	public async getResults(): Promise<IdentifyResultFeature[]> {
+		this._isLoading = true;
+		const params = [
+			'service=WFS',
+			'version=1.1.0',
+			'request=GetFeature',
+			'typeName=' + this.layer.name,
+			'srsname=EPSG:4326',
+			'outputFormat=application/json',
+			'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
+		];
+		Object.entries(params);
+
+		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs?' + params.join('&'),
+			{
+				method: 'GET'
+			});
+
+		const jsonRes = await res.json();
+		this._features = jsonRes.features;
+
+		this._isLoading = false;
+
+		return this._features || [];
 	}
 };
 

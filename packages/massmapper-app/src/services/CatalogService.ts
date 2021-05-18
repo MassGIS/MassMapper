@@ -80,9 +80,9 @@ class CatalogService {
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
 
-				const xmlLayers = new XMLParser().parseFromString(text);    // Assume xmlText contains the example XML
-				console.log(xmlLayers);
-				console.log(xmlLayers.getElementsByTagName('Layer'));
+				// const xmlLayers = new XMLParser().parseFromString(text);    // Assume xmlText contains the example XML
+				// console.log(xmlLayers);
+				// console.log(xmlLayers.getElementsByTagName('Layer'));
 			});
 	}
 }
