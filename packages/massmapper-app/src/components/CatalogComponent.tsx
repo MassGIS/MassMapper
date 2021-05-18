@@ -1,20 +1,25 @@
-import { makeStyles } from '@material-ui/core/styles';
-import TreeView from '@material-ui/lab/TreeView';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ChevronRightIcon from '@material-ui/icons/ChevronRight';
-import TreeItem from '@material-ui/lab/TreeItem';
-import { observer } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { useService } from '../services/useService';
-import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
+import { toJS } from 'mobx';
+import { observer } from 'mobx-react';
+import { useLocalObservable } from 'mobx-react-lite';
+
+import { makeStyles } from '@material-ui/core/styles';
+import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import PanoramaHorizontal from '@material-ui/icons/PanoramaHorizontal';
-import { Layer } from '../models/Layer';
-import { LegendService } from '../services/LegendService';
+import Search from '@material-ui/icons/Search';
+import TreeView from '@material-ui/lab/TreeView';
+import TreeItem from '@material-ui/lab/TreeItem';
 import { ClassNameMap } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
+import { Button } from '@material-ui/core';
+
+import { useService } from '../services/useService';
+import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
+import { Layer } from '../models/Layer';
+import { LegendService } from '../services/LegendService';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { toJS } from 'mobx';
 interface CatalogComponentProps extends RouteComponentProps<any> {
 }
 
@@ -73,11 +78,21 @@ const useStyles = makeStyles({
 	}
 });
 
+interface CatalogComponentState {
+	showAutoComplete: boolean;
+}
+
 const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({}) => {
 
 	const classes = useStyles();
 
 	const [ catalogService, legendService ] = useService([ CatalogService, LegendService ]);
+
+	const myState = useLocalObservable<CatalogComponentState>(() => {
+		return {
+			showAutoComplete: false,
+		}
+	});
 
 	if (!catalogService.ready) {
 		return (<div>loading...</div>);
@@ -87,14 +102,24 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 
 	return (
 		<div>
-			<Autocomplete
+			{myState.showAutoComplete && (<Autocomplete
 				id="combo-box-demo"
 				options={catalogService.uniqueLayers}
 				getOptionLabel={(option) => option.title}
 				style={{ width: '100%' }}
 				renderInput={(params) => <TextField {...params} label="Search for a layer" variant="outlined" />}
 				size="small"
+				onClose={(e, r) => {
+					if (r === 'blur') {
+						return;
+					}
+					myState.showAutoComplete = false;
+				}}
 				onChange={(e, v) => {
+					if (!v) {
+						myState.showAutoComplete = false;
+						return;
+					}
 					const l = new Layer(
 						v.name!,
 						v.style!,
@@ -104,7 +129,21 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 					);
 					legendService.addLayer.bind(legendService)(l);
 				}}
-			/>	
+			/>)}
+			{!myState.showAutoComplete && (
+				<Button
+					onClick={() => {
+						myState.showAutoComplete = true;
+					}}
+					style={{
+						position: 'absolute',
+						top: '63px',
+						right: '8px'
+					}}
+				>
+					<Search />
+				</Button>
+			)}
 			<TreeView
 				classes={classes}
 				defaultCollapseIcon={<ExpandMoreIcon/>}
