@@ -98,16 +98,24 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 		return (<div>loading...</div>);
 	}
 
-	console.dir(toJS(catalogService.uniqueLayers))
-
 	return (
 		<div>
 			{myState.showAutoComplete && (<Autocomplete
 				id="combo-box-demo"
 				options={catalogService.uniqueLayers}
+				handleHomeEndKeys={false}
 				getOptionLabel={(option) => option.title}
-				style={{ width: '100%' }}
-				renderInput={(params) => <TextField {...params} label="Search for a layer" variant="outlined" />}
+				style={{ width: '100%', paddingTop: '10px' }}
+				renderInput={(params) => 
+					<TextField 
+						{...params} 
+						label="Search for a layer" 
+						variant="outlined"
+						inputRef={input => {
+							input && input.focus();
+						}}
+					/>
+				}
 				size="small"
 				onClose={(e, r) => {
 					if (r === 'blur') {
