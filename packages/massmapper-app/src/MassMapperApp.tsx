@@ -20,6 +20,7 @@ import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
 
 import 'leaflet/dist/leaflet.css';
+import '../leaflet.css';
 
 import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';

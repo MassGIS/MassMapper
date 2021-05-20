@@ -61,10 +61,17 @@ class MapService {
 			this._mapZoom = this._map?.getZoom() || 0;
 		});
 
-		// TODO:  Unhardcode this?
-		m.addLayer(new TileLayer(
-			'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
-		));
+		new Control.Layers(
+			{
+				'MassGIS Statewide Basemap' : new TileLayer(
+					'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+				).addTo(this._map),
+				'OpenStreeMap Basemap': new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+					maxZoom: 19,
+					attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+				})
+			}
+		).addTo(this._map);
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
