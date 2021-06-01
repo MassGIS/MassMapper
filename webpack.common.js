@@ -80,7 +80,16 @@ module.exports = {
 					{
 						loader: 'file-loader?name=[name].[ext]?[hash]',
 						options: {
-							publicPath: 'dist'
+							// publicPath: 'dist'
+							publicPath: (a,b) => {
+								if (b.indexOf('leaflet/dist/images') !== -1) {
+									console.log(b,' -> ','../dist/' + a);
+									return '../dist/' + a;
+								} else {
+									console.log(b,' -> ','dist/' + a);
+									return 'dist/' + a;
+								}
+							}
 						},
 					},
 				],
