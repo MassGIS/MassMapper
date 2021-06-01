@@ -1,8 +1,11 @@
 import { DomUtil, TileLayer, Map as LeafletMap, Control, LayersControlEvent } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
+import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
+import coordinates from 'leaflet.coordinates';
+const c = coordinates;
 
 @Service()
 class MapService {
@@ -33,16 +36,19 @@ class MapService {
 	private _mapZoom: number = 0;
 	private _mapCenter: string = '';
 	private _activeBaseLayer: string;
+	private _baselayers:Map<string, TileLayer>;
+	private _layerControl:Control.Layers;
 
 	get permalink(): string {
 		const zoom = this._mapZoom || '';
-		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name']).join(",");
+		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
 
 		return `bl=${this._activeBaseLayer}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
+		this._baselayers = new Map<string, TileLayer>();
 		this._activeBaseLayer = 'MassGIS Statewide Basemap';
 
 		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
@@ -63,6 +69,36 @@ class MapService {
 		// read the url
 		this._map = m;
 
+		const hs = this._services.get(HistoryService);
+		if (hs.has("l")) {
+			// need to load layers
+			autorun((r) => {
+				const cs = this._services.get(CatalogService);
+				const ls = this._services.get(LegendService);
+				if (!cs.ready || !ls.ready) {
+					return;
+				}
+
+				const layers = (hs.get('l') as string).split(',');
+
+				const toAdd = cs.uniqueLayers.filter(l => {
+					return layers.includes(l.name + "__" + l.style);
+				});
+				toAdd.forEach((v) => {
+					const l = new Layer(
+						v.name!,
+						v.style!,
+						v.title!,
+						v.type!,
+						v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
+					);
+					ls.addLayer.bind(ls)(l);
+				});
+
+				toAdd.length > 0 && r.dispose();
+			})
+		}
+
 		new Control.Scale({position: 'bottomright'}).addTo(m);
 
 		this._leafletLayers.clear();
@@ -77,21 +113,33 @@ class MapService {
 			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
 		});
 
-		new Control.Layers(
-			{
-				'MassGIS Statewide Basemap' : new TileLayer(
-					'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
-				).addTo(this._map),
-				'OpenStreeMap Basemap': new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-					maxZoom: 19,
-					attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-				})
-			}
-		).addTo(this._map);
-
 		m.on('baselayerchange', (e: LayersControlEvent) => {
 			this._activeBaseLayer = e.name;
 		});
+
+		this._layerControl = new Control.Layers().addTo(this._map);
+
+		const mgis_bm = new TileLayer(
+			'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+		);
+		if (!hs.has('bl') || hs.get('bl') === 'MassGIS Statewide Basemap') {
+			mgis_bm.addTo(this._map);
+			this._activeBaseLayer = 'MassGIS Statewide Basemap';
+		}
+		this._layerControl.addBaseLayer(mgis_bm, 'MassGIS Statewide Basemap');
+
+		const osm_bm = new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+			maxZoom: 19,
+			attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+		});
+		if (hs.has('bl') && hs.get('bl') === 'OpenStreetMap Basemap') {
+			this._activeBaseLayer = 'OpenStreetMap Basemap';
+			osm_bm.addTo(this._map);
+		}
+		this._layerControl.addBaseLayer(osm_bm, 'OpenStreetMap Basemap');
+
+
+
 
 		// autorun(() => {
 		// 	const zoom = this._mapZoom || '';

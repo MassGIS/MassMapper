@@ -139,6 +139,7 @@ class Layer {
 		);
 
 		lyr.options['name'] = this.options!.layers;
+		lyr.options['style'] = this.options!.styles;
 
 		lyr.addEventListener('loading', () => {
 			this._isLoading = true;
@@ -165,6 +166,7 @@ class Layer {
 		// Explicitly set the id since wms.overlay doesn't do this free of charge.
 		lyr.options.id = this.id;
 		lyr.options.name = this.options!.layers;
+		lyr.options.style = this.options!.styles;
 
 		lyr.onLoadStart = () => {
 			this._isLoading = true;
