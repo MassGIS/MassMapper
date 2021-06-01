@@ -22,7 +22,10 @@ interface LegendComponentProps extends RouteComponentProps<any> {
 
 const useStyles = makeStyles((theme) => ({
 	button: {
-		padding: '0',
+		paddingRight: '2px',
+		paddingTop: '0',
+		paddingBottom: '0',
+		paddingLeft: '0'
 	}
 }));
 
@@ -75,7 +78,9 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 										else {
 											status =
 												<Tooltip title="Zoom in closer to see this layer">
-													<ErrorOutline fontSize="small"/>
+													<IconButton className={classes.button}>
+														<ErrorOutline fontSize="small"/>
+													</IconButton>
 												</Tooltip>;
 										}
 									}
@@ -111,12 +116,16 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 															>
 																<DeleteOutline />
 															</IconButton>
+
 															{status}
 														</div>
 
 														<Tooltip title={l.title}>
 															<div style={{
-																display: 'inline-block'
+																display: 'inline-block',
+																fontSize: '16px',
+																paddingLeft: '3px',
+																paddingTop: '2px'
 															}}>
 																{l.title}
 															</div>
