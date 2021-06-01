@@ -1,9 +1,10 @@
-import { DomUtil, TileLayer, Map as LeafletMap, Control, LayersControlEvent } from 'leaflet';
+import { DomUtil, TileLayer, GridLayer, Map as LeafletMap, Control, LayersControlEvent, gridLayer } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
+import GoogleMutant from 'leaflet.gridlayer.googlemutant';
 
 @Service()
 class MapService {
@@ -136,8 +137,10 @@ class MapService {
 		}
 		this._layerControl.addBaseLayer(osm_bm, 'OpenStreetMap Basemap');
 
-
-
+		const google_bm = new GoogleMutant({
+			type: 'roadmap'
+		});
+		this._layerControl.addBaseLayer(google_bm, 'Google Road Basemap');
 
 		// autorun(() => {
 		// 	const zoom = this._mapZoom || '';
