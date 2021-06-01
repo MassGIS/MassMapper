@@ -11,7 +11,6 @@ import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
-import 'leaflet/dist/leaflet.css';
 
 import { Close, SkipNext, ArrowForward } from '@material-ui/icons';
 import massmapper from '../images/massmapper.png';

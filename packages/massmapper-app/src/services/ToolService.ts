@@ -4,6 +4,7 @@ import { Tool, ToolPosition } from '../models/Tool';
 import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
+import { PermalinkTool } from "../models/PermalinkTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -62,6 +63,11 @@ class ToolService {
 					id: 'measure-tool',
 					position: ToolPosition.topleft,
 					class: MeasureTool,
+				},
+				{
+					id: 'permalink-tool',
+					position: ToolPosition.topleft,
+					class:PermalinkTool,
 				},
 			];
 			tools.forEach((toolDef) => {

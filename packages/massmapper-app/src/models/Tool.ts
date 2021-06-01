@@ -17,6 +17,7 @@ interface ToolComponentProps {
 
 abstract class Tool {
 	protected _active: boolean = false;
+	protected _isButton: boolean = false;
 
 	get isActive():boolean {
 		return this._active;
@@ -47,6 +48,11 @@ abstract class Tool {
 	protected abstract _deactivate(): Promise<void>;
 
 	public async activate(): Promise<void> {
+		if (this._isButton) {
+			await this._activate();
+			return;
+		}
+
 		const toolService = this._services.get(ToolService);
 		toolService.tools.forEach((t) => {
 			if (t !== this) {

@@ -17,11 +17,12 @@ import { useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useService } from '../services/useService';
-import 'leaflet/dist/leaflet.css';
 
 import { Close, Save, SaveAlt } from '@material-ui/icons';
 import { SelectionService } from '../services/SelectionService';
 import { IdentifyResult } from '../models/IdentifyResults';
+
+import layer from 'images/layers.png';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,

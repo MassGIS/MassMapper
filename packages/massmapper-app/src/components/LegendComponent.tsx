@@ -14,7 +14,6 @@ import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
-import 'leaflet/dist/leaflet.css';
 import { ClassNameMap } from '@material-ui/styles';
 import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
 

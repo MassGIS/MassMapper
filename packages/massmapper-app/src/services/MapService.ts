@@ -1,6 +1,7 @@
-import { DomUtil, TileLayer, Map as LeafletMap, Control } from 'leaflet';
+import { DomUtil, TileLayer, Map as LeafletMap, Control, LayersControlEvent } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
+import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
 
 @Service()
@@ -30,22 +31,36 @@ class MapService {
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
+	private _mapCenter: string = '';
+	private _activeBaseLayer: string;
+
+	get permalink(): string {
+		const zoom = this._mapZoom || '';
+		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name']).join(",");
+
+		return `bl=${this._activeBaseLayer}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+	}
 
 	constructor(private readonly _services: ContainerInstance) {
-		makeObservable<MapService, '_map' | '_ready' | '_mapZoom'>(
+		this._leafletLayers = new Map<string, TileLayer>();
+		this._activeBaseLayer = 'MassGIS Statewide Basemap';
+
+		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
 			this,
 			{
+				_activeBaseLayer: observable,
+				_leafletLayers: observable,
 				_map: observable,
-				_ready: observable,
+				_mapCenter: observable,
 				_mapZoom: observable,
+				_ready: observable,
 				currentScale: computed,
 			}
 		);
-
-		this._leafletLayers = new Map<string, TileLayer>();
 	}
 
 	public async initLeafletMap(m: LeafletMap): Promise<void> {
+		// read the url
 		this._map = m;
 
 		new Control.Scale({position: 'bottomright'}).addTo(m);
@@ -57,8 +72,9 @@ class MapService {
 			m.removeLayer(l);
 		});
 
-		m.addEventListener('moveend', () => {
+		m.addEventListener('moveend zoomend', () => {
 			this._mapZoom = this._map?.getZoom() || 0;
+			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
 		});
 
 		new Control.Layers(
@@ -72,6 +88,20 @@ class MapService {
 				})
 			}
 		).addTo(this._map);
+
+		m.on('baselayerchange', (e: LayersControlEvent) => {
+			this._activeBaseLayer = e.name;
+		});
+
+		// autorun(() => {
+		// 	const zoom = this._mapZoom || '';
+		// 	const hs = this._services.get(HistoryService);
+
+		// 	hs.set('bl', this._activeBaseLayer);
+		// 	hs.set('l', Array.from(this._leafletLayers.values()).map(l => l.options!['name']).join(","));
+		// 	hs.set('c', this._mapCenter);
+		// 	hs.set('z', zoom + '');
+		// });
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {

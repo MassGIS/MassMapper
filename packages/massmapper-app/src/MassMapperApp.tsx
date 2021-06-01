@@ -6,7 +6,7 @@ import {
 	Typography,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { LatLngBoundsExpression, Map } from 'leaflet';
+import { LatLng, LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
 import React, { FunctionComponent, useEffect } from 'react';
 import { MapContainer } from 'react-leaflet';
@@ -26,6 +26,7 @@ import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
+import { HistoryService } from './services/HistoryService';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -76,16 +77,19 @@ interface MassMapperAppProps extends RouteComponentProps<any> {
 const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	const classes = useStyles();
-	const [ legendService, mapService, catalogService, toolService ] = useService([ LegendService, MapService, CatalogService, ToolService]);
+	const [ legendService, mapService, catalogService, toolService, historyService ] = useService([ LegendService, MapService, CatalogService, ToolService, HistoryService]);
 
 	if (!legendService.ready || !catalogService.ready || !toolService.ready) {
 		return (<>Loading...</>);
 	}
 
-	const bbox = [
-		[41.237964, -73.508142],
-		[42.886589, -69.928393]
-	] as LatLngBoundsExpression;
+	window['mapService'] = mapService;
+
+	const c = historyService.has('c') ?
+		(historyService.get('c') as string).split(',').map(s => parseFloat(s)) :
+		[42.067627975,-71.7182675];
+	const center = new LatLng(c[0], c[1]);
+	const zoom = parseInt(historyService.get('z') as string || '8');
 
 	return (
 		<div className={classes.root}>
@@ -106,7 +110,8 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 					<Grid className={classes.mapContainer} item>
 						<ToolsOverlayComponent />
 						<MapContainer
-							bounds={bbox}
+							center={center}
+							zoom={zoom}
 							className={classes.map}
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
