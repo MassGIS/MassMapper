@@ -1,10 +1,13 @@
-import { DomUtil, TileLayer, Map as LeafletMap, Control, LayersControlEvent } from 'leaflet';
+import { DomUtil, TileLayer, GridLayer, Map as LeafletMap, Control, LayersControlEvent, gridLayer } from 'leaflet';
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
 import { BasemapLayer } from 'esri-leaflet';
+import GoogleMutant from 'leaflet.gridlayer.googlemutant';
+const g = GoogleMutant; // need this to force webpack to realize we're actually USING this object and to include it in the final bundle
+import Leaflet from 'leaflet';
 
 @Service()
 class MapService {
@@ -143,6 +146,11 @@ class MapService {
 			esri_streets_bm.addTo(this._map);
 		}
 		this._layerControl.addBaseLayer(esri_streets_bm, 'ESRI Streets Basemap');
+
+		const google_bm = new Leaflet.gridLayer['googleMutant']({
+			type: 'roadmap'
+		});
+		this._layerControl.addBaseLayer(google_bm, 'Google Road Basemap');
 
 		// autorun(() => {
 		// 	const zoom = this._mapZoom || '';
