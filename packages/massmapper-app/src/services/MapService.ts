@@ -4,6 +4,7 @@ import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
+import { BasemapLayer } from 'esri-leaflet';
 
 @Service()
 class MapService {
@@ -136,8 +137,12 @@ class MapService {
 		}
 		this._layerControl.addBaseLayer(osm_bm, 'OpenStreetMap Basemap');
 
-
-
+		const esri_streets_bm = new BasemapLayer('Streets');
+		if (hs.has('bl') && hs.get('bl') === 'ESRI Streets Basemap') {
+			this._activeBaseLayer = 'ESRI Streets Basemap';
+			esri_streets_bm.addTo(this._map);
+		}
+		this._layerControl.addBaseLayer(esri_streets_bm, 'ESRI Streets Basemap');
 
 		// autorun(() => {
 		// 	const zoom = this._mapZoom || '';
