@@ -5,6 +5,8 @@ import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
 import GoogleMutant from 'leaflet.gridlayer.googlemutant';
+const g = GoogleMutant; // need this to force webpack to realize we're actually USING this object and to include it in the final bundle
+import Leaflet from 'leaflet';
 
 @Service()
 class MapService {
@@ -137,7 +139,7 @@ class MapService {
 		}
 		this._layerControl.addBaseLayer(osm_bm, 'OpenStreetMap Basemap');
 
-		const google_bm = new GoogleMutant({
+		const google_bm = new Leaflet.gridLayer['googleMutant']({
 			type: 'roadmap'
 		});
 		this._layerControl.addBaseLayer(google_bm, 'Google Road Basemap');

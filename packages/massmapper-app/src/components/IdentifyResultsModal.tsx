@@ -11,7 +11,7 @@ import {
 	TableCell
 } from '@material-ui/core';
 import { DataGrid, GridSortDirection, GridColDef } from '@material-ui/data-grid';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
+import { createStyles, makeStyles, Theme, withStyles } from '@material-ui/core/styles';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from 'react';
@@ -22,8 +22,6 @@ import { Close, Save, SaveAlt } from '@material-ui/icons';
 import { SelectionService } from '../services/SelectionService';
 import { IdentifyResult } from '../models/IdentifyResults';
 
-import layer from 'images/layers.png';
-
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
 		container: {
@@ -33,7 +31,21 @@ const useStyles = makeStyles((theme) => ({
 		table: {
 			width: '90vh',
 		},
+		colCell: {
+			padding: '0 2em'
+		}
 	}));
+
+const useStylesGrid = makeStyles(
+	(theme: Theme) =>
+		createStyles({
+			root: {
+				colCell: {
+					padding: '0 .2em'
+				}
+			}
+		})
+);
 
 interface IdentifyResultsModalProps extends RouteComponentProps<any> {
 }
@@ -45,6 +57,7 @@ interface IdentifyResultModalState {
 const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = observer(() => {
 
 	const classes = useStyles();
+	const gridClasses = useStylesGrid();
 	const [ selectionService ] = useService([ SelectionService]);
 	const myState = useLocalObservable<IdentifyResultModalState>(() => {
 		return {
