@@ -4,8 +4,6 @@ import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
 import { LegendService, Layer } from './LegendService';
-import coordinates from 'leaflet.coordinates';
-const c = coordinates;
 
 @Service()
 class MapService {
