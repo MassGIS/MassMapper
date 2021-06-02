@@ -81,6 +81,10 @@ class MapService {
 			name: 'ESRI Streets Basemap',
 			layer: new BasemapLayer('Streets')
 		},
+		{
+			name: 'ESRI Light Gray Basemap',
+			layer: new BasemapLayer('Gray')
+		},
 	];
 
 	get permalink(): string {
