@@ -47,6 +47,12 @@ class MapService {
 			)
 		},
 		{
+			name: '2019 Color Orthos (USGS)',
+			layer: new TileLayer(
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}'
+			)
+		},
+		{
 			name: 'USGS Topographic Quadrangle Maps',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}'
