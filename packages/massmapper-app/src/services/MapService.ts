@@ -1,5 +1,5 @@
 import { DomUtil, TileLayer, GridLayer, Map as LeafletMap, Control, LayersControlEvent, gridLayer } from 'leaflet';
-import { autorun, computed, makeObservable, observable } from "mobx";
+import { autorun, computed, has, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
@@ -38,8 +38,50 @@ class MapService {
 	private _mapZoom: number = 0;
 	private _mapCenter: string = '';
 	private _activeBaseLayer: string;
-	private _baselayers:Map<string, TileLayer>;
 	private _layerControl:Control.Layers;
+	private _basemaps = [
+		{
+			name: 'MassGIS Statewide Basemap',
+			layer: new TileLayer(
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+			)
+		},
+		{
+			name: 'OpenStreetMap Basemap',
+			layer: new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				maxZoom: 19,
+				attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+			})
+		},
+		{
+			name: 'Google Roads Basemap',
+			layer: new Leaflet.gridLayer['googleMutant']({
+				type: 'roadmap'
+			})
+		},
+		{
+			name: 'Google Satellite Basemap',
+			layer: new Leaflet.gridLayer['googleMutant']({
+				type: 'satellite'
+			})
+		},
+		{
+			name: 'Google Hybrid Basemap',
+			layer: new Leaflet.gridLayer['googleMutant']({
+				type: 'hybrid'
+			})
+		},
+		{
+			name: 'Google Terrain Basemap',
+			layer: new Leaflet.gridLayer['googleMutant']({
+				type: 'terrain'
+			})
+		},
+		{
+			name: 'ESRI Streets Basemap',
+			layer: new BasemapLayer('Streets')
+		},
+	];
 
 	get permalink(): string {
 		const zoom = this._mapZoom || '';
@@ -50,7 +92,6 @@ class MapService {
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
-		this._baselayers = new Map<string, TileLayer>();
 		this._activeBaseLayer = 'MassGIS Statewide Basemap';
 
 		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
@@ -121,46 +162,16 @@ class MapService {
 
 		this._layerControl = new Control.Layers().addTo(this._map);
 
-		const mgis_bm = new TileLayer(
-			'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
-		);
-		if (!hs.has('bl') || hs.get('bl') === 'MassGIS Statewide Basemap') {
-			mgis_bm.addTo(this._map);
-			this._activeBaseLayer = 'MassGIS Statewide Basemap';
+		// square away the basemaps
+		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
+			this._activeBaseLayer = '' + hs.get('bl');
 		}
-		this._layerControl.addBaseLayer(mgis_bm, 'MassGIS Statewide Basemap');
-
-		const osm_bm = new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
-			attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
+		this._basemaps.forEach((o) => {
+			this._layerControl.addBaseLayer(o.layer, o.name);
+			if (o.name === this._activeBaseLayer) {
+				o.layer.addTo(this._map);
+			}
 		});
-		if (hs.has('bl') && hs.get('bl') === 'OpenStreetMap Basemap') {
-			this._activeBaseLayer = 'OpenStreetMap Basemap';
-			osm_bm.addTo(this._map);
-		}
-		this._layerControl.addBaseLayer(osm_bm, 'OpenStreetMap Basemap');
-
-		const esri_streets_bm = new BasemapLayer('Streets');
-		if (hs.has('bl') && hs.get('bl') === 'ESRI Streets Basemap') {
-			this._activeBaseLayer = 'ESRI Streets Basemap';
-			esri_streets_bm.addTo(this._map);
-		}
-		this._layerControl.addBaseLayer(esri_streets_bm, 'ESRI Streets Basemap');
-
-		const google_bm = new Leaflet.gridLayer['googleMutant']({
-			type: 'roadmap'
-		});
-		this._layerControl.addBaseLayer(google_bm, 'Google Road Basemap');
-
-		// autorun(() => {
-		// 	const zoom = this._mapZoom || '';
-		// 	const hs = this._services.get(HistoryService);
-
-		// 	hs.set('bl', this._activeBaseLayer);
-		// 	hs.set('l', Array.from(this._leafletLayers.values()).map(l => l.options!['name']).join(","));
-		// 	hs.set('c', this._mapCenter);
-		// 	hs.set('z', zoom + '');
-		// });
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
