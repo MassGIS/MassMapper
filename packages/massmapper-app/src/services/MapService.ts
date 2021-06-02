@@ -85,6 +85,10 @@ class MapService {
 			name: 'ESRI Light Gray Basemap',
 			layer: new BasemapLayer('Gray')
 		},
+		{
+			name: 'ESRI USGS Topographic Basemap',
+			layer: new BasemapLayer('USATopo')
+		},
 	];
 
 	get permalink(): string {
