@@ -47,6 +47,12 @@ class MapService {
 			)
 		},
 		{
+			name: 'USGS Topographic Quadrangle Maps',
+			layer: new TileLayer(
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}'
+			)
+		},
+		{
 			name: 'OpenStreetMap Basemap',
 			layer: new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 19,
@@ -84,10 +90,6 @@ class MapService {
 		{
 			name: 'ESRI Light Gray Basemap',
 			layer: new BasemapLayer('Gray')
-		},
-		{
-			name: 'ESRI USGS Topographic Basemap',
-			layer: new BasemapLayer('USATopo')
 		},
 	];
 
