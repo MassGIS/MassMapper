@@ -1,11 +1,13 @@
-import { LatLng, LatLngBounds } from "leaflet";
+import { LatLngBounds } from "leaflet";
 import { makeObservable, observable } from "mobx";
 import { Layer } from "./Layer";
 import he from 'he';
 import parser from 'fast-xml-parser';
+import { v4 as uuid } from 'uuid';
 
 interface IdentifyResultFeature {
 	id: string;
+	isSelected: boolean;
 	properties: object;
 	geometry_name: "shape",
 	geometry: {
@@ -31,10 +33,15 @@ class IdentifyResult {
 		return this._features || [];
 	}
 
+	get typeName(): string {
+		return this.layer.name;
+	}
+
 	get rows(): Array<any> {
 		return this._features?.map(f => {
 			return {
 				id: f.id,
+				isSelected: f.isSelected,
 				...f.properties
 			}
 		}) || [];
@@ -63,6 +70,16 @@ class IdentifyResult {
 				_numFeatures: observable,
 			}
 		);
+	}
+
+	public clearSelected() {
+		this._features?.forEach(f => {
+			f.isSelected = false;
+		});
+	}
+	public setSelected(featureId: string, selected: boolean) {
+		const f = this._features?.filter(f => f.id === featureId)[0];
+		f && (f.isSelected = selected);
 	}
 
 	public async getNumFeatures(): Promise<number> {
@@ -108,11 +125,51 @@ class IdentifyResult {
 			});
 
 		const jsonRes = await res.json();
+		(jsonRes.features as IdentifyResultFeature[]).forEach((feature) => {
+			feature.id = feature.id || uuid();
+		})
 		this._features = jsonRes.features;
 
 		this._isLoading = false;
 
 		return this._features || [];
+	}
+
+	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'xls', selectedOnly:boolean) {
+		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
+
+		const url = `//maps.massgis.state.ma.us/map_ol/getstore.php?name=${this.layer.name}.${fileType}&url=http://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		const outputFormatMap = {
+			'xlsx': 'excel2007',
+			'xls': 'excel97',
+			'csv': 'csv'
+		}
+		const xml = `<wfs:GetFeature
+	outputFormat="${outputFormatMap[fileType]}"
+	xmlns:wfs="http://www.opengis.net/wfs"
+	service="WFS"
+	version="1.1.0"
+	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ogc="http://www.opengis.net/ogc">
+	<wfs:Query typeName="${this.layer.name}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
+		${this.properties.map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
+		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
+			${this.rows.filter(r => r.isSelected || !selectedOnly).map(r => `<ogc:FeatureId fid="${r.id}"/>`).join('')}
+		</ogc:Filter>
+	</wfs:Query>
+</wfs:GetFeature>`;
+
+		const res = await fetch(url,
+			{
+				body: xml,
+				method: "POST",
+				mode: 'no-cors',
+			});
+
+		const exportData = await res.text();
+
+		return exportData;
 	}
 };
 
