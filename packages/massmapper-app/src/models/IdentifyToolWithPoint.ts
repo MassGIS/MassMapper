@@ -51,8 +51,8 @@ class IdentifyToolWithPoint extends Tool {
 		const mapService = this._services.get(MapService);
 
 		const clickBounds = new LatLngBounds(ev.latlng, {lng: ev.latlng.lng + .001, lat: ev.latlng.lat + .001});
-		const bbox = clickBounds.pad(mapService.currentScale/100000);
-		console.log('padding with',(mapService.currentScale/100000));
+		const bbox = clickBounds.pad(mapService.currentScale/50000);
+		console.log('padding with',(mapService.currentScale/50000));
 
 		legendService.enabledLayers.forEach(async (l) => {
 			if (!l.scaleOk) {
