@@ -1,4 +1,15 @@
-import { DomUtil, TileLayer, GridLayer, Map as LeafletMap, Control, LayersControlEvent, gridLayer } from 'leaflet';
+import {
+	DomUtil,
+	TileLayer,
+	Map as LeafletMap,
+	Control,
+	LayersControlEvent,
+	Layer as LeafletLayer,
+	polyline,
+	polygon,
+	circleMarker,
+	LatLng,
+} from 'leaflet';
 import { autorun, computed, has, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
@@ -8,6 +19,8 @@ import { BasemapLayer } from 'esri-leaflet';
 import GoogleMutant from 'leaflet.gridlayer.googlemutant';
 const g = GoogleMutant; // need this to force webpack to realize we're actually USING this object and to include it in the final bundle
 import Leaflet from 'leaflet';
+import { SelectionService } from './SelectionService';
+import { IdentifyResultFeature } from '../models/IdentifyResults';
 
 @Service()
 class MapService {
@@ -39,6 +52,7 @@ class MapService {
 	private _mapCenter: string = '';
 	private _activeBaseLayer: string;
 	private _layerControl:Control.Layers;
+	private _selectedFeatures: Array<LeafletLayer> = [];
 	private _basemaps = [
 		{
 			name: 'MassGIS Statewide Basemap',
@@ -255,6 +269,57 @@ class MapService {
 
 			// Line up ancillary scale info.
 			this._map?.fireEvent('moveend');
+		});
+
+		// after changes to the selection set, draw the selected feature on the map
+		autorun(() => {
+			this._selectedFeatures.forEach(f => {
+				this._map && f.removeFrom(this._map)
+			})
+			this._selectedFeatures = [];
+
+			const ss = this._services.get(SelectionService);
+			ss.selectedIdentifyResult?.features
+				.filter(f => f.isSelected)
+				.forEach((f:IdentifyResultFeature ) => {
+					let mapFeature;
+					if (f.geometry.type === 'Point') {
+						mapFeature = circleMarker(
+							new LatLng(f.geometry.coordinates[1], f.geometry.coordinates[0]),
+							{
+								color: "#ffae00",
+								fillColor : "#ffae00",
+								fillOpacity : .3,
+								radius: 17,
+							}
+						);
+					} else if (f.geometry.type === 'Polygon') {
+						const latLngs = f.geometry.coordinates[0].map((f:Array<number>) => new LatLng(f[1], f[0]));
+						mapFeature = polygon(
+							latLngs,
+							{
+								color: "#ffae00",
+								fillColor : "#ffae00",
+								fillOpacity : .3,
+							});
+					} else if (f.geometry.type === 'LineString') {
+						const latLngs = f.geometry.coordinates.map((f:Array<number>) => new LatLng(f[1], f[0]));
+						mapFeature = polyline(
+							latLngs,
+							{
+								color: "#ffae00",
+								weight: 3,
+							});
+					} else {
+						debugger
+						return;
+					}
+
+					this._map && mapFeature.addTo(this._map);
+					this._selectedFeatures.push(mapFeature);
+				});
+		},{
+			delay: 50
 		});
 
 		this._ready = true;

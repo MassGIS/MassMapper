@@ -7,6 +7,8 @@ import {
 	LinearProgress,
 	Menu,
 	MenuItem,
+	Paper,
+	PaperProps,
 	TableContainer,
 	Table,
 	TableHead,
@@ -14,17 +16,17 @@ import {
 	TableRow,
 	TableCell
 } from '@material-ui/core';
-import { DataGrid, GridRowSelectedParams, GridSelectionModelChangeParams } from '@material-ui/data-grid';
+import { DataGrid, GridSelectionModelChangeParams } from '@material-ui/data-grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent, MouseEvent } from 'react';
+import Draggable from 'react-draggable';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useService } from '../services/useService';
 
 import { Close, Save, SaveAlt } from '@material-ui/icons';
 import { SelectionService } from '../services/SelectionService';
-import { IdentifyResult } from '../models/IdentifyResults';
 
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
@@ -74,11 +76,19 @@ interface IdentifyResultsModalProps extends RouteComponentProps<any> {
 }
 
 interface IdentifyResultModalState {
-	selectedIdentifyResult?: IdentifyResult;
 	isExporting: boolean;
 	isDisplayingExportResults: boolean;
 	exportResultsUrl?: string;
 }
+
+const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
+	return (
+		<Draggable handle="#identify-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
+			<Paper {...props} />
+		</Draggable>
+	);
+}
+
 
 const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = observer(() => {
 
@@ -88,7 +98,6 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 	const [ selectionService ] = useService([ SelectionService]);
 	const myState = useLocalObservable<IdentifyResultModalState>(() => {
 		return {
-			selectedIdentifyResult: undefined,
 			isExporting: false,
 			isDisplayingExportResults: false,
 			exportResultsUrl: undefined,
@@ -98,7 +107,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 	const [saveAllAnchorEl, setSaveAllAnchorEl] = React.useState<null | HTMLElement>(null);
 	const [saveSelectedAnchorEl, setSaveSelectedAnchorEl] = React.useState<null | HTMLElement>(null);
 
-	const columns = myState.selectedIdentifyResult?.properties.map((p) => {
+	const columns = selectionService.selectedIdentifyResult?.properties.map((p) => {
 		return {
 			field: p,
 			headerName: p,
@@ -113,10 +122,18 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 			open={selectionService.identifyResults.length > 0}
 			onClose={() => {
 				selectionService.clearIdentifyResults()
-				myState.selectedIdentifyResult = undefined;
+				selectionService.selectedIdentifyResult = undefined;
 			}}
+			PaperComponent={PaperComponent}
 		>
-			<DialogTitle id="identify-dialog-title">Identify Results</DialogTitle>
+			<DialogTitle
+				style={{
+					cursor: "grabbing"
+				}}
+				id="identify-dialog-title"
+			>
+				Identify Results
+			</DialogTitle>
 			{myState.isExporting && (
 				<Dialog
 					maxWidth="xl"
@@ -179,9 +196,9 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								<Observer>{() => (
 									<TableRow
 										hover
-										selected={result.layer.id === myState.selectedIdentifyResult?.layer.id}
+										selected={result.layer.id === selectionService.selectedIdentifyResult?.layer.id}
 										onClick={(e) => {
-											myState.selectedIdentifyResult = result;
+											selectionService.selectedIdentifyResult = result;
 											result.getResults();
 										}}
 										key={result.layer.id}
@@ -199,7 +216,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				<Grid item xs={12} style={{
 					height: '45%'
 				}}>
-					{myState.selectedIdentifyResult && (
+					{selectionService.selectedIdentifyResult && (
 						<DataGrid
 							checkboxSelection
 							classes={{
@@ -208,11 +225,11 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							columns={columns}
 							headerHeight={35}
 							onSelectionModelChange={(p:GridSelectionModelChangeParams) => {
-								myState.selectedIdentifyResult?.clearSelected();
-								p.selectionModel.forEach(fid => { myState.selectedIdentifyResult?.setSelected(fid as string, true) })
+								selectionService.selectedIdentifyResult?.clearSelected();
+								p.selectionModel.forEach(fid => { selectionService.selectedIdentifyResult?.setSelected(fid as string, true) })
 							}}
 							rowHeight={35}
-							rows={myState.selectedIdentifyResult.rows}
+							rows={selectionService.selectedIdentifyResult.rows}
 						/>
 					)}
 				</Grid>
@@ -220,7 +237,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 					height: '10%',
 					marginTop: '1em'
 				}}>
-					{myState.selectedIdentifyResult && (
+					{selectionService.selectedIdentifyResult && (
 						<>
 							<Button
 								variant="contained"
@@ -245,7 +262,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('xlsx', false);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xlsx', false);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -255,7 +272,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('xls', false);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xls', false);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -265,7 +282,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('csv', false);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('csv', false);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -279,7 +296,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								style={{
 									marginLeft: '1em'
 								}}
-								disabled={myState.selectedIdentifyResult.rows.filter(t => t.isSelected).length === 0}
+								disabled={selectionService.selectedIdentifyResult.rows.filter(t => t.isSelected).length === 0}
 								onClick={(event: MouseEvent<HTMLButtonElement>) => {
 									setSaveSelectedAnchorEl(event.currentTarget);
 								}}
@@ -297,7 +314,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('xlsx', true);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xlsx', true);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -307,7 +324,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('xls', true);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xls', true);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -317,7 +334,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await myState.selectedIdentifyResult?.exportToUrl('xlsx', true);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xlsx', true);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
@@ -337,7 +354,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						variant="contained"
 						onClick={() => {
 							selectionService.clearIdentifyResults()
-							myState.selectedIdentifyResult = undefined;
+							selectionService.selectedIdentifyResult = undefined;
 						}}
 					>
 						<Close /> Back to Map

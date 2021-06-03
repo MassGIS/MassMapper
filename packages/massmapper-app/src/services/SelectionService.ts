@@ -11,20 +11,19 @@ class SelectionService {
 		return Array.from(this._idResults.values());
 	}
 
-	get ready(): boolean {
-		return this._ready;
-	}
+	public selectedIdentifyResult?: IdentifyResult;
 
 	private readonly _idResults: Map<string, IdentifyResult>;
-	private _ready: boolean = false;
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._idResults = new Map<string,IdentifyResult>();
+		this.selectedIdentifyResult = undefined;
 
 		makeObservable<SelectionService, '_idResults'>(
 			this,
 			{
-				_idResults: observable
+				_idResults: observable,
+				selectedIdentifyResult: observable,
 			}
 		);
 

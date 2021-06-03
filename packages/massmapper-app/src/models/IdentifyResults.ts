@@ -11,7 +11,7 @@ interface IdentifyResultFeature {
 	properties: object;
 	geometry_name: "shape",
 	geometry: {
-		type: "Point" | "Line" | "Polygon",
+		type: "Point" | "LineString" | "Polygon",
 		coordinates: Array<any>
 	}
 };
@@ -164,7 +164,7 @@ class IdentifyResult {
 			{
 				body: xml,
 				method: "POST",
-				mode: 'no-cors',
+				mode: 'cors',
 			});
 
 		const exportData = await res.text();
@@ -196,4 +196,4 @@ const getNumFeaturesFromHitsResponse = (hitsBody:string): number => {
 	return xml.FeatureCollection[0].numberOfFeatures;
 }
 
-export { IdentifyResult }
+export { IdentifyResult, IdentifyResultFeature }

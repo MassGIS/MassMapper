@@ -27,6 +27,7 @@ import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
 import { HistoryService } from './services/HistoryService';
+import { SelectionService } from './services/SelectionService';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -78,12 +79,14 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	const classes = useStyles();
 	const [ legendService, mapService, catalogService, toolService, historyService ] = useService([ LegendService, MapService, CatalogService, ToolService, HistoryService]);
+	const [ selectionService ] = useService([ SelectionService ]);
 
 	if (!legendService.ready || !catalogService.ready || !toolService.ready) {
 		return (<>Loading...</>);
 	}
 
 	window['mapService'] = mapService;
+	window['selectionService'] = selectionService;
 
 	const c = historyService.has('c') ?
 		(historyService.get('c') as string).split(',').map(s => parseFloat(s)) :
