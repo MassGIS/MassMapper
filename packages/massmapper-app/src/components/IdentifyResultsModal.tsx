@@ -14,7 +14,8 @@ import {
 	TableHead,
 	TableBody,
 	TableRow,
-	TableCell
+	TableCell,
+	Tooltip,
 } from '@material-ui/core';
 import { DataGrid, GridSelectionModelChangeParams } from '@material-ui/data-grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -107,12 +108,21 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 	const [saveAllAnchorEl, setSaveAllAnchorEl] = React.useState<null | HTMLElement>(null);
 	const [saveSelectedAnchorEl, setSaveSelectedAnchorEl] = React.useState<null | HTMLElement>(null);
 
-	const columns = selectionService.selectedIdentifyResult?.properties.map((p) => {
+	const columns = selectionService.selectedIdentifyResult?.properties.filter(p => p != 'bbox').map((p) => {
 		return {
 			field: p,
 			headerName: p,
 			width: 110,
 			height: 20,
+			resizable: true,
+			renderCell: (params: any) => {
+				const value = params.getValue(p);
+				return (
+					<Tooltip title={value} >
+						<span className="table-cell-trucate">{value}</span>
+					</Tooltip>
+				);
+			},
 		};
 	}) || [];
 
