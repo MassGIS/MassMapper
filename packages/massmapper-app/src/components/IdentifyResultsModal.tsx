@@ -26,7 +26,7 @@ import Draggable from 'react-draggable';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useService } from '../services/useService';
 
-import { Close, Save, SaveAlt } from '@material-ui/icons';
+import { Close, Save, SaveAlt, AspectRatio, PhotoSizeSelectSmall } from '@material-ui/icons';
 import { SelectionService } from '../services/SelectionService';
 
 const selectedColor = '#eee';
@@ -80,6 +80,7 @@ interface IdentifyResultModalState {
 	isExporting: boolean;
 	isDisplayingExportResults: boolean;
 	exportResultsUrl?: string;
+	windowSize: "xl" | "xs";
 }
 
 const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
@@ -102,6 +103,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 			isExporting: false,
 			isDisplayingExportResults: false,
 			exportResultsUrl: undefined,
+			windowSize: "xl"
 		}
 	});
 
@@ -128,7 +130,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 
 	return (
 		<Dialog
-			maxWidth="xl"
+			maxWidth={myState.windowSize}
 			open={selectionService.identifyResults.length > 0}
 			onClose={() => {
 				selectionService.clearIdentifyResults()
@@ -143,6 +145,17 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				id="identify-dialog-title"
 			>
 				Identify Results
+				<div style={{float: 'right'}}>
+					<Button
+						onClick={() => {
+							myState.windowSize = myState.windowSize === 'xl' ? 'xs':'xl'
+						}}
+					>
+						{myState.windowSize === 'xl' && <PhotoSizeSelectSmall />}
+						{myState.windowSize === 'xs' && <AspectRatio />}
+					</Button>
+
+				</div>
 			</DialogTitle>
 			{myState.isExporting && (
 				<Dialog
@@ -228,6 +241,8 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				}}>
 					{selectionService.selectedIdentifyResult && (
 						<DataGrid
+							hideFooterRowCount={myState.windowSize === 'xs'}
+							hideFooterSelectedRowCount={myState.windowSize === 'xs'}
 							checkboxSelection
 							classes={{
 								root: dataGridClasses.root
