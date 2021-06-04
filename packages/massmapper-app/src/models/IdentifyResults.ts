@@ -137,8 +137,9 @@ class IdentifyResult {
 
 	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'xls', selectedOnly:boolean) {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
-
-		const url = `//maps.massgis.state.ma.us/map_ol/getstore.php?name=${this.layer.name}.${fileType}&url=http://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		// Get rid of any leading prefix:.
+		const name = this.layer.name.replace(/^[^:]*:/, '');
+		const url = `https://massgis.2creek.com/oliver-data/getstore.php?name=${name}.${fileType}&url=http://giswebservices.massgis.state.ma.us/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
@@ -153,12 +154,12 @@ class IdentifyResult {
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ogc="http://www.opengis.net/ogc">
 	<wfs:Query typeName="${this.layer.name}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
-		${this.properties.map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
+		${this.properties.filter(p => p !== 'bbox').map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
 			${this.rows.filter(r => r.isSelected || !selectedOnly).map(r => `<ogc:FeatureId fid="${r.id}"/>`).join('')}
 		</ogc:Filter>
 	</wfs:Query>
-</wfs:GetFeature>`;
+	</wfs:GetFeature>`;
 
 		const res = await fetch(url,
 			{
@@ -169,7 +170,8 @@ class IdentifyResult {
 
 		const exportData = await res.text();
 
-		return exportData;
+		// Specify host since getstore went through a proxy.
+		return 'http://maps.massgis.state.ma.us' + exportData;
 	}
 };
 

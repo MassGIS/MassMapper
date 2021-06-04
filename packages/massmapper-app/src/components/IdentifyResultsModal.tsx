@@ -167,7 +167,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							marginBottom: '1em'
 						}}
 					>
-						<a href={myState.exportResultsUrl}>Click here</a> to download your export
+						<a target=_blank href={myState.exportResultsUrl}>Click here</a> to download your export
 					</DialogContent>
 					<Button
 						onClick={() => {
