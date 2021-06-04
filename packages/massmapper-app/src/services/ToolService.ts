@@ -5,7 +5,8 @@ import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
-import { GeocodeTool } from "../models/GeocodeTool";
+import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
+import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -73,7 +74,12 @@ class ToolService {
 				{
 					id: 'google-geocode-tool',
 					position: ToolPosition.topright,
-					class: GeocodeTool
+					class: GoogleGeocodeTool
+				},
+				{
+					id: 'arcgis-geocode-tool',
+					position: ToolPosition.topleft,
+					class: ArcGISGeocodeTool
 				}
 			];
 			tools.forEach((toolDef) => {

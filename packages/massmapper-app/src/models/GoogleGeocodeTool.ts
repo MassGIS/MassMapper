@@ -1,14 +1,9 @@
-import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
-import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
 
-// import './MeasureTool.module.css';
 import { ContainerInstance } from 'typedi';
-import { FunctionComponent } from "react";
-import { GeocodeToolComponent } from '../components/GeocodeToolComponent';
-// import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
+import { GoogleGeocodeToolComponent } from '../components/GoogleGeocodeToolComponent';
 
-class GeocodeTool extends Tool {
+class GoogleGeocodeTool extends Tool {
 
 	constructor(
 		protected readonly _services:ContainerInstance,
@@ -33,8 +28,8 @@ class GeocodeTool extends Tool {
 	}
 
 	public component() {
-		return GeocodeToolComponent
+		return GoogleGeocodeToolComponent
 	}
 }
 
-export { GeocodeTool };
+export { GoogleGeocodeTool };
