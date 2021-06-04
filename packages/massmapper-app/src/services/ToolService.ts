@@ -6,6 +6,8 @@ import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
 import { GeocodeTool } from "../models/GeocodeTool";
+import { LogoTool } from "../models/LogoTool";
+import massmapper from '../images/massmapper.png';
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -13,6 +15,7 @@ interface ToolDefinition {
 	position: ToolPosition;
 	class: typeof Tool;
 	isDefault?: boolean;
+	options?: any;
 }
 
 const delay = (duration:number) => new Promise(resolve => setTimeout(resolve, duration));
@@ -74,7 +77,18 @@ class ToolService {
 					id: 'google-geocode-tool',
 					position: ToolPosition.topright,
 					class: GeocodeTool
-				}
+				},
+				{
+					id: 'oliver-logo-tool',
+					position: ToolPosition.bottomright,
+					class: LogoTool,
+					options: {
+						logoUrl: massmapper,
+						logoTooltip: 'MassMapper - by MassGIS',
+						logoLink: "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
+					}
+				},
+
 			];
 			tools.forEach((toolDef) => {
 				this.addToolFromDefinition(toolDef);
@@ -84,7 +98,7 @@ class ToolService {
 	}
 
 	public addToolFromDefinition(def:ToolDefinition) {
-		const t = new (def.class as any)(this._services, def.id, def.position, def.isDefault) as Tool;
+		const t = new (def.class as any)(this._services, def.id, def.position, def.options, def.isDefault) as Tool;
 		this.addTool(t);
 		if (t.isDefault) {
 			t.activate();
