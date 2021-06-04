@@ -31,6 +31,7 @@ abstract class Tool {
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
 		public position: ToolPosition,
+		public readonly options: any,
 		protected _default: boolean = false
 	) {
 		// makeObservable<Tool, ToolAnnotations>(

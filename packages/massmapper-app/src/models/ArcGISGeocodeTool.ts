@@ -8,9 +8,10 @@ class ArcGISGeocodeTool extends Tool {
 	constructor(
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
-		public position: ToolPosition
+		public position: ToolPosition,
+		public readonly options:any
 	) {
-		super(_services,id,position);
+		super(_services,id,position,options);
 
 		// makeObservable<GeocodeTool>(
 		// 	this,

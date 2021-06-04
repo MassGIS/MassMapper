@@ -22,7 +22,6 @@ import { useService } from './services/useService';
 import 'leaflet/dist/leaflet.css';
 import '../leaflet.css';
 
-import massmapper from './images/massmapper.png';
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
@@ -96,7 +95,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	return (
 		<div className={classes.root}>
-			<AppBar position="absolute">
+			{/* <AppBar position="absolute">
 				<Toolbar>
 					<img src={massmapper} style={{
 						height: 54
@@ -105,8 +104,8 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 						&nbsp;&nbsp;MassGIS's Online Mapping Tool
 					</Typography>
 				</Toolbar>
-			</AppBar>
-			<Grid style={{paddingTop: 65}} className={classes.content} component="main" container direction="column">
+			</AppBar> */}
+			<Grid className={classes.content} component="main" container direction="column">
 				<SplashPageModal />
 				<IdentifyResultsModal />
 				<Grid className={classes.container} container item wrap="nowrap">
@@ -122,7 +121,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							}}
 						/>
 					</Grid>
-					<Grid style={{maxHeight: 'calc(100vh - 65px)'}} component={Paper} item square xs={3}>
+					<Grid style={{maxHeight: '100vh'}} component={Paper} item square xs={3}>
 						<Grid container style={{height: '100%'}} direction="column">
 							<Grid item style={{minHeight: '60%', maxHeight: '60%', maxWidth: '100%', overflowY: 'scroll', border: "1px solid lightgray"}}>
 								<CatalogComponent />

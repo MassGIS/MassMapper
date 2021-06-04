@@ -36,17 +36,44 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 			</div>
 
 			<div
-			style={{
-				position: 'absolute',
-				right: '80px',
-				top: '10px',
-				zIndex: 1000,
-				display: 'flex',
-				flexDirection: 'row-reverse',
-			}}
+				style={{
+					position: 'absolute',
+					right: '80px',
+					top: '10px',
+					zIndex: 1000,
+					display: 'flex',
+					flexDirection: 'row-reverse',
+				}}
 			>
 			{
 				toolService.getTools(ToolPosition.topright)
+					.map((tool) => {
+						const ToolComponent = tool.component();
+						return (
+							<div
+								style={{
+									marginRight:'.5em',
+								}}
+								key={tool.id}><ToolComponent
+								tool={tool}
+							/></div>
+						);
+					})
+			}
+			</div>
+
+			<div
+				style={{
+					position: 'absolute',
+					right: '100px',
+					bottom: '10px',
+					zIndex: 1000,
+					display: 'flex',
+					flexDirection: 'row-reverse',
+				}}
+			>
+			{
+				toolService.getTools(ToolPosition.bottomright)
 					.map((tool) => {
 						const ToolComponent = tool.component();
 						return (
