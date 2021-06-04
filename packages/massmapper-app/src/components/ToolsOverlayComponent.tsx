@@ -7,18 +7,46 @@ import { useService } from '../services/useService';
 const ToolsOverlayComponent: FunctionComponent = observer(() => {
 	const toolService = useService(ToolService);
 	return (
-		<div
+		<>
+			<div
+				style={{
+					position: 'absolute',
+					left: '60px',
+					top: '10px',
+					zIndex: 1000,
+					display: 'flex',
+					flexDirection: 'row',
+				}}
+			>
+				{
+					toolService.getTools(ToolPosition.topleft)
+						.map((tool) => {
+							const ToolComponent = tool.component();
+							return (
+								<div
+									style={{
+										marginRight:'.5em',
+									}}
+									key={tool.id}><ToolComponent
+									tool={tool}
+								/></div>
+							);
+						})
+				}
+			</div>
+
+			<div
 			style={{
 				position: 'absolute',
-				left: '60px',
+				right: '80px',
 				top: '10px',
 				zIndex: 1000,
 				display: 'flex',
-				flexDirection: 'row',
+				flexDirection: 'row-reverse',
 			}}
-		>
+			>
 			{
-				toolService.getTools(ToolPosition.topleft)
+				toolService.getTools(ToolPosition.topright)
 					.map((tool) => {
 						const ToolComponent = tool.component();
 						return (
@@ -32,7 +60,8 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 						);
 					})
 			}
-		</div>
+			</div>
+		</>
 	);
 });
 

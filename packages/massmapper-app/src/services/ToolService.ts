@@ -5,6 +5,7 @@ import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
+import { GeocodeTool } from "../models/GeocodeTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -69,6 +70,11 @@ class ToolService {
 					position: ToolPosition.topleft,
 					class:PermalinkTool,
 				},
+				{
+					id: 'google-geocode-tool',
+					position: ToolPosition.topright,
+					class: GeocodeTool
+				}
 			];
 			tools.forEach((toolDef) => {
 				this.addToolFromDefinition(toolDef);
