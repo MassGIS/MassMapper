@@ -9,7 +9,7 @@ import identify from '../images/identify.png';
 
 class IdentifyToolWithPoint extends Tool {
 
-	private _myRect: Array<Rectangle> = [];
+	// private _myRect: Array<Rectangle> = [];
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
 		const ms = this._services.get(MapService);
@@ -50,10 +50,10 @@ class IdentifyToolWithPoint extends Tool {
 		}
 
 		const ms = this._services.get(MapService);
-		this._myRect.forEach((f) => {
-			f.removeFrom(ms.leafletMap!);
-		});
-		this._myRect = [];
+		// this._myRect.forEach((f) => {
+		// 	f.removeFrom(ms.leafletMap!);
+		// });
+		// this._myRect = [];
 
 		legendService.enabledLayers.forEach(async (l) => {
 			if (!l.scaleOk) {
@@ -80,7 +80,7 @@ class IdentifyToolWithPoint extends Tool {
 				);
 			}
 
-			// create an orange rectangle
+			// create an orange rectangle where we clicked
 			// this._myRect.push(rectangle(bbox, {color: "#ff7800", weight: 1}).addTo(ms.leafletMap!));
 
 			const selService = this._services.get(SelectionService);
