@@ -145,7 +145,6 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 					}}
 					style={{
 						position: 'absolute',
-						top: '63px',
 						right: '8px',
 						zIndex: 100
 					}}
