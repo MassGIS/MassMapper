@@ -117,7 +117,7 @@ class MapService {
 		const zoom = this._mapZoom || '';
 		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
 
-		return `bl=${this._activeBaseLayer}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+		return `bl=${encodeURIComponent(this._activeBaseLayer)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
@@ -143,34 +143,49 @@ class MapService {
 		this._map = m;
 
 		const hs = this._services.get(HistoryService);
-		if (hs.has("l")) {
-			// need to load layers
-			autorun((r) => {
-				const cs = this._services.get(CatalogService);
-				const ls = this._services.get(LegendService);
-				if (!cs.ready || !ls.ready) {
-					return;
+
+		// need to load layers
+		autorun((r) => {
+			const cs = this._services.get(CatalogService);
+			const ls = this._services.get(LegendService);
+			if (!cs.ready || !ls.ready) {
+				return;
+			}
+
+			// Add standard overlays if empty permalink (which implies MassGIS basemap).
+			let layers = (hs.has('bl') || hs.has('l')) ? 
+				[] : 
+				'Basemaps_Structures__,Basemaps_L3Parcels__,Basemaps_MassGISBasemapWithLabels2__'.split(',');
+
+			// Incoming permalink layers override defaults.
+			if (hs.has('l')) {
+				layers = (hs.get('l') as string).split(',');
+			}
+
+			// Only add layers we recognize, according to permalink order.
+			let toAdd: any[] = [];
+			layers.forEach(l => {
+				const catlyr = cs.uniqueLayers.find(cl => {
+					return l === cl.name + "__" + cl.style;
+				});
+				if (catlyr) {
+					toAdd.push(catlyr);
 				}
-
-				const layers = (hs.get('l') as string).split(',');
-
-				const toAdd = cs.uniqueLayers.filter(l => {
-					return layers.includes(l.name + "__" + l.style);
-				});
-				toAdd.forEach((v) => {
-					const l = new Layer(
-						v.name!,
-						v.style!,
-						v.title!,
-						v.type!,
-						v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
-					);
-					ls.addLayer.bind(ls)(l);
-				});
-
-				toAdd.length > 0 && r.dispose();
 			})
-		}
+
+			toAdd.forEach((v) => {
+				const l = new Layer(
+					v.name!,
+					v.style!,
+					v.title!,
+					v.type!,
+					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
+				);
+				ls.addLayer.bind(ls)(l);
+			});
+
+			toAdd.length > 0 && r.dispose();
+		})
 
 		new Control.Scale({position: 'bottomright'}).addTo(m);
 
