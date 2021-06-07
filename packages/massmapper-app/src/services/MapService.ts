@@ -21,6 +21,9 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
+import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
+import massmapper from '../images/massmapper.png';
+import north from '../images/north_arrow.png';
 
 @Service()
 class MapService {
@@ -187,7 +190,34 @@ class MapService {
 			toAdd.length > 0 && r.dispose();
 		})
 
-		new Control.Scale({position: 'bottomright'}).addTo(m);
+		const WM = Control.extend({
+			onAdd: function () {
+				const img = DomUtil.create('img');
+				img.src = massmapper;
+				return img;
+			},
+			onRemove: function () {
+			},
+		});
+		const WatermarkControl = function(opts: Leaflet.ControlOptions | undefined) {
+			return new WM(opts);
+		};
+		WatermarkControl({position: 'bottomright'}).addTo(this._map);
+
+		new Control.Scale({position: 'bottomleft'}).addTo(m);
+		const NA = Control.extend({
+			onAdd: function () {
+				const img = DomUtil.create('img');
+				img.src = north;
+				return img;
+			},
+			onRemove: function () {
+			},
+		});
+		const NorthArrowControl = function(opts: Leaflet.ControlOptions | undefined) {
+			return new NA(opts);
+		};
+		NorthArrowControl({position: 'bottomleft'}).addTo(this._map);
 
 		this._leafletLayers.clear();
 
@@ -217,6 +247,12 @@ class MapService {
 				o.layer.addTo(this._map);
 			}
 		});
+
+		new SimpleMapScreenshoter({
+			hideElementsWithSelectors: [
+				'.leaflet-top.leaflet-left',
+				'.leaflet-top.leaflet-right'			]
+		}).addTo(this._map);
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {

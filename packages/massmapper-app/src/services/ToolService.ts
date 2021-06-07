@@ -7,7 +7,6 @@ import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
 import { GeocodeTool } from "../models/GeocodeTool";
 import { LogoTool } from "../models/LogoTool";
-import massmapper from '../images/massmapper.png';
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -78,17 +77,6 @@ class ToolService {
 					position: ToolPosition.topright,
 					class: GeocodeTool
 				},
-				{
-					id: 'oliver-logo-tool',
-					position: ToolPosition.bottomright,
-					class: LogoTool,
-					options: {
-						logoUrl: massmapper,
-						logoTooltip: 'MassMapper - by MassGIS',
-						logoLink: "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
-					}
-				},
-
 			];
 			tools.forEach((toolDef) => {
 				this.addToolFromDefinition(toolDef);
