@@ -244,6 +244,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							hideFooterRowCount={myState.windowSize === 'xs'}
 							hideFooterSelectedRowCount={myState.windowSize === 'xs'}
 							checkboxSelection
+							disableColumnFilter
 							classes={{
 								root: dataGridClasses.root
 							}}
