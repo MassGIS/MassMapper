@@ -57,7 +57,7 @@ class MapService {
 		{
 			name: 'MassGIS Statewide Basemap',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}'
 			)
 		},
 		{
@@ -155,7 +155,7 @@ class MapService {
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
 			let layers = (hs.has('bl') || hs.has('l')) ? 
 				[] : 
-				'Basemaps_Structures__,Basemaps_L3Parcels__,Basemaps_MassGISBasemapWithLabels2__'.split(',');
+				'Basemaps_L3Parcels__'.split(',');
 
 			// Incoming permalink layers override defaults.
 			if (hs.has('l')) {
