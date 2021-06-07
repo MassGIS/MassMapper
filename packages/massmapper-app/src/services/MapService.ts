@@ -117,7 +117,7 @@ class MapService {
 		const zoom = this._mapZoom || '';
 		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
 
-		return `bl=${this._activeBaseLayer}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+		return `bl=${encodeURIComponent(this._activeBaseLayer)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
