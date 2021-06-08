@@ -11,6 +11,8 @@ type LayerMetadata = {
 	minScale: number,
 	maxScale: number,
 	srcUrl: string,
+	minZoom: number,
+	maxZoom: number,
 }
 
 class Layer {
@@ -51,7 +53,9 @@ class Layer {
 	private _layerData: LayerMetadata = {
 		srcUrl: '',
 		minScale: -1,
-		maxScale: -1
+		maxScale: -1,
+		minZoom: 0,
+		maxZoom: 18
 	};
 
 	constructor(
@@ -109,7 +113,9 @@ class Layer {
 				this._layerData = {
 					minScale: xmlData.Scale && xmlData.Scale[0].minScaleDenominator,
 					maxScale: xmlData.Scale && xmlData.Scale[0].maxScaleDenominator,
-					srcUrl: this.src
+					srcUrl: this.src,
+					minZoom: this._layerData.minZoom,
+					maxZoom: this._layerData.maxZoom,
 				};
 
 				this.options = {
@@ -125,16 +131,23 @@ class Layer {
 				.then(response => response.json())
 				.then(json => {
 					this._layerData.srcUrl = json.tileServers[0] + '/tile/{z}/{y}/{x}';
+					if (json.tileInfo?.lods) {
+						this._layerData.minZoom = json.tileInfo.lods[0].level;
+						this._layerData.maxZoom = json.tileInfo.lods[json.tileInfo.lods.length - 1].level;
+					}
 				})
 		}
 	}
 
 	public createLeafletTileLayer(): TileLayer {
+		console.dir(this._layerData);
 		const lyr = new TileLayer(
 			this.srcURL,
 			{
 				id: this.id,
-				pane: this.id
+				pane: this.id,
+				minZoom: this._layerData.minZoom,
+				maxZoom: this._layerData.maxZoom
 			}
 		);
 
