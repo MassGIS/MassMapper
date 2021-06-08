@@ -57,7 +57,10 @@ class MapService {
 		{
 			name: 'MassGIS Statewide Basemap',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 19
+				}
 			)
 		},
 		{
@@ -72,7 +75,10 @@ class MapService {
 		{
 			name: 'USGS Topographic Quadrangle Maps',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 18
+				}
 			)
 		},
 		{
