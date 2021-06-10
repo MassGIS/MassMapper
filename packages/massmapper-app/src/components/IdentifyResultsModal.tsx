@@ -298,16 +298,6 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xls', false);
-									myState.isDisplayingExportResults = true;
-									myState.isExporting = false;
-
-									setSaveAllAnchorEl(null)
-								}}>
-									Excel 97-2003 (xls)
-								</MenuItem>
-								<MenuItem onClick={async () => {
-									myState.isExporting = true;
 									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('csv', false);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
