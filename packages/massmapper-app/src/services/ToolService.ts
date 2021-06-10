@@ -9,6 +9,7 @@ import { LogoTool } from "../models/LogoTool";
 import massmapper from '../images/massmapper.png';
 import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
 import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
+import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -93,7 +94,12 @@ class ToolService {
 					id: 'arcgis-geocode-tool',
 					position: ToolPosition.topleft,
 					class: ArcGISGeocodeTool
-				}
+				},
+				{
+					id: 'show-coordinates-tool',
+					position: ToolPosition.bottomright,
+					class: ShowCoordinatesTool
+				},
 			];
 			tools.forEach((toolDef) => {
 				this.addToolFromDefinition(toolDef);
