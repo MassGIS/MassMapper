@@ -30,11 +30,10 @@ const googleGeocode = async (search:string): Promise<Array<google.maps.GeocoderR
 	})
 }
 
-
-interface GeocodeToolComponentProps {
+interface GoogleGeocodeToolComponentProps {
 }
 
-interface GeocodeToolComponentState {
+interface GoogleGeocodeToolComponentState {
 	isFocused: boolean;
 	searchString: string;
 	searchResults: google.maps.GeocoderResult[];
@@ -42,8 +41,8 @@ interface GeocodeToolComponentState {
 	noOptionsText: string;
 }
 
-const GeocodeToolComponent: FunctionComponent<GeocodeToolComponentProps> = () => {
-	const myState = useLocalObservable<GeocodeToolComponentState>(() => {
+const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentProps> = () => {
+	const myState = useLocalObservable<GoogleGeocodeToolComponentState>(() => {
 		return {
 			isFocused: false,
 			searchString: '',
@@ -52,8 +51,6 @@ const GeocodeToolComponent: FunctionComponent<GeocodeToolComponentProps> = () =>
 			noOptionsText: ''
 		}
 	});
-
-	window['geocodeToolComponent'] = { myState };
 
 	const [mapService] = useService([MapService]);
 
@@ -153,4 +150,4 @@ const GeocodeToolComponent: FunctionComponent<GeocodeToolComponentProps> = () =>
 	);
 };
 
-export { GeocodeToolComponent }
+export { GoogleGeocodeToolComponent }
