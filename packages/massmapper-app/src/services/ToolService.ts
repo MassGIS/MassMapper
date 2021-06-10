@@ -29,7 +29,7 @@ class ToolService {
 	}
 
 	get activeTool(): Tool | undefined{
-		return this._tools.get(this._activeToolId);
+		return Array.from(this._tools.values()).filter((t:Tool) => t.isActive)[0];
 	}
 
 	get ready(): boolean {
@@ -38,7 +38,6 @@ class ToolService {
 
 	private readonly _tools: Map<string,Tool>;
 	private _ready: boolean = false;
-	private _activeToolId:string;
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._tools = new Map<string,Tool>();

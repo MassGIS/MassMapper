@@ -95,16 +95,6 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	return (
 		<div className={classes.root}>
-			{/* <AppBar position="absolute">
-				<Toolbar>
-					<img src={massmapper} style={{
-						height: 54
-					}} />
-					<Typography className={classes.title} color="inherit" component="h1" noWrap variant="h6">
-						&nbsp;&nbsp;MassGIS's Online Mapping Tool
-					</Typography>
-				</Toolbar>
-			</AppBar> */}
 			<Grid className={classes.content} component="main" container direction="column">
 				<SplashPageModal />
 				<IdentifyResultsModal />
@@ -118,6 +108,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map);
+							}}
+							style={{
+								cursor: toolService.activeTool?.cursor,
 							}}
 						/>
 					</Grid>

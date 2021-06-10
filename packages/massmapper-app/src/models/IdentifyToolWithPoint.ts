@@ -12,6 +12,7 @@ class IdentifyToolWithPoint extends Tool {
 	// private _myRect: Array<Rectangle> = [];
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
+		// this._cursor = ;
 		const ms = this._services.get(MapService);
 		autorun((r:IReactionPublic) => {
 			if (!ms.leafletMap) {
@@ -23,7 +24,7 @@ class IdentifyToolWithPoint extends Tool {
 				this._handleIdentifyClick
 			);
 			r.dispose();
-		})
+		});
 	}
 
 
