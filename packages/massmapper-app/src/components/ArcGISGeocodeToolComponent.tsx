@@ -69,15 +69,18 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 
 
 	const xmlLayers = new XMLParser().parseFromString(resXML);
-	const results: ArcGISGecodeResult[] = xmlLayers.getElementsByTagName('GeocodeAddressResult').map((o:any) => {
-		return {
-			address: o.children.filter((c:any) => c.name === 'MatchedAddress')[0].value,
-			location: {
-				x: o.children.filter((c:any) => c.name === 'X')[0].value,
-				y: o.children.filter((c:any) => c.name === 'Y')[0].value,
-			}
-		} as ArcGISGecodeResult;
-	});
+	const results: ArcGISGecodeResult[] = xmlLayers.getElementsByTagName('GeocodeAddressResult')
+		.filter((o:any) => o.children.filter((c:any) => c.name === 'MatchedAddress').length > 0)
+		.map((o:any) => {
+			const addrChildren = o.children.filter((c:any) => c.name === 'MatchedAddress')
+			return {
+				address: addrChildren[0].value,
+				location: {
+					x: o.children.filter((c:any) => c.name === 'X')[0].value,
+					y: o.children.filter((c:any) => c.name === 'Y')[0].value,
+				}
+			} as ArcGISGecodeResult;
+		});
 
 	return results;
 }
@@ -106,8 +109,8 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 
 	const [mapService] = useService([MapService]);
 
-	if (!myState.isOpen) {
-		return (
+	return (
+		<>
 			<Button
 				style={{
 					backgroundColor: 'white',
@@ -121,49 +124,51 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 			>
 				<ImageSearch />
 			</Button>
-		)
-	}
-
-	return (
-		<Dialog
-			open
-			onClose={() => {
-				myState.isOpen = false;
-				myState.city = '';
-				myState.zip = '';
-				myState.street = '';
-				myState.results = [];
-			}}
-		>
-			<DialogTitle>
-				{myState.results.length > 0 ? 'Search Results' : 'Location Search'}
-			</DialogTitle>
-			<Grid
-				style={{
-					flexGrow: 1,
-					height: '40vh',
-				}}
-			>
-				{myState.results.length > 0 && (<ResultsComponent uiState={myState} />)}
-				{myState.results.length === 0 && (<SearchComponent uiState={myState} />)}
-				<Grid
-					style={{
-						height: '15%',
-						textAlign: 'center'
+			{myState.isOpen && (
+				<Dialog
+					open
+					onClose={() => {
+						myState.isOpen = false;
+						myState.city = '';
+						myState.zip = '';
+						myState.street = '';
+						myState.results = [];
 					}}
 				>
-					<Button
-						onClick={() => {
-							myState.isOpen = false;
-							myState.results = [];
+					<DialogTitle>
+						{myState.results.length > 0 ? 'Search Results' : 'Location Search'}
+					</DialogTitle>
+					<Grid
+						style={{
+							flexGrow: 1,
+							height: '40vh',
 						}}
-						variant="contained"
 					>
-						<Close /> Close
-					</Button>
-				</Grid>
-			</Grid>
-		</Dialog>
+						{myState.results.length > 0 && (<ResultsComponent uiState={myState} />)}
+						{myState.results.length === 0 && (<SearchComponent uiState={myState} />)}
+						<Grid
+							style={{
+								height: '15%',
+								textAlign: 'center'
+							}}
+						>
+							<Button
+								onClick={() => {
+									myState.isOpen = false;
+									myState.city = '';
+									myState.zip = '';
+									myState.street = '';
+									myState.results = [];
+								}}
+								variant="contained"
+							>
+								<Close /> Close
+							</Button>
+						</Grid>
+					</Grid>
+				</Dialog>
+			)}
+		</>
 	);
 });
 
@@ -218,6 +223,9 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 			<Button
 				onClick={async () => {
 					uiState.results = await arcgisGeocode(uiState.street, uiState.city, uiState.zip);
+					if (uiState.results.length === 0) {
+						alert("No matches found.  Please try again.");
+					}
 				}}
 				disabled={!uiState.street || (!uiState.city && !uiState.zip)}
 				variant="contained"
@@ -267,6 +275,10 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 										window.setTimeout(() => {
 											mapService.leafletMap?.panTo(center);
 											uiState.isOpen = false;
+											uiState.city = '';
+											uiState.zip = '';
+											uiState.street = '';
+											uiState.results = [];
 										}, 500)
 									}}
 									variant="contained"
