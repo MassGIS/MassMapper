@@ -6,6 +6,7 @@ import {
 	Grid,
 	TextField,
 } from '@material-ui/core'
+import proj4 from 'proj4';
 import {
 	ArrowBack,
 	Close,
@@ -65,6 +66,7 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 	if (!resXML) {
 		return [];
 	}
+
 
 	const xmlLayers = new XMLParser().parseFromString(resXML);
 	const results: ArcGISGecodeResult[] = xmlLayers.getElementsByTagName('GeocodeAddressResult').map((o:any) => {
@@ -130,6 +132,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 				myState.city = '';
 				myState.zip = '';
 				myState.street = '';
+				myState.results = [];
 			}}
 		>
 			<DialogTitle>
@@ -152,9 +155,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 					<Button
 						onClick={() => {
 							myState.isOpen = false;
-							myState.city = '';
-							myState.zip = '';
-							myState.street = '';
+							myState.results = [];
 						}}
 						variant="contained"
 					>
@@ -229,13 +230,14 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 
 
 const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentState}> = observer(({uiState}) => {
+	const mapService = useService(MapService);
 	return (
 		<>
 			<Grid
 				container
 				style={{
 					height: '85%',
-					marginLeft: '2em'
+					padding: '0 2em',
 				}}
 			>
 				<Grid
@@ -252,11 +254,20 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 								style={{
 									height: '1.4em'
 								}}
+								key={Math.random()}
 							>
 								<Button
 									onClick={async () => {
-										console.log("zoom to result", r)
-										alert("zoom to result");
+										const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+										const spFeet = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000.0001016002 +y_0=750000 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs"
+										const pt = proj4(spMeters).inverse([Math.round(r.location.x), Math.round(r.location.y)]);
+										const center = latLng(pt[1], pt[0]);
+										mapService.leafletMap?.setZoom(19);
+										// have to give it time to get to the right zoom, I guess
+										window.setTimeout(() => {
+											mapService.leafletMap?.panTo(center);
+											uiState.isOpen = false;
+										}, 500)
 									}}
 									variant="contained"
 								>
