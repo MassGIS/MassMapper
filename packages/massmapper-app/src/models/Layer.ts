@@ -140,7 +140,6 @@ class Layer {
 	}
 
 	public createLeafletTileLayer(): TileLayer {
-		console.dir(this._layerData);
 		const lyr = new TileLayer(
 			this.srcURL,
 			{
