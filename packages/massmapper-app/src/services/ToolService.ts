@@ -1,4 +1,4 @@
-import { makeObservable, observable } from "mobx";
+import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { Tool, ToolPosition } from '../models/Tool';
 import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
@@ -10,6 +10,7 @@ import massmapper from '../images/massmapper.png';
 import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
 import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
+import { MapService } from "./MapService";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -46,9 +47,21 @@ class ToolService {
 			this,
 			{
 				_tools: observable,
-				_ready: observable
+				_ready: observable,
+				activeTool: computed,
 			}
 		);
+
+		autorun(() => {
+			const ms = this._services.get(MapService);
+			if (!ms || !ms.leafletMap) {
+				return;
+			}
+
+			ms.leafletMap['_container'].style.cursor = this.activeTool?.cursor;
+		},{
+			delay: 10,
+		});
 
 		(async () => {
 			await delay(0); // have to wait for the constructor to finish initing, and get added to the service to get registered

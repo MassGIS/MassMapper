@@ -47,6 +47,7 @@ abstract class Tool {
 				position: observable,
 				isActive: computed,
 				_cursor: observable,
+				cursor: computed,
 			}
 		);
 	}

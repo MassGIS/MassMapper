@@ -86,6 +86,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	window['mapService'] = mapService;
 	window['selectionService'] = selectionService;
+	window['toolService'] = toolService;
 
 	const c = historyService.has('c') ?
 		(historyService.get('c') as string).split(',').map(s => parseFloat(s)) :
@@ -108,9 +109,6 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map);
-							}}
-							style={{
-								cursor: toolService.activeTool?.cursor,
 							}}
 						/>
 					</Grid>

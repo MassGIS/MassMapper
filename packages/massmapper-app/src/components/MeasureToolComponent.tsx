@@ -36,7 +36,8 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 					style={{
 						position: 'absolute',
 						top: '40px',
-						width:'20vw'
+						width:'20vw',
+						minWidth: '315px',
 					}}
 					elevation={3}
 				>

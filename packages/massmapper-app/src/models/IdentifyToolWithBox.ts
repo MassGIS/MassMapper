@@ -72,6 +72,8 @@ class IdentifyToolWithBox extends Tool {
 				return;
 			}
 
+			this._cursor = 'crosshair';
+
 			if (!ms.leafletMap['identifyBox']) {
 				ms.leafletMap.addHandler('identifyBox', BoxIdentify);
 				this._handler = ms.leafletMap['identifyBox'];
