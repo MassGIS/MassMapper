@@ -15,44 +15,57 @@ class MeasureTool extends Tool {
 	private _measureDisposer:IReactionDisposer;
 	private _drawnItems:FeatureGroup;
 	private _measureHandler: Draw.Polyline | Draw.Polygon;
-	private _totalLength: string;
-	private _totalArea: string;
+	private _totalLength?: number;
+	private _totalArea?: number;
 	public measureMode: 'Length' | 'Area' = 'Length';
+	public lengthUnits : 'ft' | 'm' | 'mi' = 'ft';
+	public areaUnits : 'sq ft' | 'acres' | 'sq meters' | 'sq mi' = 'acres';
 
 	get totalLength():string {
-		return this._totalLength;
+		if (this._totalLength === undefined) {
+			return '';
+		} else if (this.lengthUnits === 'ft') {
+			return this._totalLength.toFixed(1) + ' ft';
+		} else if (this.lengthUnits === 'm') {
+			return (this._totalLength * 0.3048).toFixed(1) + " m";
+		} else if (this.lengthUnits === 'mi') {
+			return (this._totalLength / 5280).toFixed(2) + " mi";
+		}
+		return '';
 	}
 	get totalArea():string {
-		return this._totalArea;
+		if (this._totalArea === undefined) {
+			return '';
+		}
+
+		if (this.areaUnits === 'sq ft') {
+			return (this._totalArea * 10.7639).toFixed(1) + ' sq ft';
+		} else if (this.areaUnits === 'acres') {
+			return (this._totalArea * 0.000247105).toFixed(2) + ' acres';
+		} else if (this.areaUnits === 'sq meters') {
+			return this._totalArea.toFixed(1) + ' sq meters';
+		} else if (this.areaUnits === 'sq mi') {
+			return (this._totalArea * 3.86101562499999206e-7).toFixed(3) + ' sq mi';
+		}
+		return '';
 	}
 
 	private _handleMeasureComplete(evt: any) {
 		this._drawnItems.addLayer(evt.layer);
 		if (this.measureMode === 'Length') {
-			const lengthInFeet = parseFloat((this._measureHandler as any)._getMeasurementString());
-			this._totalLength = lengthInFeet > 6000 ? (lengthInFeet/5280).toFixed(2) + ' mi' : lengthInFeet.toFixed(2) + ' ft';
-			this._totalArea = '';
+			this._totalLength = parseFloat((this._measureHandler as any)._getMeasurementString());
+			this._totalArea = undefined;
 		} else {
 			const areaInSqMeters = GeometryUtil.geodesicArea(this._measureHandler['_poly'].getLatLngs());
-			// this._totalArea = areaInSqFt > 6000 ? (areaInSqFt/5280).toFixed(2) + ' acres' : areaInSqFt.toFixed(2) + ' sqft';
-			const areaInSqFt = areaInSqMeters * 10.7639
-			const areaInAcres = areaInSqMeters * 0.000247105;
-			const areaInSqMi = areaInSqMeters * 3.86101562499999206e-7;
-			if (areaInSqFt < 20000) {
-				this._totalArea = areaInSqFt.toFixed(0) + " sqft";
-			} else if (areaInAcres < 1000) {
-				this._totalArea = areaInAcres.toFixed(2) + " acres";
-			} else {
-				this._totalArea = areaInSqMi.toFixed(3) + " sqmi";
-			}
-			this._totalLength = '';
+			this._totalArea = areaInSqMeters;
+			this._totalLength = undefined;
 		}
 	}
 
 	private _clearExistingShape() {
 		this._drawnItems && this._drawnItems.clearLayers();
-		this._totalLength = '';
-		this._totalArea = '';
+		this._totalLength = undefined;
+		this._totalArea = undefined;
 	}
 
 	constructor(
@@ -63,8 +76,8 @@ class MeasureTool extends Tool {
 	) {
 		super(_services,id,position,options);
 
-		this._totalLength = '';
-		this._totalArea = '';
+		this._totalLength = undefined;
+		this._totalArea = undefined;
 
 		makeObservable<MeasureTool, '_totalLength' | '_totalArea' >(
 			this,
@@ -72,6 +85,8 @@ class MeasureTool extends Tool {
 				_totalLength: observable,
 				_totalArea: observable,
 				measureMode: observable,
+				lengthUnits: observable,
+				areaUnits: observable,
 			}
 		);
 	}
