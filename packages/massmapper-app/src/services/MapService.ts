@@ -193,13 +193,18 @@ class MapService {
 			toAdd.length > 0 && r.dispose();
 		})
 
+		// Add PDF button.
 		const ss = new SimpleMapScreenshoter({
 			hideElementsWithSelectors: [
 				'.leaflet-top.leaflet-left',
 				'.leaflet-top.leaflet-right'
 			],
-			hidden: true
+			preventDownload: true
 		}).addTo(this._map);
+		this._map.on('simpleMapScreenshoter.click', function() {
+			// TODO:  prompt for title and filename, and perhaps block out any interaction w/ a Waiting dialog.
+			makePDF('MY MAP', 'map.pdf');
+		});
 
 		const WM = Control.extend({
 			onAdd: function () {
@@ -207,61 +212,6 @@ class MapService {
 				img.src = massmapper;
 				img.onclick = function(e) { 
 					DomEvent.stopPropagation(e);
-					
-					ss.takeScreen('image', {}).then(image => {
-						const pdf = new jsPDF('l', 'pt', [m.getSize().x - 0, m.getSize().y]);
-						const mapWidth = pdf.internal.pageSize.getWidth() - 200;
-						const ratio = mapWidth / pdf.internal.pageSize.getWidth();
-						const mapHeight = pdf.internal.pageSize.getHeight() * ratio;
-						pdf.addImage(String(image), 'PNG', 0, 0, mapWidth, mapHeight);
-
-						let legends: any[] = [];
-						const layers = ls.enabledLayers.map(async (l, i) => {
-							if (l.legendURL) {
-								const legImg = new Image();
-								legImg.src = l.legendURL;
-								legImg.crossOrigin = "Anonymous";
-								await legImg.decode();
-
-								const canvas = document.createElement('canvas');
-								canvas.width = legImg.width;
-								canvas.height = legImg.height;
-								const context = canvas.getContext('2d');
-								context?.drawImage(legImg, 0, 0);
-
-								legends[i] = {
-									title: l.title,
-									img: {
-										data: canvas.toDataURL('image/gif'),
-										width: legImg.width,
-										height: legImg.height
-									}
-								};
-							}
-							else {
-								legends[i] = {
-									title: l.title,
-									img: null
-								}
-								return Promise.resolve();
-							}
-						});
-
-						Promise.all(layers).then(() => {
-							let y = 20;
-							legends.forEach(leg => {
-								pdf.text(leg.title, mapWidth + 10, y);
-								if (leg.img) {
-									y += 10;
-									pdf.addImage(String(leg.img.data), 'PNG', mapWidth + 10, y, leg.img.width, leg.img.height);
-									y += leg.img.height;
-								}
-								y += 25;
-							})
-
-							pdf.save('map.pdf')
-						});
-					})
 				}
 				return img;
 			},
@@ -434,6 +384,71 @@ class MapService {
 		},{
 			delay: 50
 		});
+
+		function makePDF(title: string, filename: string) {
+			const legendWidth = 200;
+			const titleHeight = 50;
+			const leftMargin = 20;
+
+			ss.takeScreen('image', {}).then(image => {
+				const pdf = new jsPDF('l', 'pt', [m.getSize().x - 0, m.getSize().y]);
+
+				pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, 'center');
+
+				const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
+				const ratio = mapWidth / pdf.internal.pageSize.getWidth();
+				const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
+				pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
+
+				let legends: any[] = [];
+				const layers = ls.enabledLayers.map(async (l, i) => {
+					if (l.legendURL) {
+						const legImg = new Image();
+						legImg.src = l.legendURL;
+						legImg.crossOrigin = 'Anonymous';
+						await legImg.decode();
+
+						const canvas = document.createElement('canvas');
+						canvas.width = legImg.width;
+						canvas.height = legImg.height;
+						const context = canvas.getContext('2d');
+						context?.drawImage(legImg, 0, 0);
+
+						legends[i] = {
+							title: l.title,
+							img: {
+								data: canvas.toDataURL('image/gif'),
+								width: legImg.width,
+								height: legImg.height
+							}
+						};
+					}
+					else {
+						legends[i] = {
+							title: l.title,
+							img: null
+						}
+						return Promise.resolve();
+					}
+				});
+
+				Promise.all(layers).then(() => {
+					let y = titleHeight + 20;
+
+					legends.forEach(leg => {
+						pdf.text(leg.title, leftMargin + mapWidth + 10, y);
+						if (leg.img) {
+							y += 10;
+							pdf.addImage(String(leg.img.data), 'PNG', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
+							y += leg.img.height;
+						}
+						y += 25;
+					})
+
+					pdf.save(filename);
+				});
+			})
+		}
 
 		this._ready = true;
 	}
