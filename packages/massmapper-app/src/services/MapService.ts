@@ -208,7 +208,7 @@ class MapService {
 
 		const WM = Control.extend({
 			onAdd: function () {
-				const img = DomUtil.create('img');
+				const img = document.createElement('img');
 				img.src = massmapper;
 				img.onclick = function(e) { 
 					DomEvent.stopPropagation(e);
@@ -226,7 +226,7 @@ class MapService {
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
 		const NA = Control.extend({
 			onAdd: function () {
-				const img = DomUtil.create('img');
+				const img = document.createElement('img');
 				img.src = north;
 				return img;
 			},
@@ -385,7 +385,7 @@ class MapService {
 			delay: 50
 		});
 
-		function makePDF(title: string, filename: string) {
+		const makePDF = (title: string, filename: string) => {
 			const legendWidth = 200;
 			const titleHeight = 50;
 			const leftMargin = 20;
@@ -393,7 +393,7 @@ class MapService {
 			ss.takeScreen('image', {}).then(image => {
 				const pdf = new jsPDF('l', 'pt', [m.getSize().x - 0, m.getSize().y]);
 
-				pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, 'center');
+				pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, {align: 'center'});
 
 				const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
 				const ratio = mapWidth / pdf.internal.pageSize.getWidth();
@@ -436,9 +436,17 @@ class MapService {
 					let y = titleHeight + 20;
 
 					legends.forEach(leg => {
-						pdf.text(leg.title, leftMargin + mapWidth + 10, y);
+						// Word wrap (trying near character(s) 20); H/T https://stackoverflow.com/a/51506718
+						const title = leg.title.replace(
+							/(?![^\n]{1,20}$)([^\n]{1,20})\s/g, '$1\n'
+						);
+						// Write it.
+						pdf.text(title, leftMargin + mapWidth + 10, y);
+						// Number of newlines
+						const c = (title.match(/\n/g) || []).length;
+						y += c * 20;
 						if (leg.img) {
-							y += 10;
+							y += 5;
 							pdf.addImage(String(leg.img.data), 'PNG', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
 							y += leg.img.height;
 						}
