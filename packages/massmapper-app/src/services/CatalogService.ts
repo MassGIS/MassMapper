@@ -60,7 +60,7 @@ class CatalogService {
 
 	private async init(): Promise<void> {
 		// Stack order:  bottom-to-top.
-		fetch('https://massgis.2creek.com/oliver-data/temp/oliver_folderset.xml', { cache: "no-store" })
+		fetch('https://massgis.2creek.com/oliver-data/temp/massmapper_folderset.xml', { cache: "no-store" })
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
