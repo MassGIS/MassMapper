@@ -23,10 +23,9 @@ import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
-import massmapper from '../images/massmapper.png';
 import north from '../images/north_arrow.png';
+import massmapper from '../images/massmapper.png';
 import { jsPDF } from 'jspdf';
-import { doc } from 'prettier';
 
 @Service()
 class MapService {
@@ -63,19 +62,28 @@ class MapService {
 		{
 			name: 'MassGIS Statewide Basemap',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGIS_Topographic_Features_for_Basemap/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 19
+				}
 			)
 		},
 		{
 			name: '2019 Color Orthos (USGS)',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 19
+				}
 			)
 		},
 		{
 			name: 'USGS Topographic Quadrangle Maps',
 			layer: new TileLayer(
-				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}'
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 18
+				}
 			)
 		},
 		{
@@ -161,7 +169,7 @@ class MapService {
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
 			let layers = (hs.has('bl') || hs.has('l')) ? 
 				[] : 
-				'Basemaps_Structures__,Basemaps_L3Parcels__,Basemaps_MassGISBasemapWithLabels2__'.split(',');
+				'Basemaps_L3Parcels__'.split(',');
 
 			// Incoming permalink layers override defaults.
 			if (hs.has('l')) {
@@ -205,23 +213,6 @@ class MapService {
 			// TODO:  prompt for title and filename, and perhaps block out any interaction w/ a Waiting dialog.
 			makePDF('MY MAP', 'map.pdf');
 		});
-
-		const WM = Control.extend({
-			onAdd: function () {
-				const img = document.createElement('img');
-				img.src = massmapper;
-				img.onclick = function(e) { 
-					DomEvent.stopPropagation(e);
-				}
-				return img;
-			},
-			onRemove: function () {
-			},
-		});
-		const WatermarkControl = function(opts: Leaflet.ControlOptions | undefined) {
-			return new WM(opts);
-		};
-		WatermarkControl({position: 'bottomright'}).addTo(this._map);
 
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
 		const NA = Control.extend({
@@ -399,6 +390,7 @@ class MapService {
 				const ratio = mapWidth / pdf.internal.pageSize.getWidth();
 				const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
 				pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
+				pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 3, 129, 69);
 
 				let legends: any[] = [];
 				const layers = ls.enabledLayers.map(async (l, i) => {

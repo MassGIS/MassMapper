@@ -1,4 +1,4 @@
-import { LatLngBounds, LeafletEventHandlerFn, LeafletMouseEvent } from "leaflet";
+import { LatLngBounds, LeafletEventHandlerFn, LeafletMouseEvent, Rectangle, rectangle } from "leaflet";
 import { autorun, IReactionPublic } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
@@ -6,11 +6,15 @@ import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
 import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify.png';
+import move from '../images/move_cursor_24.png';
 
 class IdentifyToolWithPoint extends Tool {
 
+	// private _myRect: Array<Rectangle> = [];
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
+		this._cursor = `url("${move}"), default`;
+		// this._cursor = 'move';
 		const ms = this._services.get(MapService);
 		autorun((r:IReactionPublic) => {
 			if (!ms.leafletMap) {
@@ -21,8 +25,26 @@ class IdentifyToolWithPoint extends Tool {
 				'click',
 				this._handleIdentifyClick
 			);
+
+			ms.leafletMap.on(
+				'mousedown',
+				(() => {
+					if (this._active) {
+						this._cursor = 'crosshair';
+					}
+				}).bind(this)
+			);
+
+			ms.leafletMap.on(
+				'mouseup panend zoomend moveend',
+				(() => {
+					if (this._active) {
+						this._cursor = `url("${move}"), default`;
+					}
+				}).bind(this)
+			);
 			r.dispose();
-		})
+		});
 	}
 
 
@@ -48,16 +70,39 @@ class IdentifyToolWithPoint extends Tool {
 			return;
 		}
 
-		const mapService = this._services.get(MapService);
-
-		const clickBounds = new LatLngBounds(ev.latlng, {lng: ev.latlng.lng + .001, lat: ev.latlng.lat + .001});
-		const bbox = clickBounds.pad(mapService.currentScale/50000);
-		console.log('padding with',(mapService.currentScale/50000));
+		const ms = this._services.get(MapService);
+		// this._myRect.forEach((f) => {
+		// 	f.removeFrom(ms.leafletMap!);
+		// });
+		// this._myRect = [];
 
 		legendService.enabledLayers.forEach(async (l) => {
 			if (!l.scaleOk) {
 				return;
 			}
+
+			if (l.layerType === 'tiled_overlay') {
+				return;
+			}
+
+			let bbox;
+			if (['pt','line'].includes(l.layerType)) {
+				const clickBounds = new LatLngBounds(
+					{lng: ev.latlng.lng - .0001, lat: ev.latlng.lat - .0001},
+					{lng: ev.latlng.lng + .0001, lat: ev.latlng.lat + .0001}
+				);
+				const denom = 5000;
+				bbox = clickBounds.pad(ms.currentScale/denom);
+				console.log('padding with',(ms.currentScale/denom));
+			} else {
+				bbox = new LatLngBounds(
+					{lng: ev.latlng.lng - .000001, lat: ev.latlng.lat - .000001},
+					{lng: ev.latlng.lng + .000001, lat: ev.latlng.lat + .000001}
+				);
+			}
+
+			// create an orange rectangle where we clicked
+			// this._myRect.push(rectangle(bbox, {color: "#ff7800", weight: 1}).addTo(ms.leafletMap!));
 
 			const selService = this._services.get(SelectionService);
 			selService.addIdentifyResult(l, bbox);

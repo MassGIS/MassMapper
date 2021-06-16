@@ -1,47 +1,71 @@
-import { FeatureGroup, Draw } from 'leaflet';
+import { FeatureGroup, Draw, GeometryUtil } from 'leaflet';
 import draw from 'leaflet-draw';
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
-import ruler from '../images/ruler.png';
+
+import { MeasureToolComponent } from '../components/MeasureToolComponent';
+import { ContainerInstance } from 'typedi';
 
 import './MeasureTool.module.css';
-import { ContainerInstance } from 'typedi';
-import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
 
 class MeasureTool extends Tool {
 
 	private _measureDisposer:IReactionDisposer;
 	private _drawnItems:FeatureGroup;
-	private _handler: Draw.Polyline;
-	private _totalLength: string;
-	private _labelPosition: {x:number, y:number};
+	private _measureHandler: Draw.Polyline | Draw.Polygon;
+	private _totalLength?: number;
+	private _totalArea?: number;
+	public measureMode: 'Length' | 'Area' = 'Length';
+	public lengthUnits : 'ft' | 'm' | 'mi' = 'ft';
+	public areaUnits : 'sq ft' | 'acres' | 'sq meters' | 'sq mi' = 'acres';
 
 	get totalLength():string {
-		return this._totalLength;
+		if (this._totalLength === undefined) {
+			return '';
+		} else if (this.lengthUnits === 'ft') {
+			return this._totalLength.toFixed(1) + ' ft';
+		} else if (this.lengthUnits === 'm') {
+			return (this._totalLength * 0.3048).toFixed(1) + " m";
+		} else if (this.lengthUnits === 'mi') {
+			return (this._totalLength / 5280).toFixed(2) + " mi";
+		}
+		return '';
 	}
-	// get labelPosition(): {x: number, y: number} {
-	// 	return this._labelPosition;
-	// }
+	get totalArea():string {
+		if (this._totalArea === undefined) {
+			return '';
+		}
+
+		if (this.areaUnits === 'sq ft') {
+			return (this._totalArea * 10.7639).toFixed(1) + ' sq ft';
+		} else if (this.areaUnits === 'acres') {
+			return (this._totalArea * 0.000247105).toFixed(2) + ' acres';
+		} else if (this.areaUnits === 'sq meters') {
+			return this._totalArea.toFixed(1) + ' sq meters';
+		} else if (this.areaUnits === 'sq mi') {
+			return (this._totalArea * 3.86101562499999206e-7).toFixed(3) + ' sq mi';
+		}
+		return '';
+	}
 
 	private _handleMeasureComplete(evt: any) {
 		this._drawnItems.addLayer(evt.layer);
-		const lengthInFeet = parseFloat((this._handler as any)._getMeasurementString());
-		this._totalLength = lengthInFeet > 6000 ? (lengthInFeet/5280).toFixed(2) + ' mi' : lengthInFeet.toFixed(2) + ' ft';
-
-		// const x = (evt.layer._pxBounds.max.x - evt.layer._pxBounds.min.x)/2 + evt.layer._pxBounds.min.x;
-		// const y = (evt.layer._pxBounds.max.y - evt.layer._pxBounds.min.y)/2 + evt.layer._pxBounds.min.y;
-		// this._labelPosition = {
-		// 	x,
-		// 	y,
-		// }
+		if (this.measureMode === 'Length') {
+			this._totalLength = parseFloat((this._measureHandler as any)._getMeasurementString());
+			this._totalArea = undefined;
+		} else {
+			const areaInSqMeters = GeometryUtil.geodesicArea(this._measureHandler['_poly'].getLatLngs());
+			this._totalArea = areaInSqMeters;
+			this._totalLength = undefined;
+		}
 	}
 
 	private _clearExistingShape() {
 		this._drawnItems && this._drawnItems.clearLayers();
-		this._totalLength = '';
-		// this._labelPosition = { x: -1, y: -1};
+		this._totalLength = undefined;
+		this._totalArea = undefined;
 	}
 
 	constructor(
@@ -52,22 +76,24 @@ class MeasureTool extends Tool {
 	) {
 		super(_services,id,position,options);
 
+		this._totalLength = undefined;
+		this._totalArea = undefined;
 
-		this._totalLength = '';
-		this._labelPosition = {x:-1, y:-1};
-
-		makeObservable<MeasureTool, '_totalLength' | '_labelPosition'>(
+		makeObservable<MeasureTool, '_totalLength' | '_totalArea' >(
 			this,
 			{
 				_totalLength: observable,
-				_labelPosition: observable,
+				_totalArea: observable,
+				measureMode: observable,
+				lengthUnits: observable,
+				areaUnits: observable,
 			}
 		);
 	}
 
 	protected async _deactivate() {
 		this._measureDisposer && this._measureDisposer();
-		this._handler && this._handler.disable();
+		this._measureHandler && this._measureHandler.disable();
 		this._clearExistingShape();
 
 		const ms = this._services.get(MapService);
@@ -77,6 +103,9 @@ class MeasureTool extends Tool {
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
+		this._drawnItems = new FeatureGroup();
+		ms.leafletMap?.addLayer(this._drawnItems);
+
 		this._measureDisposer = autorun(() => {
 			if (!ms.leafletMap) {
 				return;
@@ -84,27 +113,40 @@ class MeasureTool extends Tool {
 
 			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
 
-			if (!ms.leafletMap['measure'])
-				ms.leafletMap.addHandler('measure', (window.L as any).Draw.Polyline);
+			if (!ms.leafletMap['measureLine'])
+				ms.leafletMap.addHandler('measureLine', (window.L as any).Draw.Polyline);
+			if (!ms.leafletMap['measureArea'])
+				ms.leafletMap.addHandler('measureArea', (window.L as any).Draw.Polygon);
 
-			this._drawnItems = new FeatureGroup();
-     		ms.leafletMap.addLayer(this._drawnItems);
+			this._measureHandler?.disable();
+			this._clearExistingShape();
 
-			this._handler = ms.leafletMap['measure'];
-			this._handler.setOptions({
-				showLength: true,
-				metric: false,
-				feet: true,
-				repeatMode: true,
-			})
+			if (this.measureMode === 'Length') {
+				this._measureHandler = ms.leafletMap['measureLine'];
+				this._measureHandler.setOptions({
+					showLength: true,
+					metric: false,
+					feet: true,
+					repeatMode: true,
+				})
+			} else {
+				this._measureHandler = ms.leafletMap['measureArea'];
+				this._measureHandler.setOptions({
+					showArea: true,
+					showLength: false,
+					metric: false,
+					feet: true,
+					repeatMode: true,
+				})
+			}
+
 			ms.leafletMap.on(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
-			this._handler.enable();
+			this._measureHandler.enable();
 		});
 	}
 
 	public component() {
-		// return MeasureToolComponent;
-		return MakeToolButtonComponent(ruler, 'Click to measure distances');
+		return MeasureToolComponent;
 	}
 }
 

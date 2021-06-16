@@ -1,12 +1,16 @@
-import { makeObservable, observable } from "mobx";
+import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { Tool, ToolPosition } from '../models/Tool';
 import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
-import { GeocodeTool } from "../models/GeocodeTool";
 import { LogoTool } from "../models/LogoTool";
+import massmapper from '../images/massmapper.png';
+import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
+import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
+import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
+import { MapService } from "./MapService";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -26,7 +30,7 @@ class ToolService {
 	}
 
 	get activeTool(): Tool | undefined{
-		return this._tools.get(this._activeToolId);
+		return Array.from(this._tools.values()).filter((t:Tool) => t.isActive)[0];
 	}
 
 	get ready(): boolean {
@@ -35,7 +39,6 @@ class ToolService {
 
 	private readonly _tools: Map<string,Tool>;
 	private _ready: boolean = false;
-	private _activeToolId:string;
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._tools = new Map<string,Tool>();
@@ -44,9 +47,21 @@ class ToolService {
 			this,
 			{
 				_tools: observable,
-				_ready: observable
+				_ready: observable,
+				activeTool: computed,
 			}
 		);
+
+		autorun(() => {
+			const ms = this._services.get(MapService);
+			if (!ms || !ms.leafletMap) {
+				return;
+			}
+
+			ms.leafletMap['_container'].style.cursor = this.activeTool?.cursor;
+		},{
+			delay: 10,
+		});
 
 		(async () => {
 			await delay(0); // have to wait for the constructor to finish initing, and get added to the service to get registered
@@ -75,7 +90,27 @@ class ToolService {
 				{
 					id: 'google-geocode-tool',
 					position: ToolPosition.topright,
-					class: GeocodeTool
+					class: GoogleGeocodeTool
+				},
+				{
+					id: 'oliver-logo-tool',
+					position: ToolPosition.bottomright,
+					class: LogoTool,
+					options: {
+						logoUrl: massmapper,
+						logoTooltip: 'MassMapper - by MassGIS',
+						logoLink: "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
+					}
+				},
+				{
+					id: 'arcgis-geocode-tool',
+					position: ToolPosition.topleft,
+					class: ArcGISGeocodeTool
+				},
+				{
+					id: 'show-coordinates-tool',
+					position: ToolPosition.bottomright,
+					class: ShowCoordinatesTool
 				},
 			];
 			tools.forEach((toolDef) => {

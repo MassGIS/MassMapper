@@ -27,20 +27,27 @@ abstract class Tool {
 		return this._default;
 	}
 
+	get cursor(): string {
+		return this._cursor;
+	}
+
 	constructor(
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
 		public position: ToolPosition,
 		public readonly options: any,
-		protected _default: boolean = false
+		protected _default: boolean = false,
+		protected _cursor: string = 'default'
 	) {
 		// makeObservable<Tool, ToolAnnotations>(
-		makeObservable<Tool, '_active'>(
+		makeObservable<Tool, '_active' | '_cursor'>(
 			this,
 			{
 				_active: observable,
 				position: observable,
-				isActive: computed
+				isActive: computed,
+				_cursor: observable,
+				cursor: computed,
 			}
 		);
 	}

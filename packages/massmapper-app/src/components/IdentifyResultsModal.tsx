@@ -244,6 +244,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							hideFooterRowCount={myState.windowSize === 'xs'}
 							hideFooterSelectedRowCount={myState.windowSize === 'xs'}
 							checkboxSelection
+							disableColumnFilter
 							classes={{
 								root: dataGridClasses.root
 							}}
@@ -297,16 +298,6 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xls', false);
-									myState.isDisplayingExportResults = true;
-									myState.isExporting = false;
-
-									setSaveAllAnchorEl(null)
-								}}>
-									Excel 97-2003 (xls)
-								</MenuItem>
-								<MenuItem onClick={async () => {
-									myState.isExporting = true;
 									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('csv', false);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
@@ -349,17 +340,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xls', true);
-									myState.isDisplayingExportResults = true;
-									myState.isExporting = false;
-
-									setSaveSelectedAnchorEl(null)
-								}}>
-									Excel 97-2003 (xls)
-								</MenuItem>
-								<MenuItem onClick={async () => {
-									myState.isExporting = true;
-									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('xlsx', true);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('csv', true);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
