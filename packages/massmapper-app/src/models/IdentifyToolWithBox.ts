@@ -39,24 +39,7 @@ const BoxIdentify = (window.L.Map as any).BoxZoom.extend({
 		this._clearDeferredResetState();
 		this._resetStateTimeout = setTimeout(Util.bind(this._resetState, this), 0);
 
-		const legendService = this._services.get(LegendService) as LegendService;
-		if (!legendService || legendService.enabledLayers.length === 0) {
-			return;
-		}
-
-		const bbox = new LatLngBounds(
-				this._map.containerPointToLatLng(this._startPoint),
-				this._map.containerPointToLatLng(this._point));
-
-		legendService.enabledLayers.forEach(async (l) => {
-			if (!l.scaleOk) {
-				return;
-			}
-
-			const selService = this._services.get(SelectionService);
-			selService.addIdentifyResult(l, bbox);
-		});
-
+		this.actionHandler(this._startPoint, this._point);
 	},
 });
 
@@ -77,7 +60,7 @@ class IdentifyToolWithBox extends Tool {
 			if (!ms.leafletMap['identifyBox']) {
 				ms.leafletMap.addHandler('identifyBox', BoxIdentify);
 				this._handler = ms.leafletMap['identifyBox'];
-				this._handler['_services'] = this._services;
+				this._handler['actionHandler'] = this.handleIdentifyClick.bind(this);
 			}
 
 			this._handler.enable();
@@ -101,19 +84,19 @@ class IdentifyToolWithBox extends Tool {
 		return MakeToolButtonComponent(identify, 'Click to drag a box and identify features');
 	}
 
-	public async handleIdentifyClick(ev:LeafletMouseEvent) {
+	public async handleIdentifyClick(startPoint:any, point:any) {
 
 		// do the identify here
 		const legendService = this._services.get(LegendService);
+		const mapService = this._services.get(MapService);
+
 		if (!legendService || legendService.enabledLayers.length === 0) {
 			return;
 		}
 
-		const mapService = this._services.get(MapService);
-
-		const clickBounds = new LatLngBounds(ev.latlng, {lng: ev.latlng.lng + .001, lat: ev.latlng.lat + .001});
-		const bbox = clickBounds.pad(mapService.currentScale/100000);
-		console.log('padding with',(mapService.currentScale/100000));
+		const bbox = new LatLngBounds(
+				mapService.leafletMap!.containerPointToLatLng(startPoint),
+				mapService.leafletMap!.containerPointToLatLng(point));
 
 		legendService.enabledLayers.forEach(async (l) => {
 			if (!l.scaleOk) {
@@ -123,6 +106,7 @@ class IdentifyToolWithBox extends Tool {
 			const selService = this._services.get(SelectionService);
 			selService.addIdentifyResult(l, bbox);
 		});
+
 	}
 }
 
