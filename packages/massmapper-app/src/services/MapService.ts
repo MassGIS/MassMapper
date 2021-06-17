@@ -21,6 +21,8 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
+import north from '../images/north_arrow.png';
+
 @Service()
 class MapService {
 	get currentScale(): number {
@@ -151,11 +153,11 @@ class MapService {
 		this._map = m;
 
 		const hs = this._services.get(HistoryService);
+		const ls = this._services.get(LegendService);
 
 		// need to load layers
 		autorun((r) => {
 			const cs = this._services.get(CatalogService);
-			const ls = this._services.get(LegendService);
 			if (!cs.ready || !ls.ready) {
 				return;
 			}
@@ -193,13 +195,25 @@ class MapService {
 			});
 
 			toAdd.length > 0 && r.dispose();
-		})
+		});
 
-		new Control.Scale({position: 'bottomright'}).addTo(m);
-
-		this._leafletLayers.clear();
+		new Control.Scale({position: 'bottomleft'}).addTo(m);
+		const NA = Control.extend({
+			onAdd: function () {
+				const img = document.createElement('img');
+				img.src = north;
+				return img;
+			},
+			onRemove: function () {
+			},
+		});
+		const NorthArrowControl = function(opts: Leaflet.ControlOptions | undefined) {
+			return new NA(opts);
+		};
+		NorthArrowControl({position: 'bottomleft'}).addTo(this._map);
 
 		// clear all layers, if there were any to start
+		this._leafletLayers.clear();
 		m.eachLayer((l) => {
 			m.removeLayer(l);
 		});

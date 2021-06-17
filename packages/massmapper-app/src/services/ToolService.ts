@@ -12,6 +12,7 @@ import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 import { MapService } from "./MapService";
 import { AbuttersTool } from "../models/AbuttersTool";
+import { PrintPdfTool } from "../models/PrintPdfTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -120,6 +121,11 @@ class ToolService {
 					options: {
 						abuttersLayer: 'massgis:GISDATA.L3_TAXPAR_POLY_ASSESS'
 					}
+				},
+				{
+					id: 'print-pdf-tool',
+					position: ToolPosition.topleft,
+					class: PrintPdfTool
 				},
 			];
 			tools.forEach((toolDef) => {

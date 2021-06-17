@@ -11,6 +11,8 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 			style={{
 				height:'80%',
 				padding: '0 1em',
+				position: 'relative',
+				top: '5px'
 			}}
 			elevation={3}
 		>
