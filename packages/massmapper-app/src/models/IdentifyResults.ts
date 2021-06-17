@@ -4,6 +4,7 @@ import { Layer } from "./Layer";
 import he from 'he';
 import parser from 'fast-xml-parser';
 import { v4 as uuid } from 'uuid';
+import proj4 from 'proj4';
 
 interface IdentifyResultFeature {
 	id: string;
@@ -54,6 +55,20 @@ class IdentifyResult {
 		return Object.keys(this._features[0].properties);
 	}
 
+	get statePlaneMetersPolygonWKT(): string {
+		const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+		const ul = [this.bbox.getNorthEast().lng, this.bbox.getNorthEast().lat];
+		const lr = [this.bbox.getSouthWest().lng, this.bbox.getSouthWest().lat];
+		const spul = proj4(spMeters).forward(ul);
+		const splr = proj4(spMeters).forward(lr);
+
+		return `POLYGON((${spul[0]} ${spul[1]
+			}, ${spul[0]} ${splr[1]
+			}, ${splr[0]} ${splr[1]
+			}, ${splr[0]} ${spul[1]
+			}, ${spul[0]} ${spul[1]}))`;
+	}
+
 	constructor(
 		public readonly layer: Layer,
 		public readonly bbox: LatLngBounds,
@@ -92,7 +107,8 @@ class IdentifyResult {
 			'typeName=' + this.layer.name,
 			'srsname=EPSG:4326',
 			'resultType=hits',
-			'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
+			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${this.statePlaneMetersPolygonWKT}))`
 		];
 		Object.entries(params);
 
@@ -108,6 +124,7 @@ class IdentifyResult {
 
 	public async getResults(): Promise<IdentifyResultFeature[]> {
 		this._isLoading = true;
+
 		const params = [
 			'service=WFS',
 			'version=1.1.0',
@@ -115,7 +132,8 @@ class IdentifyResult {
 			'typeName=' + this.layer.name,
 			'srsname=EPSG:4326',
 			'outputFormat=application/json',
-			'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
+			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${this.statePlaneMetersPolygonWKT}))`
 		];
 		Object.entries(params);
 

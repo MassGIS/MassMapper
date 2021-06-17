@@ -30,7 +30,7 @@ class IdentifyToolWithPoint extends Tool {
 				'mousedown',
 				(() => {
 					if (this._active) {
-						this._cursor = 'crosshair';
+						this._cursor = '';
 					}
 				}).bind(this)
 			);
@@ -63,7 +63,6 @@ class IdentifyToolWithPoint extends Tool {
 	}
 
 	public async handleIdentifyClick(ev:LeafletMouseEvent) {
-
 		// do the identify here
 		const legendService = this._services.get(LegendService);
 		if (!legendService || legendService.enabledLayers.length === 0) {
@@ -96,8 +95,8 @@ class IdentifyToolWithPoint extends Tool {
 				console.log('padding with',(ms.currentScale/denom));
 			} else {
 				bbox = new LatLngBounds(
-					{lng: ev.latlng.lng - .000001, lat: ev.latlng.lat - .000001},
-					{lng: ev.latlng.lng + .000001, lat: ev.latlng.lat + .000001}
+					{lng: ev.latlng.lng - .00000001, lat: ev.latlng.lat - .00000001},
+					{lng: ev.latlng.lng + .00000001, lat: ev.latlng.lat + .00000001}
 				);
 			}
 

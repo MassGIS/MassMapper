@@ -1,6 +1,5 @@
 import {
 	DomUtil,
-	DomEvent,
 	TileLayer,
 	Map as LeafletMap,
 	Control,
@@ -23,7 +22,6 @@ import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
 import north from '../images/north_arrow.png';
-
 
 @Service()
 class MapService {
