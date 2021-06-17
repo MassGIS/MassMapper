@@ -11,6 +11,7 @@ import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
 import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 import { MapService } from "./MapService";
+import { AbuttersTool } from "../models/AbuttersTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -111,6 +112,14 @@ class ToolService {
 					id: 'show-coordinates-tool',
 					position: ToolPosition.bottomright,
 					class: ShowCoordinatesTool
+				},
+				{
+					id: 'abutters-tool',
+					position: ToolPosition.topleft,
+					class: AbuttersTool,
+					options: {
+						abuttersLayer: 'massgis:GISDATA.L3_TAXPAR_POLY_ASSESS'
+					}
 				},
 			];
 			tools.forEach((toolDef) => {
