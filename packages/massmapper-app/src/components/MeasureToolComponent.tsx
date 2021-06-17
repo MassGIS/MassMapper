@@ -3,29 +3,18 @@ import {
 	Grid,
 	TextField,
 	Paper,
-	Select,
 	MenuItem
 } from '@material-ui/core'
-import {
-	ArrowBack,
-	Close,
-	Explore,
-	ImageSearch,
-	Search,
-} from '@material-ui/icons';
-import { latLngBounds, latLng } from 'leaflet';
-import { observer, useLocalObservable } from 'mobx-react-lite';
+
+import { observer } from 'mobx-react-lite';
 import React, { FunctionComponent } from "react";
 import { ToolComponentProps } from '../models/Tool';
-import { MapService } from '../services/MapService';
-import { useService } from '../services/useService';
 
 import ruler from '../images/ruler.png';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { MeasureTool } from '../models/MeasureTool';
 
 const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
-	const [mapService] = useService([MapService]);
 	const myTool = tool as MeasureTool;
 
 	const MeasureButton = MakeToolButtonComponent(ruler, 'Click to measure distances');
