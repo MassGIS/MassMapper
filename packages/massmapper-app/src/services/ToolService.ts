@@ -11,6 +11,7 @@ import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
 import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 import { MapService } from "./MapService";
+import { PrintPdfTool } from "../models/PrintPdfTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -111,6 +112,11 @@ class ToolService {
 					id: 'show-coordinates-tool',
 					position: ToolPosition.bottomright,
 					class: ShowCoordinatesTool
+				},
+				{
+					id: 'print-pdf-tool',
+					position: ToolPosition.topleft,
+					class: PrintPdfTool
 				},
 			];
 			tools.forEach((toolDef) => {

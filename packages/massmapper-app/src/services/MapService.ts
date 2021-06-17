@@ -22,10 +22,8 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
-import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
 import north from '../images/north_arrow.png';
-import massmapper from '../images/massmapper.png';
-import { jsPDF } from 'jspdf';
+
 
 @Service()
 class MapService {
@@ -126,7 +124,7 @@ class MapService {
 			layer: new BasemapLayer('Gray')
 		},
 	];
-	
+
 	get permalink(): string {
 		const zoom = this._mapZoom || '';
 		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
@@ -167,8 +165,8 @@ class MapService {
 			}
 
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
-			let layers = (hs.has('bl') || hs.has('l')) ? 
-				[] : 
+			let layers = (hs.has('bl') || hs.has('l')) ?
+				[] :
 				'Basemaps_L3Parcels__'.split(',');
 
 			// Incoming permalink layers override defaults.
@@ -199,19 +197,6 @@ class MapService {
 			});
 
 			toAdd.length > 0 && r.dispose();
-		})
-
-		// Add PDF button.
-		const ss = new SimpleMapScreenshoter({
-			hideElementsWithSelectors: [
-				'.leaflet-top.leaflet-left',
-				'.leaflet-top.leaflet-right'
-			],
-			preventDownload: true
-		}).addTo(this._map);
-		this._map.on('simpleMapScreenshoter.click', function() {
-			// TODO:  prompt for title and filename, and perhaps block out any interaction w/ a Waiting dialog.
-			makePDF('MY MAP', 'map.pdf');
 		});
 
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
@@ -375,80 +360,6 @@ class MapService {
 		},{
 			delay: 50
 		});
-
-		const makePDF = (title: string, filename: string) => {
-			const legendWidth = 200;
-			const titleHeight = 50;
-			const leftMargin = 20;
-
-			ss.takeScreen('image', {}).then(image => {
-				const pdf = new jsPDF('l', 'pt', [m.getSize().x - 0, m.getSize().y]);
-
-				pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, {align: 'center'});
-
-				const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
-				const ratio = mapWidth / pdf.internal.pageSize.getWidth();
-				const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
-				pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
-				pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 3, 129, 69);
-
-				let legends: any[] = [];
-				const layers = ls.enabledLayers.map(async (l, i) => {
-					if (l.legendURL) {
-						const legImg = new Image();
-						legImg.src = l.legendURL;
-						legImg.crossOrigin = 'Anonymous';
-						await legImg.decode();
-
-						const canvas = document.createElement('canvas');
-						canvas.width = legImg.width;
-						canvas.height = legImg.height;
-						const context = canvas.getContext('2d');
-						context?.drawImage(legImg, 0, 0);
-
-						legends[i] = {
-							title: l.title,
-							img: {
-								data: canvas.toDataURL('image/gif'),
-								width: legImg.width,
-								height: legImg.height
-							}
-						};
-					}
-					else {
-						legends[i] = {
-							title: l.title,
-							img: null
-						}
-						return Promise.resolve();
-					}
-				});
-
-				Promise.all(layers).then(() => {
-					let y = titleHeight + 20;
-
-					legends.forEach(leg => {
-						// Word wrap (trying near character(s) 20); H/T https://stackoverflow.com/a/51506718
-						const title = leg.title.replace(
-							/(?![^\n]{1,20}$)([^\n]{1,20})\s/g, '$1\n'
-						);
-						// Write it.
-						pdf.text(title, leftMargin + mapWidth + 10, y);
-						// Number of newlines
-						const c = (title.match(/\n/g) || []).length;
-						y += c * 20;
-						if (leg.img) {
-							y += 5;
-							pdf.addImage(String(leg.img.data), 'PNG', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
-							y += leg.img.height;
-						}
-						y += 25;
-					})
-
-					pdf.save(filename);
-				});
-			})
-		}
 
 		this._ready = true;
 	}
