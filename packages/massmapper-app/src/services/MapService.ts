@@ -21,7 +21,6 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
-
 @Service()
 class MapService {
 	get currentScale(): number {
@@ -162,8 +161,8 @@ class MapService {
 			}
 
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
-			let layers = (hs.has('bl') || hs.has('l')) ? 
-				[] : 
+			let layers = (hs.has('bl') || hs.has('l')) ?
+				[] :
 				'Basemaps_L3Parcels__'.split(',');
 
 			// Incoming permalink layers override defaults.
