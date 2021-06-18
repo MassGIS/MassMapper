@@ -12,6 +12,7 @@ type CatalogTreeNode = {
 	name?: string;
 	type?: 'tiled_overlay' | 'pt' | 'line' | 'poly';
 	agol?: string;
+	query?: string;
 	Layer?: CatalogTreeNode[];
 	Folder?: CatalogTreeNode[];
 }

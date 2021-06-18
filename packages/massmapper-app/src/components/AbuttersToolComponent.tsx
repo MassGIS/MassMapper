@@ -67,11 +67,10 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 						>
 							<TextField
 								value={myTool.buffer !== undefined ? myTool.buffer : ''}
-								type="number"
 								required
 								helperText="buffer distance"
 								onChange={(e) => {
-									myTool.buffer = parseInt(e.target.value) || undefined;
+									myTool.buffer = parseInt(e.target.value) || 0;
 								}}
 							/>
 							&nbsp;&nbsp;

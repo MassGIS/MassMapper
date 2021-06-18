@@ -63,7 +63,8 @@ class Layer {
 		public readonly style:string,
 		public readonly title:string,
 		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly',
-		public readonly src:string
+		public readonly src:string,
+		public readonly queryName:string
 	) {
 		makeObservable<Layer, LayerAnnotations>(
 			this,

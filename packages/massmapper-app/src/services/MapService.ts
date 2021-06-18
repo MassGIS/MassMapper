@@ -189,7 +189,8 @@ class MapService {
 					v.style!,
 					v.title!,
 					v.type!,
-					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
+					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms',
+					v.query || v.name!
 				);
 				ls.addLayer.bind(ls)(l);
 			});

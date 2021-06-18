@@ -3,6 +3,7 @@ import { ContainerInstance, Service } from "typedi";
 import { IdentifyResult } from "../models/IdentifyResults";
 import { LatLngBounds } from "leaflet";
 import { Layer } from "../models/Layer";
+import * as turf from '@turf/turf';
 
 @Service()
 class SelectionService {
@@ -32,13 +33,14 @@ class SelectionService {
 		})();
 	}
 
-	public addIdentifyResult(layer: Layer, bbox: LatLngBounds) {
+	public addIdentifyResult(layer: Layer, bbox: LatLngBounds): IdentifyResult {
 		const idResult = new IdentifyResult(
 			layer,
 			bbox
 		);
 		idResult.getNumFeatures()
 		this._idResults.set(layer.id, idResult);
+		return idResult;
 	}
 
 	public clearIdentifyResults(): void {
