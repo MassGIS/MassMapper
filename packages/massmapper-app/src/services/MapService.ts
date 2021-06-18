@@ -69,7 +69,7 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 20
+					maxZoom: 19
 				}
 			)
 		},
@@ -316,10 +316,10 @@ class MapService {
 		// listen for opacity changes
 		autorun(() => {
 			ls.enabledLayers.forEach(l => {
-				if (l.opacity !== 100) {
+				// if (l.opacity !== 100) {
 					const leafletLayer = this._leafletLayers.get(l.id);
 					leafletLayer?.setOpacity(l.opacity/100);
-				}
+				// }
 			})
 		});
 

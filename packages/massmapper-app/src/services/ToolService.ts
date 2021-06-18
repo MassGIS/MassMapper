@@ -124,7 +124,7 @@ class ToolService {
 					position: ToolPosition.topleft,
 					class: AbuttersTool,
 					options: {
-						abuttersLayer: 'massgis:GISDATA.L3_TAXPAR_POLY_ASSESS'
+						abuttersLayer: 'Basemaps_L3Parcels'
 					}
 				},
 			];

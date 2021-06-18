@@ -1,4 +1,4 @@
-import { DomEvent, DomUtil, Handler, LatLngBounds, rectangle, Point, Util, polyline, latLng } from "leaflet";
+import { DomEvent, DomUtil, Handler, LatLngBounds, Point, Util, polyline, polygon, latLng, Polygon, Polyline } from "leaflet";
 import { autorun, IReactionDisposer, IReactionPublic, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
@@ -7,10 +7,13 @@ import { SelectionService } from "../services/SelectionService";
 import { AbuttersToolComponent } from "../components/AbuttersToolComponent";
 import { ContainerInstance } from "typedi";
 import * as turf from '@turf/turf';
-import proj4 from 'proj4';
+import buffer from '@turf/buffer';
+import proj4, { TemplateCoordinates } from 'proj4';
+import { IdentifyResult } from "./IdentifyResults";
 
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+const EPSG_4326 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
 const BoxIdentify = (window.L.Map as any).BoxZoom.extend({
 	_onMouseDown: function (e:any) {
 
@@ -47,11 +50,17 @@ const BoxIdentify = (window.L.Map as any).BoxZoom.extend({
 	},
 });
 
+// function reproject(geom:any, srs:proj4.Converter): any {
+// 	geom.coordinates[0].map((c:Array<number>) => epsg26986.inverse(c))
+
+// }
+
 class AbuttersTool extends Tool {
 
 	private _handlerDisposer:IReactionDisposer;
 	private _handler: Handler;
 	private _abuttersLayer: string;
+	private _abuttersShape: Polyline;
 
 	public buffer?: number = 0;
 	public units: 'ft' | 'm' = 'ft';
@@ -73,6 +82,15 @@ class AbuttersTool extends Tool {
 				units: observable,
 			}
 		);
+
+		autorun(() => {
+			const ss = this._services.get(SelectionService);
+			const ms = this._services.get(MapService);
+			if (ss.identifyResults.length === 0) {
+				this._abuttersShape &&
+				this._abuttersShape.removeFrom(ms.leafletMap!);
+			}
+		});
 	}
 
 	protected async _activate() {
@@ -110,22 +128,24 @@ class AbuttersTool extends Tool {
 	}
 
 	public async handleIdentifyClick(startPoint: Point, endPoint: Point) {
-
-
 		// do the identify here
 		const legendService = this._services.get(LegendService);
 		const selService = this._services.get(SelectionService);
+		const ms = this._services.get(MapService);
+
+		if (this._abuttersShape) {
+			this._abuttersShape.removeFrom(ms.leafletMap!);
+		}
 
 		selService.clearIdentifyResults();
 
-		const ms = this._services.get(MapService);
 		let bbox;
 		if (!endPoint) {
 			// it's a click, not a drag
 			const geoPoint = ms.leafletMap!.layerPointToLatLng(startPoint);
 			bbox = new LatLngBounds(
-				{lng: geoPoint.lng - .000000001, lat: geoPoint.lat - .000000001},
-				{lng: geoPoint.lng + .000000001, lat: geoPoint.lat + .000000001}
+				{lng: geoPoint.lng - .00000000001, lat: geoPoint.lat - .00000000001},
+				{lng: geoPoint.lng + .00000000001, lat: geoPoint.lat + .00000000001}
 			);
 		} else {
 			bbox = new LatLngBounds(
@@ -135,44 +155,74 @@ class AbuttersTool extends Tool {
 
 		const abuttersLayer = legendService.layers.filter(l => this._abuttersLayer === l.name);
 		if (abuttersLayer.length === 0) {
+			debugger;
 			alert("error: can't find abutters layer " + this._abuttersLayer + " in layer list");
 			return;
 		}
 
-		selService.addIdentifyResult(abuttersLayer[0], bbox);
-		const targetFeatureResults = selService.identifyResults[0];
-		const targetFeatures = await targetFeatureResults.getResults();
+		// search based on the selected bbox
+		const targetParcels = new IdentifyResult(
+			abuttersLayer[0],
+			bbox,
+			// 'EPSG:26986'
+		);
+		const targetFeatures = await targetParcels.getResults();
 
-		// results come back in 4326, need to reproject back to 26986, do the buffer, then reproject back
-		let bufferShape:turf.Polygon | turf.MultiPolygon | undefined;
+		// union together the target features
+		let abuttersQueryShape:turf.Polygon | turf.MultiPolygon | undefined;
 		targetFeatures.forEach(f => {
-			const epsg26986 = proj4(SP_METERS);
-			const spMetersCoords = [f.geometry.coordinates[0].map((c:Array<number>) => epsg26986.inverse(c))];
-			const poly = turf.polygon(spMetersCoords);
-			if (!bufferShape) {
-				bufferShape = poly.geometry;
+			const turfPoly = geojsonFeatureToTurfFeature(f);
+			if (!abuttersQueryShape) {
+				abuttersQueryShape = turfPoly;
 			} else {
-				bufferShape = turf.union(bufferShape, poly.geometry).geometry;
+				abuttersQueryShape = turf.union(abuttersQueryShape, turfPoly).geometry;
 			}
 		});
-		if (!bufferShape) {
+		if (!abuttersQueryShape) {
 			// no shape?
 			return;
 		}
 
+		// now buffer the target features in meters
 		// 0 buffer is a no-op
-		bufferShape = this.buffer !== 0 ? turf.buffer(bufferShape, this.buffer).geometry : bufferShape;
+		// TODO: convert buffer distance to metecrs for map units, later
+		// const bufferDist = this.buffer * xxx
+		const buf = this.buffer === 1 ? 0 : this.buffer;
+		const units = this.buffer === 0 ? 'ft' : this.units;
+		abuttersQueryShape = buffer(abuttersQueryShape, buf, {units: units === 'ft' ? 'feet' : 'meters'}).geometry;
 
-		// now reproject bufferShape back to 4326
+		const abuttersOutlinePolygon = abuttersQueryShape; //turfReproject(abuttersQueryShape, SP_METERS, EPSG_4326);
+		const abuttersOutlineLineString = (turf.polygonToLineString(abuttersOutlinePolygon) as turf.Feature).geometry as turf.Geometry;
+		// convert the abutters linestring to leaflet
+		const mapLatLngs = (abuttersOutlineLineString as turf.LineString).coordinates.map(p => latLng(p[1],p[0]));
+		this._abuttersShape = polyline(mapLatLngs, {color: "#ff7800", weight: 4});
+		this._abuttersShape.addTo(ms.leafletMap!);
 
-
-		// draw the bufferShape
-		const bufferLine = (turf.polygonToLineString(bufferShape) as turf.Feature<turf.LineString>).geometry;
-		const leafletLine = polyline(bufferLine.coordinates.map(p => { return latLng(p[1],p[0])}), {color: "#ff7800", weight: 1});
-		leafletLine.addTo(ms.leafletMap!);
-		debugger;
+		const abuttersIdResult = selService.addIdentifyResult(abuttersLayer[0], this._abuttersShape.getBounds());
+		abuttersIdResult.intersectsShape = abuttersOutlineLineString;
+		abuttersIdResult.getNumFeatures();
+		selService.selectedIdentifyResult = abuttersIdResult;
+		abuttersIdResult.getResults();
 
 	}
 }
+
+function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):turf.Polygon {
+	return turf.polygon([f.geometry.coordinates[0]]).geometry;
+}
+
+// function turfToLeaflet<T>(f:T, shapetypeConstructor:any):T {
+// 	const fshp = f as any;
+// 	return shapetypeConstructor(fshp.coordinates[0].map(
+// 		(p:Position|Position[]) => {
+// 			if (p instanceof Array) {
+// 				return turfToLeaflet(p[1] as number, p[0] as number);
+// 			} else {
+
+// 			}
+// 		})
+// 	);
+// }
+
 
 export { AbuttersTool };
