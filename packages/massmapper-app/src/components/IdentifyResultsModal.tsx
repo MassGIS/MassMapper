@@ -226,7 +226,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 										}}
 										key={result.layer.id}
 									>
-										<TableCell>{result.layer.layerType}</TableCell>
+										<TableCell>{result.layer.queryName ? 'polygon' : result.layer.layerType}</TableCell>
 										<TableCell>{result.layer.title}</TableCell>
 										<TableCell>{result.numFeaturesDisplay}</TableCell>
 									</TableRow>

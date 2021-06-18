@@ -309,6 +309,17 @@ class MapService {
 			this._map?.fireEvent('moveend');
 		});
 
+		// listen for opacity changes
+		autorun(() => {
+			ls.enabledLayers.forEach(l => {
+				if (l.opacity !== 100) {
+					const leafletLayer = this._leafletLayers.get(l.id);
+					leafletLayer?.setOpacity(l.opacity/100);
+					leafletLayer?.redraw();
+				}
+			})
+		});
+
 		// after changes to the selection set, draw the selected feature on the map
 		autorun(() => {
 			this._selectedFeatures.forEach(f => {
