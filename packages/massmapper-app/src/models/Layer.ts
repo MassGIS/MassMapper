@@ -5,8 +5,6 @@ import he from 'he';
 import { TileLayer } from 'leaflet';
 import wms from '@2creek/leaflet-wms';
 
-type LayerAnnotations = '_isLoading' | '_layerData';
-
 type LayerMetadata = {
 	minScale: number,
 	maxScale: number,
@@ -57,22 +55,25 @@ class Layer {
 		minZoom: 0,
 		maxZoom: 18
 	};
+	public opacity: number = 100;
 
 	constructor(
 		public readonly name:string,
 		public readonly style:string,
 		public readonly title:string,
 		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly',
-		public readonly src:string
+		public readonly src:string,
+		public readonly queryName:string
 	) {
-		makeObservable<Layer, LayerAnnotations>(
+		makeObservable<Layer, '_isLoading' | '_layerData'>(
 			this,
 			{
 				_isLoading: observable,
 				_layerData: observable,
 				scaleOk: computed,
 				enabled: observable,
-				isLoading: computed
+				isLoading: computed,
+				opacity: observable,
 			}
 		);
 		this.id = 'layer-' + Math.random();

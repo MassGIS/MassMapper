@@ -189,7 +189,8 @@ class MapService {
 					v.style!,
 					v.title!,
 					v.type!,
-					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms'
+					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms',
+					v.query || v.name!
 				);
 				ls.addLayer.bind(ls)(l);
 			});
@@ -306,6 +307,17 @@ class MapService {
 
 			// Line up ancillary scale info.
 			this._map?.fireEvent('moveend');
+		});
+
+		// listen for opacity changes
+		autorun(() => {
+			ls.enabledLayers.forEach(l => {
+				if (l.opacity !== 100) {
+					const leafletLayer = this._leafletLayers.get(l.id);
+					leafletLayer?.setOpacity(l.opacity/100);
+					leafletLayer?.redraw();
+				}
+			})
 		});
 
 		// after changes to the selection set, draw the selected feature on the map

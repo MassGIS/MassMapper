@@ -75,12 +75,13 @@ class IdentifyToolWithPoint extends Tool {
 		// });
 		// this._myRect = [];
 
+		const selService = this._services.get(SelectionService);
 		legendService.enabledLayers.forEach(async (l) => {
 			if (!l.scaleOk) {
 				return;
 			}
 
-			if (l.layerType === 'tiled_overlay') {
+			if (l.layerType === 'tiled_overlay' && l.queryName === l.name) {
 				return;
 			}
 
@@ -102,11 +103,14 @@ class IdentifyToolWithPoint extends Tool {
 
 			// create an orange rectangle where we clicked
 			// this._myRect.push(rectangle(bbox, {color: "#ff7800", weight: 1}).addTo(ms.leafletMap!));
-
-			const selService = this._services.get(SelectionService);
 			selService.addIdentifyResult(l, bbox);
 		});
-	}
-}
+
+		if (selService.identifyResults.length === 1) {
+			//just one layer enabled, pre-click it
+			selService.selectedIdentifyResult = selService.identifyResults[0];
+			selService.identifyResults[0].getResults();
+		}
+	}}
 
 export { IdentifyToolWithPoint };

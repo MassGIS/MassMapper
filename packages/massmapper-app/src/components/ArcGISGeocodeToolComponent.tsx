@@ -8,15 +8,14 @@ import {
 } from '@material-ui/core'
 import proj4 from 'proj4';
 import {
-	ArrowBack,
 	Close,
 	Explore,
 	ImageSearch,
 	Search,
 } from '@material-ui/icons';
-import { latLngBounds, latLng } from 'leaflet';
+import { latLng } from 'leaflet';
 import { observer, useLocalObservable } from 'mobx-react-lite';
-import React, { ChangeEvent, FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import { MapService } from '../services/MapService';
 import { useService } from '../services/useService';
 

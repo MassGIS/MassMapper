@@ -104,7 +104,7 @@ class IdentifyResult {
 			'service=WFS',
 			'version=1.1.0',
 			'request=GetFeature',
-			'typeName=' + this.layer.name,
+			'typeName=' + this.layer.queryName,
 			'srsname=EPSG:4326',
 			'resultType=hits',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
@@ -129,7 +129,7 @@ class IdentifyResult {
 			'service=WFS',
 			'version=1.1.0',
 			'request=GetFeature',
-			'typeName=' + this.layer.name,
+			'typeName=' + this.layer.queryName,
 			'srsname=EPSG:4326',
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'

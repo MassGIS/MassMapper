@@ -1,21 +1,28 @@
 import {
+	Button,
+	Grid,
 	Checkbox,
 	Tooltip,
 	CircularProgress,
-	IconButton
+	IconButton,
+	Paper,
+	Slider,
+	Typography
 } from '@material-ui/core';
 import {
+	ArrowRight,
+	Close,
 	DeleteOutline,
-	ErrorOutline
+	ErrorOutline,
+	TuneOutlined
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
-import { Observer, observer } from 'mobx-react';
+import { Observer, observer, useLocalObservable } from 'mobx-react';
 import React, { FunctionComponent } from 'react';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { LegendService } from '../services/LegendService';
+import { Layer, LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
-import { ClassNameMap } from '@material-ui/styles';
-import { DragDropContext, Droppable, Draggable, DropResult } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 
 interface LegendComponentProps extends RouteComponentProps<any> {
 }
@@ -29,7 +36,76 @@ const useStyles = makeStyles((theme) => ({
 	}
 }));
 
+interface LegendComponentState {
+	layerOpacityToEdit?: Layer;
+	activeOpacity?: number;
+}
+
+const LegendOpacityEditor: FunctionComponent<{layer: Layer, state: LegendComponentState}> = observer(({layer, state}) => {
+	return (
+		<Paper
+			elevation={5}
+			style={{
+				position: 'absolute',
+				width: '200px',
+				zIndex: 100,
+
+			}}
+		>
+			<Grid
+				direction="row"
+			>
+				<Grid
+					style={{
+						position: 'absolute',
+						right: '0px',
+						top: '4px',
+					}}
+				>
+					<Button
+						variant="text"
+						onClick={() => {
+							state.layerOpacityToEdit = undefined;
+						}}
+					>
+						<Close />
+					</Button>
+				</Grid>
+				<Grid
+					style={{
+						margin: '1em'
+					}}
+				>
+					<Typography
+						id="opacity-slider"
+						gutterBottom
+					>
+						Opacity
+					</Typography>
+					<Slider
+						value={state.activeOpacity}
+						min={0}
+						max={100}
+						onChange={(e, v) => {
+							state.activeOpacity = v as number;
+						}}
+						onChangeCommitted={(e, v) => {
+							state.activeOpacity = v as number;
+							layer.opacity = v as number;
+						}}
+					/>
+				</Grid>
+			</Grid>
+		</Paper>
+	)
+});
+
 const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) => {
+
+	const myState = useLocalObservable<LegendComponentState>(() => {
+		return {
+		}
+	});
 
 	const [ legendService ] = useService([ LegendService ]);
 	const classes = useStyles();
@@ -86,62 +162,83 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 									}
 
 									return (
-										<Draggable key={l.id} draggableId={l.id} index={i}>
-											{(provided) => (
-												<div
-													{...provided.draggableProps}
-													{...provided.dragHandleProps}
-													ref={provided.innerRef}
-													key={`layer-${l.id}`}
-												>
-													<div style={{whiteSpace: 'pre'}}>
-														<div style={{
-															display: 'inline-block',
-															position: 'relative'
-														}}>
-															<Checkbox
-																className={classes.button}
-																onChange={(e) => {
-																	l.enabled = e.target.checked;
-																}}
-																checked={l.enabled}
-																color="default"
-															/>
+										<span
+											key={l.id}
+										>
+											<Observer>{() => {
+												if (myState.layerOpacityToEdit === l) {
+													return (<LegendOpacityEditor layer={l} state={myState} />);
+												}
+												return null;
+											}}</Observer>
+											<Draggable key={l.id} draggableId={l.id} index={i}>
+												{(provided) => (
+													<div
+														{...provided.draggableProps}
+														{...provided.dragHandleProps}
+														ref={provided.innerRef}
+														key={`layer-${l.id}`}
+													>
 
-															<IconButton
-																className={classes.button}
-																onClick={() => {
-																	legendService.removeLayer(l);
-																}}
-															>
-																<DeleteOutline />
-															</IconButton>
-
-															{status}
-														</div>
-
-														<Tooltip title={l.title}>
+														<div style={{whiteSpace: 'pre'}}>
 															<div style={{
 																display: 'inline-block',
-																fontSize: '16px',
-																paddingLeft: '3px',
-																paddingTop: '2px'
+																position: 'relative'
 															}}>
-																{l.title}
-															</div>
-														</Tooltip>
+																<Checkbox
+																	className={classes.button}
+																	onChange={(e) => {
+																		l.enabled = e.target.checked;
+																	}}
+																	checked={l.enabled}
+																	color="default"
+																/>
 
-														<div style={{
-															position: 'relative',
-															textAlign: 'left',
-															marginLeft: '3em'
-														}}>
-															{image}
+																<IconButton
+																	className={classes.button}
+																	onClick={() => {
+																		legendService.removeLayer(l);
+																	}}
+																>
+																	<DeleteOutline />
+																</IconButton>
+
+																<IconButton
+																	className={classes.button}
+																	onClick={() => {
+																		myState.activeOpacity = l.opacity;
+																		myState.layerOpacityToEdit = l;
+																	}}
+																>
+																	<TuneOutlined />
+																</IconButton>
+
+																{status}
+															</div>
+
+															<Tooltip title={l.title}>
+																<div style={{
+																	display: 'inline-block',
+																	fontSize: '16px',
+																	paddingLeft: '3px',
+																	paddingTop: '2px'
+																}}>
+																	{l.title}
+																</div>
+															</Tooltip>
+
+															<div style={{
+																position: 'relative',
+																textAlign: 'left',
+																marginLeft: '3em'
+															}}>
+																{image}
+															</div>
 														</div>
 													</div>
-												</div>
-											)}
-										</Draggable>
+												)}
+											</Draggable>
+										</span>
 									);
 								})}
 								{provided.placeholder}
