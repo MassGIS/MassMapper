@@ -56,7 +56,7 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 							node.style!,
 							node.title!,
 							node.type!,
-							node.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms',
+							node.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 							node.query || node.name!
 						);
 						addLayer(l);
@@ -134,7 +134,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 						v.style!,
 						v.title!,
 						v.type!,
-						v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms',
+						v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 						v.query || v.name!
 					);
 					legendService.addLayer.bind(legendService)(l);

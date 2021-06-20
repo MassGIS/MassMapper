@@ -157,7 +157,7 @@ class IdentifyResult {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
 		// Get rid of any leading prefix:.
 		const name = this.layer.name.replace(/^[^:]*:/, '');
-		const url = `https://massgis.2creek.com/oliver-data/getstore.php?name=${name}.${fileType}&url=http://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		const url = `https://massgis.2creek.com/oliver-data/getstore.php?name=${name}.${fileType}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
