@@ -153,7 +153,24 @@ class IdentifyResult {
 		return this._features || [];
 	}
 
-	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'xls', selectedOnly:boolean) {
+	public async exportToKML(selectedOnly: boolean) {
+		const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
+			layers=${this.layer.queryName}&
+			service=WMS&
+			version=1.1.0&
+			request=GetMap&
+			bbox=${this.statePlaneMetersPolygonWKT}&
+			srs=EPSG:26986&
+			height=100&
+			width=100&
+			styles=&
+			format=application/vnd.google-earth.kml+xml
+			`.replace(/\n/g,'');
+
+		console.log(exportUrl);
+	}
+
+	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'shp' , selectedOnly:boolean) {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
 		// Get rid of any leading prefix:.
 		const name = this.layer.name.replace(/^[^:]*:/, '');
@@ -161,7 +178,8 @@ class IdentifyResult {
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
-			'csv': 'csv'
+			'csv': 'csv',
+			'shp' : 'shape-zip',
 		}
 		const xml = `<wfs:GetFeature
 	outputFormat="${outputFormatMap[fileType]}"
@@ -190,6 +208,22 @@ class IdentifyResult {
 
 		// Specify host since getstore went through a proxy.
 		return 'http://maps.massgis.state.ma.us' + exportData;
+	}
+
+	public async exportToMkzip(fileType: string) {
+		const exportXML = `
+<layers>
+	<layer
+		wmsStyle="Blank_Polys"
+		wmsLayer="GISDATA.L3_TAXPAR_POLY_ASSESS"
+		name="Tax Parcels for Query"
+		baseURL="http://giswebservices.massgis.state.ma.us/geoserver/wms?layers___EQ___massgis:GISDATA.L3_TAXPAR_POLY_ASSESS___AMP___service___EQ___WMS___AMP___version___EQ___1.1.0___AMP___request___EQ___GetMap___AMP___bbox___EQ___160823.171987,876167.17726399,162545.925669,877561.99102299___AMP___srs___EQ___EPSG:26986___AMP___height___EQ___100___AMP___width___EQ___100___AMP___styles___EQ______AMP___format___EQ___application/vnd.google-earth.kml+xml">
+		<metadata>http://www.mass.gov/info-details/massgis-data-property-tax-parcels</metadata>
+		<metadata>http://maps.massgis.state.ma.us/metadata/GISDATA_L3_TAXPAR_POLY_ASSESS.shp.xml</metadata>
+	</layer>
+	<zip name="test-kml"/>
+</layers>
+`
 	}
 };
 
