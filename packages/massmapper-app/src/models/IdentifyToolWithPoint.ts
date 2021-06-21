@@ -6,15 +6,15 @@ import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
 import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify.png';
-import move from '../images/move_cursor_24.png';
+import moveCursor from '../images/move_cursor_24.png';
+import idCursor from '../images/mouse-pointer.png';
 
 class IdentifyToolWithPoint extends Tool {
 
 	// private _myRect: Array<Rectangle> = [];
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
-		this._cursor = `url("${move}"), default`;
-		// this._cursor = 'move';
+		this._cursor = `url("${idCursor}"), default`;
 		const ms = this._services.get(MapService);
 		autorun((r:IReactionPublic) => {
 			if (!ms.leafletMap) {
@@ -27,19 +27,19 @@ class IdentifyToolWithPoint extends Tool {
 			);
 
 			ms.leafletMap.on(
-				'mousedown',
+				'dragstart',
 				(() => {
 					if (this._active) {
-						this._cursor = '';
+						this._cursor = `url("${moveCursor}"), default`;
 					}
 				}).bind(this)
 			);
 
 			ms.leafletMap.on(
-				'mouseup panend zoomend moveend',
+				'mouseup dragend zoomend moveend',
 				(() => {
 					if (this._active) {
-						this._cursor = `url("${move}"), default`;
+						this._cursor = `url("${idCursor}"), default`;
 					}
 				}).bind(this)
 			);
