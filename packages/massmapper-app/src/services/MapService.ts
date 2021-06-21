@@ -319,7 +319,6 @@ class MapService {
 				if (l.opacity !== 100) {
 					const leafletLayer = this._leafletLayers.get(l.id);
 					leafletLayer?.setOpacity(l.opacity/100);
-					leafletLayer?.redraw();
 				}
 			})
 		});
