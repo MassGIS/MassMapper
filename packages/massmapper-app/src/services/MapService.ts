@@ -152,6 +152,10 @@ class MapService {
 		// read the url
 		this._map = m;
 
+		// Chrome needs a gentle nudge to create a PDF if a user doesn't interact w/ the map at all.
+		// A m.invalidateSize() doesn't seem to do the trick either.
+		window.dispatchEvent(new Event('resize'));
+
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
 
