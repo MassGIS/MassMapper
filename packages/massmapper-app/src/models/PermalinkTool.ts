@@ -1,5 +1,5 @@
 import { MapService } from "../services/MapService";
-import { Tool, ToolPosition } from "./Tool";
+import { Tool } from "./Tool";
 import link from '../images/link.png';
 
 import './MeasureTool.module.css';

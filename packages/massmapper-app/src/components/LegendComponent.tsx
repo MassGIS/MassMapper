@@ -46,15 +46,16 @@ const LegendOpacityEditor: FunctionComponent<{layer: Layer, state: LegendCompone
 		<Paper
 			elevation={5}
 			style={{
-				position: 'absolute',
+				position: 'relative',
+				float: 'right',
 				width: '200px',
 				zIndex: 100,
+				right: '94px',
+				top: '10px',
 
 			}}
 		>
-			<Grid
-				direction="row"
-			>
+			<Grid>
 				<Grid
 					style={{
 						position: 'absolute',
@@ -83,7 +84,9 @@ const LegendOpacityEditor: FunctionComponent<{layer: Layer, state: LegendCompone
 						Opacity
 					</Typography>
 					<Slider
+						color="secondary"
 						value={state.activeOpacity}
+						valueLabelDisplay="auto"
 						min={0}
 						max={100}
 						onChange={(e, v) => {
@@ -185,33 +188,39 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																display: 'inline-block',
 																position: 'relative'
 															}}>
-																<Checkbox
-																	className={classes.button}
-																	onChange={(e) => {
-																		l.enabled = e.target.checked;
-																	}}
-																	checked={l.enabled}
-																	color="default"
-																/>
+																<Tooltip title={l.enabled ? 'Click to disable layer' : 'Click to enable layer'}>
+																	<Checkbox
+																		className={classes.button}
+																		onChange={(e) => {
+																			l.enabled = e.target.checked;
+																		}}
+																		checked={l.enabled}
+																		color="default"
+																	/>
+																</Tooltip>
 
-																<IconButton
-																	className={classes.button}
-																	onClick={() => {
-																		legendService.removeLayer(l);
-																	}}
-																>
-																	<DeleteOutline />
-																</IconButton>
+																<Tooltip title="Remove layer from map">
+																	<IconButton
+																		className={classes.button}
+																		onClick={() => {
+																			legendService.removeLayer(l);
+																		}}
+																	>
+																		<DeleteOutline />
+																	</IconButton>
+																</Tooltip>
 
-																<IconButton
-																	className={classes.button}
-																	onClick={() => {
-																		myState.activeOpacity = l.opacity;
-																		myState.layerOpacityToEdit = l;
-																	}}
-																>
-																	<TuneOutlined />
-																</IconButton>
+																<Tooltip title="Change layer opacity">
+																	<IconButton
+																		className={classes.button}
+																		onClick={() => {
+																			myState.activeOpacity = l.opacity;
+																			myState.layerOpacityToEdit = l;
+																		}}
+																	>
+																		<TuneOutlined />
+																	</IconButton>
+																</Tooltip>
 
 																{status}
 															</div>

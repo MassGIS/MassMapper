@@ -84,8 +84,8 @@ class PrintPdfTool extends Tool {
 		const layers = ls.enabledLayers.map(async (l, i) => {
 			if (l.legendURL) {
 				const legImg = new Image();
-				legImg.src = l.legendURL;
 				legImg.crossOrigin = 'Anonymous';
+				legImg.src = l.legendURL;
 				await legImg.decode();
 
 				const canvas = document.createElement('canvas');

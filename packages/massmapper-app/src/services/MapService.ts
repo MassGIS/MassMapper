@@ -152,6 +152,10 @@ class MapService {
 		// read the url
 		this._map = m;
 
+		// Chrome needs a gentle nudge to create a PDF if a user doesn't interact w/ the map at all.
+		// A m.invalidateSize() doesn't seem to do the trick either.
+		window.dispatchEvent(new Event('resize'));
+
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
 
@@ -189,7 +193,7 @@ class MapService {
 					v.style!,
 					v.title!,
 					v.type!,
-					v.agol || 'http://giswebservices.massgis.state.ma.us/geoserver/wms',
+					v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 					v.query || v.name!
 				);
 				ls.addLayer.bind(ls)(l);
@@ -315,7 +319,6 @@ class MapService {
 				if (l.opacity !== 100) {
 					const leafletLayer = this._leafletLayers.get(l.id);
 					leafletLayer?.setOpacity(l.opacity/100);
-					leafletLayer?.redraw();
 				}
 			})
 		});

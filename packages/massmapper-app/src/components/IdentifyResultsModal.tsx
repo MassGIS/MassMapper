@@ -118,7 +118,10 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 			height: 20,
 			resizable: true,
 			renderCell: (params: any) => {
-				const value = params.getValue(p);
+				let value = params.getValue(p);
+				if (typeof(value) === 'string' && /^http.*/.test(value as string)) {
+					value = (<a href={value}>{value}</a>)
+				}
 				return (
 					<Tooltip title={value} >
 						<span className="table-cell-trucate">{value}</span>
@@ -147,12 +150,23 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				Identify Results
 				<div style={{float: 'right'}}>
 					<Button
+						size="small"
 						onClick={() => {
 							myState.windowSize = myState.windowSize === 'xl' ? 'xs':'xl'
 						}}
 					>
 						{myState.windowSize === 'xl' && <PhotoSizeSelectSmall />}
 						{myState.windowSize === 'xs' && <AspectRatio />}
+					</Button>
+
+					<Button
+						size="small"
+						onClick={() => {
+							selectionService.clearIdentifyResults()
+							selectionService.selectedIdentifyResult = undefined;
+						}}
+					>
+						<Close />
 					</Button>
 
 				</div>
@@ -305,6 +319,16 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 									setSaveAllAnchorEl(null)
 								}}>
 									CSV (csv)
+								</MenuItem>
+								<MenuItem onClick={async () => {
+									myState.isExporting = true;
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('shp', false);
+									myState.isDisplayingExportResults = true;
+									myState.isExporting = false;
+
+									setSaveAllAnchorEl(null)
+								}}>
+									Shapefile
 								</MenuItem>
 							</Menu>
 							<Button
