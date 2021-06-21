@@ -68,6 +68,23 @@ class MeasureTool extends Tool {
 		this._totalArea = undefined;
 	}
 
+	private _updateMeasureUI(evt: any) {
+		const handler = this._measureHandler;
+		if (handler) {
+			if (this.measureMode === 'Length') {
+				const total = parseFloat(handler['_getTooltipText']().subtext);
+				if (total) {
+					this._totalLength = total;
+				}
+			} else {
+				const area = GeometryUtil.geodesicArea(handler['_poly'].getLatLngs())
+				if (area) {
+					this._totalArea = GeometryUtil.geodesicArea(handler['_poly'].getLatLngs());
+				}
+			}
+		}
+	}
+
 	constructor(
 		protected readonly _services:ContainerInstance,
 		public readonly id:string,
@@ -98,7 +115,9 @@ class MeasureTool extends Tool {
 
 		const ms = this._services.get(MapService);
 		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
+		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._updateMeasureUI.bind(this));
 		ms.leafletMap?.off(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
+		ms.leafletMap?.off('mousemove', this._updateMeasureUI.bind(this));
 	}
 
 	protected async _activate() {
@@ -112,6 +131,7 @@ class MeasureTool extends Tool {
 			}
 
 			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
+			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._updateMeasureUI.bind(this));
 
 			if (!ms.leafletMap['measureLine'])
 				ms.leafletMap.addHandler('measureLine', (window.L as any).Draw.Polyline);
@@ -139,6 +159,8 @@ class MeasureTool extends Tool {
 					repeatMode: true,
 				})
 			}
+
+			ms.leafletMap.on('mousemove', this._updateMeasureUI.bind(this));
 
 			ms.leafletMap.on(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
 			this._measureHandler.enable();
