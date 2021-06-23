@@ -25,9 +25,14 @@ class IdentifyResult {
 	private _features?: IdentifyResultFeature[];
 	private _numFeatures: number;
 	private _intersectsShape: turf.Geometry;
+	private _excludeIds: string[];
 
 	set intersectsShape(_is: turf.Geometry) {
 		this._intersectsShape = _is;
+	}
+
+	set excludeIds(ids: string[]) {
+		this._excludeIds = ids;
 	}
 
 	get isLoading(): boolean {
@@ -119,6 +124,8 @@ class IdentifyResult {
 			this.statePlaneMetersIntersectsWKT :
 			this.statePlaneMetersBBOXWKT;
 
+		const excludeIds = this._excludeIds ? "not in (" + this._excludeIds.map(id => `'${id}'`).join(',') + ")" : '1=1';
+
 		const params = [
 			'service=WFS',
 			'version=1.1.0',
@@ -127,7 +134,7 @@ class IdentifyResult {
 			'srsname=' + this._outputCRS,
 			'resultType=hits',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt}))`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
 		];
 		Object.entries(params);
 
@@ -148,6 +155,8 @@ class IdentifyResult {
 			this.statePlaneMetersIntersectsWKT :
 			this.statePlaneMetersBBOXWKT;
 
+		const excludeIds = this._excludeIds ? "not in (" + this._excludeIds.map(id => `'${id}'`).join(',') + ")" : '1=1';
+
 		const params = [
 			'service=WFS',
 			'version=1.1.0',
@@ -156,7 +165,9 @@ class IdentifyResult {
 			'srsname=' + this._outputCRS,
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt}))`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
+
+
 		];
 		Object.entries(params);
 
