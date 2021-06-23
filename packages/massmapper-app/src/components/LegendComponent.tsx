@@ -226,13 +226,20 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 															</div>
 
 															<Tooltip title={l.title}>
-																<div style={{
-																	display: 'inline-block',
-																	fontSize: '16px',
-																	paddingLeft: '3px',
-																	paddingTop: '2px'
-																}}>
-																	{l.title}
+																<div
+																	style={{
+																		display: 'inline-block',
+																		fontSize: '16px',
+																		paddingLeft: '3px',
+																		paddingTop: '2px'
+																	}}
+																>
+																	<a
+																		href={l.metadataUrl}
+																		target="_blank"
+																	>
+																		{l.title}
+																	</a>
 																</div>
 															</Tooltip>
 

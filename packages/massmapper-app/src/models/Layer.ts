@@ -9,6 +9,7 @@ type LayerMetadata = {
 	minScale: number,
 	maxScale: number,
 	srcUrl: string,
+	metadataUrl: string,
 	minZoom: number,
 	maxZoom: number,
 }
@@ -45,11 +46,15 @@ class Layer {
 		const scale = this._mapService.currentScale;
 		return (this.minScale || 0) <= scale && scale <= (this.maxScale || 999999999);
 	}
+	get metadataUrl(): string {
+		return this._layerData.metadataUrl;
+	}
 
 	private _mapService:MapService;
 	private _isLoading = false;
 	private _layerData: LayerMetadata = {
 		srcUrl: '',
+		metadataUrl: '',
 		minScale: -1,
 		maxScale: -1,
 		minZoom: 0,
@@ -63,7 +68,7 @@ class Layer {
 		public readonly title:string,
 		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly',
 		public readonly src:string,
-		public readonly queryName:string
+		public readonly queryName:string,
 	) {
 		makeObservable<Layer, '_isLoading' | '_layerData'>(
 			this,
@@ -110,6 +115,25 @@ class Layer {
 
 				const xmlData = parser.parse(text, options).Layer[0];
 
+				// Pull out the metadata URL.  This is a bit messy because sometimes the keywords come in as a single array.
+				// Other times as a nested array.
+				let murl = xmlData.KeywordList ? 
+					(
+						(xmlData.KeywordList[0].Keyword.find && xmlData.KeywordList[0].Keyword.find(
+							(s: string) => /MassgisMetadataUrl/i.test(s)
+						)) ||
+						(xmlData.KeywordList.find && xmlData.KeywordList.find(
+							(s: { Keyword: string; }) => /MassgisMetadataUrl/i.test(s.Keyword)
+						)) 
+					) :
+					undefined;
+				if (typeof murl === 'object' && murl !== null) {
+					murl = murl.Keyword.split('=')[1];
+				}
+				else if (typeof murl === 'string') {
+					murl = murl.split('=')[1]
+				}
+
 				// Assume WMS.
 				this._layerData = {
 					minScale: xmlData.Scale && xmlData.Scale[0].minScaleDenominator,
@@ -117,6 +141,7 @@ class Layer {
 					srcUrl: this.src,
 					minZoom: this._layerData.minZoom,
 					maxZoom: this._layerData.maxZoom,
+					metadataUrl: murl
 				};
 
 				this.options = {
