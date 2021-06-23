@@ -9,6 +9,14 @@ class ConfigService {
 		return this._config.tools;
 	}
 
+	get initialExtent(): [number, number] {
+		return this._config.initialExtent || [ 42.067627975,-71.7182675 ]
+	}
+
+	get initialZoomLevel(): number {
+		return this._config.initialZoomLevel || 8;
+	}
+
 	get folderSet():string {
 		return this._config.folderSet;
 	}
@@ -20,9 +28,13 @@ class ConfigService {
 	private _ready: boolean = false;
 	private _config: {
 		folderSet: string,
+		initialExtent: [number, number],
+		initialZoomLevel: number,
 		tools: ToolDefinition[],
 	} = {
 		folderSet: '',
+		initialExtent: [42.067627975,-71.7182675],
+		initialZoomLevel: 8,
 		tools: []
 	};
 

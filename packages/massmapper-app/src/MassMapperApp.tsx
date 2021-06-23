@@ -1,32 +1,32 @@
 import {
-	AppBar,
 	Grid,
-	Paper,
-	Toolbar,
-	Typography,
+	Paper
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { LatLng, LatLngBoundsExpression, Map } from 'leaflet';
 import { observer } from 'mobx-react';
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
-import { LegendService } from './services/LegendService';
-import { CatalogService } from './services/CatalogService';
-import { MapService } from './services/MapService';
-import { ToolService } from './services/ToolService';
-import LegendComponent from './components/LegendComponent';
-import CatalogComponent from './components/CatalogComponent';
 import { useService } from './services/useService';
 
 import 'leaflet/dist/leaflet.css';
 import '../leaflet.css';
 
+import { LegendService } from './services/LegendService';
+import { CatalogService } from './services/CatalogService';
+import { MapService } from './services/MapService';
+import { ToolService } from './services/ToolService';
+import { HistoryService } from './services/HistoryService';
+import { SelectionService } from './services/SelectionService';
+import { ConfigService } from './services/ConfigService';
+
 import SplashPageModal from './components/SplashPageModal';
 import IdentifyResultsModal from './components/IdentifyResultsModal';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
-import { HistoryService } from './services/HistoryService';
-import { SelectionService } from './services/SelectionService';
+import LegendComponent from './components/LegendComponent';
+import CatalogComponent from './components/CatalogComponent';
+
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -78,9 +78,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	const classes = useStyles();
 	const [ legendService, mapService, catalogService, toolService, historyService ] = useService([ LegendService, MapService, CatalogService, ToolService, HistoryService]);
-	const [ selectionService ] = useService([ SelectionService ]);
+	const [ selectionService, configService ] = useService([ SelectionService, ConfigService ]);
 
-	if (!legendService.ready || !catalogService.ready || !toolService.ready) {
+	if (!legendService.ready || !catalogService.ready || !toolService.ready || !configService.ready) {
 		return (<>Loading...</>);
 	}
 
@@ -90,9 +90,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 
 	const c = historyService.has('c') ?
 		(historyService.get('c') as string).split(',').map(s => parseFloat(s)) :
-		[42.067627975,-71.7182675];
+		configService.initialExtent;
 	const center = new LatLng(c[0], c[1]);
-	const zoom = parseInt(historyService.get('z') as string || '8');
+	const zoom = parseInt(historyService.get('z') as string) || configService.initialZoomLevel;
 
 	return (
 		<div className={classes.root}>
@@ -122,7 +122,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 									maxWidth: '100%',
 									overflowY: 'scroll',
 									borderBottom: "2px solid darkgray",
-									borderLeft: "2px solid darkgray",
+									// borderLeft: "2px solid darkgray",
 								}}
 							>
 								<CatalogComponent />
@@ -135,7 +135,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 									maxWidth: '100%',
 									overflowY: 'scroll',
 									overflowX: 'hidden',
-									borderLeft: "2px solid darkgray",
+									// borderLeft: "2px solid darkgray",
 								}}
 							>
 								<LegendComponent />

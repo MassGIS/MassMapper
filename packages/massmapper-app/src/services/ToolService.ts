@@ -2,6 +2,7 @@ import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { Tool, ToolPosition } from '../models/Tool';
 import { MapService } from "./MapService";
+import { ConfigService } from "./ConfigService";
 
 import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
@@ -13,7 +14,7 @@ import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 import { AbuttersTool } from "../models/AbuttersTool";
 import { PrintPdfTool } from "../models/PrintPdfTool";
-import { ConfigService } from "./ConfigService";
+import { ZoomToMaxExtentTool } from '../models/ZoomToMaxExtentTool';
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -23,8 +24,6 @@ interface ToolDefinition {
 	isDefault?: boolean;
 	options?: any;
 }
-
-const delay = (duration:number) => new Promise(resolve => setTimeout(resolve, duration));
 
 const ToolRegistry:Map<string, typeof Tool> = new Map();
 ToolRegistry.set('IdentifyToolWithPoint', IdentifyToolWithPoint);
@@ -37,6 +36,7 @@ ToolRegistry.set('ArcGISGeocodeTool', ArcGISGeocodeTool);
 ToolRegistry.set('ShowCoordinatesTool', ShowCoordinatesTool);
 ToolRegistry.set('AbuttersTool', AbuttersTool);
 ToolRegistry.set('PrintPdfTool', PrintPdfTool);
+ToolRegistry.set('ZoomToMaxExtentTool', ZoomToMaxExtentTool);
 
 @Service()
 class ToolService {
@@ -103,7 +103,7 @@ class ToolService {
 
 			for (const toolDef of tools) {
 				if (!ToolRegistry.has(toolDef.class as any as string)) {
-					console.error("error: couldn't resolve tool class" + toolDef.class);
+					console.error("error: couldn't resolve tool class", toolDef.class);
 					continue;
 				}
 				toolDef.class = ToolRegistry.get(toolDef.class as any as string)!;

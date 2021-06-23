@@ -106,8 +106,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 		}
 	});
 
-	const [mapService] = useService([MapService]);
-
 	return (
 		<>
 			<Button
@@ -117,6 +115,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 				color="default"
 				variant="contained"
 				size="small"
+				title="Search and zoom to an address"
 				onClick={() => {
 					myState.isOpen = true;
 				}}
