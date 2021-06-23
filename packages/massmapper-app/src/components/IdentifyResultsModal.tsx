@@ -18,6 +18,7 @@ import {
 	Tooltip,
 } from '@material-ui/core';
 import { DataGrid, GridSelectionModelChangeParams } from '@material-ui/data-grid';
+import { XGrid, LicenseInfo } from '@material-ui/x-grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
@@ -28,6 +29,7 @@ import { useService } from '../services/useService';
 
 import { Close, Save, SaveAlt, AspectRatio, PhotoSizeSelectSmall } from '@material-ui/icons';
 import { SelectionService } from '../services/SelectionService';
+import { ConfigService } from '../services/ConfigService';
 
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
@@ -97,7 +99,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 	const classes = useStyles();
 	const dataGridClasses = useStylesDataGrid();
 
-	const [ selectionService ] = useService([ SelectionService]);
+	const [ selectionService, configService ] = useService([ SelectionService, ConfigService ]);
 	const myState = useLocalObservable<IdentifyResultModalState>(() => {
 		return {
 			isExporting: false,
@@ -114,11 +116,11 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 		return {
 			field: p,
 			headerName: p,
-			width: 110,
+			width: 120,
 			height: 20,
 			resizable: true,
 			renderCell: (params: any) => {
-				let value = params.getValue(p);
+				let value = configService.useXGrid ? params.row[p] : params.getValue(p);
 				if (typeof(value) === 'string' && /^http.*/.test(value as string)) {
 					value = (<a href={value}>{value}</a>)
 				}
@@ -130,6 +132,11 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 			},
 		};
 	}) || [];
+
+	const GridComponent = configService.useXGrid ? XGrid : DataGrid;
+	if (configService.useXGrid) {
+		LicenseInfo.setLicenseKey(configService.xGridLicenseKey!);
+	}
 
 	return (
 		<Dialog
@@ -254,7 +261,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 					height: '45%'
 				}}>
 					{selectionService.selectedIdentifyResult && (
-						<DataGrid
+						<GridComponent
 							hideFooterRowCount={myState.windowSize === 'xs'}
 							hideFooterSelectedRowCount={myState.windowSize === 'xs'}
 							checkboxSelection

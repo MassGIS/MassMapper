@@ -9,6 +9,14 @@ class ConfigService {
 		return this._config.tools;
 	}
 
+	get useXGrid(): boolean {
+		return this._config.useXGrid || false;
+	}
+
+	get xGridLicenseKey(): string | undefined {
+		return this._config.xGridLicenseKey;
+	}
+
 	get initialExtent(): [number, number] {
 		return this._config.initialExtent || [ 42.067627975,-71.7182675 ]
 	}
@@ -31,6 +39,8 @@ class ConfigService {
 		initialExtent: [number, number],
 		initialZoomLevel: number,
 		tools: ToolDefinition[],
+		useXGrid?: boolean,
+		xGridLicenseKey?: string,
 	} = {
 		folderSet: '',
 		initialExtent: [42.067627975,-71.7182675],

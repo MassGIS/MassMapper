@@ -14,6 +14,7 @@ import {
 	Close,
 	DeleteOutline,
 	ErrorOutline,
+	TimeToLeaveRounded,
 	TuneOutlined
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,6 +24,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { Layer, LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { MapService } from '../services/MapService';
 
 interface LegendComponentProps extends RouteComponentProps<any> {
 }
@@ -110,7 +112,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 		}
 	});
 
-	const [ legendService ] = useService([ LegendService ]);
+	const [ legendService, mapService ] = useService([ LegendService, MapService ]);
 	const classes = useStyles();
 
 	return (
@@ -155,8 +157,11 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 
 										}
 										else {
+											const title = l.minScale > mapService.currentScale ?
+												'Zoom out to see this layer' :
+												'Zoom in closer to see this layer';
 											status =
-												<Tooltip title="Zoom in closer to see this layer">
+												<Tooltip title={title}>
 													<IconButton className={classes.button}>
 														<ErrorOutline fontSize="small"/>
 													</IconButton>

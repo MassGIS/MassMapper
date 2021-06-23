@@ -10,6 +10,7 @@ import * as turf from '@turf/turf';
 import buffer from '@turf/buffer';
 import proj4, { TemplateCoordinates } from 'proj4';
 import { IdentifyResult } from "./IdentifyResults";
+import { Position } from "@turf/turf";
 
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
@@ -168,6 +169,8 @@ class AbuttersTool extends Tool {
 		);
 		const targetFeatures = await targetParcels.getResults();
 
+		const excludeIds = targetFeatures.map(f => f.id);
+
 		// union together the target features
 		let abuttersQueryShape:turf.Polygon | turf.MultiPolygon | undefined;
 		targetFeatures.forEach(f => {
@@ -183,11 +186,19 @@ class AbuttersTool extends Tool {
 			return;
 		}
 
+		// // coords come back in 26986 - reproject to 4326?
+		// const transform = proj4(SP_METERS, "EPSG:4326");
+		// const coords = (abuttersQueryShape.coordinates[0] as Position[]).map((p) => {
+		// 	return transform.forward([round(p[0], 2), round(p[1], 2)]);
+		// });
+
+		// abuttersQueryShape.coordinates = [coords];
+
 		// now buffer the target features in meters
 		// 0 buffer is a no-op
 		// TODO: convert buffer distance to metecrs for map units, later
 		// const bufferDist = this.buffer * xxx
-		const buf = this.buffer === 1 ? 0 : this.buffer;
+		const buf = Math.max(this.buffer || 0, 3);
 		const units = this.buffer === 0 ? 'ft' : this.units;
 		abuttersQueryShape = buffer(abuttersQueryShape, buf, {units: units === 'ft' ? 'feet' : 'meters'}).geometry;
 
@@ -200,6 +211,7 @@ class AbuttersTool extends Tool {
 
 		const abuttersIdResult = selService.addIdentifyResult(abuttersLayer[0], this._abuttersShape.getBounds());
 		abuttersIdResult.intersectsShape = abuttersOutlineLineString;
+		abuttersIdResult.excludeIds = excludeIds;
 		abuttersIdResult.getNumFeatures();
 		selService.selectedIdentifyResult = abuttersIdResult;
 		abuttersIdResult.getResults();
@@ -223,6 +235,11 @@ function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):t
 // 		})
 // 	);
 // }
+
+const round = (number: number, decimalPlaces: number) => {
+	const factorOfTen = Math.pow(10, decimalPlaces)
+	return Math.round(number * factorOfTen) / factorOfTen
+}
 
 
 export { AbuttersTool };

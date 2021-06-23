@@ -86,7 +86,9 @@ class Layer {
 		(
 			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
 		);
-		await fetch(`https://massgis.2creek.com/oliver-data/temp/OL_MORIS_cache/${layerId}.xml`)
+		await fetch(`https://massgis.2creek.com/oliver-data/temp/OL_MORIS_cache/${layerId}.xml`, {
+			cache: 'no-cache'
+		})
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!
