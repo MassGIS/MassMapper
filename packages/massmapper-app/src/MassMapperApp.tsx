@@ -114,10 +114,30 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 					</Grid>
 					<Grid style={{maxHeight: '100vh'}} component={Paper} item square xs={3}>
 						<Grid container style={{height: '100%'}} direction="column">
-							<Grid item style={{minHeight: '60%', maxHeight: '60%', maxWidth: '100%', overflowY: 'scroll', border: "1px solid lightgray"}}>
+							<Grid
+								item
+								style={{
+									minHeight: '60%',
+									maxHeight: '60%',
+									maxWidth: '100%',
+									overflowY: 'scroll',
+									borderBottom: "2px solid darkgray",
+									borderLeft: "2px solid darkgray",
+								}}
+							>
 								<CatalogComponent />
 							</Grid>
-							<Grid item style={{minHeight: '40%', maxHeight: '40%', maxWidth: '100%', overflowY: 'scroll', overflowX: 'hidden'}}>
+							<Grid
+								item
+								style={{
+									minHeight: '40%',
+									maxHeight: '40%',
+									maxWidth: '100%',
+									overflowY: 'scroll',
+									overflowX: 'hidden',
+									borderLeft: "2px solid darkgray",
+								}}
+							>
 								<LegendComponent />
 							</Grid>
 						</Grid>

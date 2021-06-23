@@ -1,0 +1,64 @@
+{
+	"folderSet" : "https://massgis.2creek.com/oliver-data/temp/massmapper_folderset.xml",
+	"tools": [
+		{
+			"id": "identify-tool-point",
+			"position": "topleft",
+			"class": "IdentifyToolWithPoint",
+			"isDefault": true
+		},
+		{
+			"id": "identify-tool-box",
+			"position": "topleft",
+			"class": "IdentifyToolWithBox"
+		},
+		{
+			"id": "measure-tool",
+			"position": "topleft",
+			"class": "MeasureTool"
+		},
+		{
+			"id": "permalink-tool",
+			"position": "topleft",
+			"class":"PermalinkTool"
+		},
+		{
+			"id": "google-geocode-tool",
+			"position": "topright",
+			"class": "GoogleGeocodeTool"
+		},
+		{
+			"id": "oliver-logo-tool",
+			"position": "bottomright",
+			"class": "LogoTool",
+			"options": {
+				"logoUrl": "massmapper.png",
+				"logoTooltip": "MassMapper - by MassGIS",
+				"logoLink": "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
+			}
+		},
+		{
+			"id": "arcgis-geocode-tool",
+			"position": "topleft",
+			"class": "ArcGISGeocodeTool"
+		},
+		{
+			"id": "show-coordinates-tool",
+			"position": "bottomright",
+			"class": "ShowCoordinatesTool"
+		},
+		{
+			"id": "abutters-tool",
+			"position": "topleft",
+			"class": "AbuttersTool",
+			"options": {
+				"abuttersLayer": "Basemaps_L3Parcels"
+			}
+		},
+		{
+			"id": "print-pdf-tool",
+			"position": "topleft",
+			"class": "PrintPdfTool"
+		}
+	]
+}
