@@ -316,10 +316,10 @@ class MapService {
 		// listen for opacity changes
 		autorun(() => {
 			ls.enabledLayers.forEach(l => {
-				if (l.opacity !== 100) {
+				// if (l.opacity !== 100) {
 					const leafletLayer = this._leafletLayers.get(l.id);
 					leafletLayer?.setOpacity(l.opacity/100);
-				}
+				// }
 			})
 		});
 

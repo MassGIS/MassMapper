@@ -5,6 +5,9 @@ import he from 'he';
 import parser from 'fast-xml-parser';
 import { v4 as uuid } from 'uuid';
 import proj4 from 'proj4';
+import * as turf from '@turf/turf';
+import * as wkt from 'wellknown';
+
 
 interface IdentifyResultFeature {
 	id: string;
@@ -21,6 +24,16 @@ class IdentifyResult {
 	private _isLoading: boolean;
 	private _features?: IdentifyResultFeature[];
 	private _numFeatures: number;
+	private _intersectsShape: turf.Geometry;
+	private _excludeIds: string[];
+
+	set intersectsShape(_is: turf.Geometry) {
+		this._intersectsShape = _is;
+	}
+
+	set excludeIds(ids: string[]) {
+		this._excludeIds = ids;
+	}
 
 	get isLoading(): boolean {
 		return this._isLoading;
@@ -55,7 +68,7 @@ class IdentifyResult {
 		return Object.keys(this._features[0].properties);
 	}
 
-	get statePlaneMetersPolygonWKT(): string {
+	get statePlaneMetersBBOXWKT(): string {
 		const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
 		const ul = [this.bbox.getNorthEast().lng, this.bbox.getNorthEast().lat];
 		const lr = [this.bbox.getSouthWest().lng, this.bbox.getSouthWest().lat];
@@ -69,9 +82,16 @@ class IdentifyResult {
 			}, ${spul[0]} ${spul[1]}))`;
 	}
 
+	get statePlaneMetersIntersectsWKT(): string {
+		const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+		const selShape = turfReproject(this._intersectsShape, 'EPSG:4326',spMeters);
+		return wkt.stringify(selShape as wkt.GeoJSONGeometry);
+	}
+
 	constructor(
 		public readonly layer: Layer,
 		public readonly bbox: LatLngBounds,
+		private _outputCRS: string = 'EPSG:4326'
 	) {
 		this._isLoading = false;
 		this._numFeatures = -1;
@@ -100,15 +120,21 @@ class IdentifyResult {
 	public async getNumFeatures(): Promise<number> {
 		this._isLoading = true;
 
+		const intersectionWkt = this._intersectsShape ?
+			this.statePlaneMetersIntersectsWKT :
+			this.statePlaneMetersBBOXWKT;
+
+		const excludeIds = this._excludeIds ? "not in (" + this._excludeIds.map(id => `'${id}'`).join(',') + ")" : '1=1';
+
 		const params = [
 			'service=WFS',
 			'version=1.1.0',
 			'request=GetFeature',
 			'typeName=' + this.layer.queryName,
-			'srsname=EPSG:4326',
+			'srsname=' + this._outputCRS,
 			'resultType=hits',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${this.statePlaneMetersPolygonWKT}))`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
 		];
 		Object.entries(params);
 
@@ -125,15 +151,23 @@ class IdentifyResult {
 	public async getResults(): Promise<IdentifyResultFeature[]> {
 		this._isLoading = true;
 
+		const intersectionWkt = this._intersectsShape ?
+			this.statePlaneMetersIntersectsWKT :
+			this.statePlaneMetersBBOXWKT;
+
+		const excludeIds = this._excludeIds ? "not in (" + this._excludeIds.map(id => `'${id}'`).join(',') + ")" : '1=1';
+
 		const params = [
 			'service=WFS',
 			'version=1.1.0',
 			'request=GetFeature',
 			'typeName=' + this.layer.queryName,
-			'srsname=EPSG:4326',
+			'srsname=' + this._outputCRS,
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${this.statePlaneMetersPolygonWKT}))`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
+
+
 		];
 		Object.entries(params);
 
@@ -153,22 +187,22 @@ class IdentifyResult {
 		return this._features || [];
 	}
 
-	public async exportToKML(selectedOnly: boolean) {
-		const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
-			layers=${this.layer.queryName}&
-			service=WMS&
-			version=1.1.0&
-			request=GetMap&
-			bbox=${this.statePlaneMetersPolygonWKT}&
-			srs=EPSG:26986&
-			height=100&
-			width=100&
-			styles=&
-			format=application/vnd.google-earth.kml+xml
-			`.replace(/\n/g,'');
+	// public async exportToKML(selectedOnly: boolean) {
+	// 	const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
+	// 		layers=${this.layer.queryName}&
+	// 		service=WMS&
+	// 		version=1.1.0&
+	// 		request=GetMap&
+	// 		bbox=${this.statePlaneMetersPolygonWKT}&
+	// 		srs=EPSG:26986&
+	// 		height=100&
+	// 		width=100&
+	// 		styles=&
+	// 		format=application/vnd.google-earth.kml+xml
+	// 		`.replace(/\n/g,'');
 
-		console.log(exportUrl);
-	}
+	// 	console.log(exportUrl);
+	// }
 
 	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'shp' , selectedOnly:boolean) {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
@@ -207,7 +241,7 @@ class IdentifyResult {
 		const exportData = await res.text();
 
 		// Specify host since getstore went through a proxy.
-		return 'http://maps.massgis.state.ma.us' + exportData;
+		return '//' + document.location.host + exportData;
 	}
 
 	public async exportToMkzip(fileType: string) {
@@ -248,6 +282,31 @@ const getNumFeaturesFromHitsResponse = (hitsBody:string): number => {
 
 	const xml = parser.parse(hitsBody, options);
 	return xml.FeatureCollection[0].numberOfFeatures;
+}
+
+function turfReproject<T extends turf.Geometry>(shape:T, srcSrs:string, targetSrs:string): T{
+	const transform = proj4(srcSrs, targetSrs);
+
+	// need to decide whether to swap axes if going to/from lat/lon, sheesh
+
+	if (shape.type === 'Polygon') {
+		const coordinates = (shape as turf.Polygon).coordinates[0].map(p => transform.forward(p))
+		return turf.polygon([coordinates]).geometry as T;
+	} else if (shape.type === 'MultiPolygon') {
+		const coordinates = (shape as turf.MultiPolygon).coordinates[0].map(
+			p =>
+			p.map(
+				p2 =>
+				transform.forward(p2)
+			)
+		)
+		return turf.multiPolygon([coordinates]).geometry as T;
+	} else if (shape.type === 'LineString') {
+		const coordinates = (shape as turf.LineString).coordinates.map(p => transform.forward(p))
+		return turf.polygon([coordinates]).geometry as T;
+	}
+
+	return shape;
 }
 
 export { IdentifyResult, IdentifyResultFeature }

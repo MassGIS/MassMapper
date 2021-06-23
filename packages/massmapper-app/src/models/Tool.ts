@@ -4,11 +4,11 @@ import { ContainerInstance } from "typedi";
 import { ToolService } from "../services/ToolService";
 
 enum ToolPosition {
-	topright,
-	bottomright,
-	topleft,
-	bottomleft,
-	none
+	topright = 'topright',
+	bottomright = 'bottomright',
+	topleft = 'topleft',
+	bottomleft = 'bottomleft',
+	none = 'none'
 }
 
 interface ToolComponentProps {
@@ -56,10 +56,10 @@ abstract class Tool {
 	protected abstract _deactivate(): Promise<void>;
 
 	public async activate(): Promise<void> {
-		if (this._isButton) {
-			await this._activate();
-			return;
-		}
+		// if (this._isButton) {
+		// 	await this._activate();
+		// 	return;
+		// }
 
 		const toolService = this._services.get(ToolService);
 		toolService.tools.forEach((t) => {

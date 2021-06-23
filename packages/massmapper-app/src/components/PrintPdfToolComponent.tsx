@@ -37,7 +37,6 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 			isPrinting: false,
 		}
 	});
-	const [mapService] = useService([MapService]);
 	const myTool = tool as PrintPdfTool;
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
@@ -55,6 +54,8 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 						return;
 					}
 					myState.isOpen = false;
+					myState.title = '';
+					myState.filename = 'massmapper.pdf';
 				}}
 			>
 				<DialogTitle>
@@ -110,6 +111,8 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 										myState.isPrinting = true;
 										await myTool.makePDF(myState.title, myState.filename);
 										myState.isOpen = false;
+										myState.title = '';
+										myState.filename = 'massmapper.pdf';
 										myState.isPrinting = false;
 									}}
 								>
@@ -121,6 +124,8 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									onClick={async () => {
 										myState.isOpen = false;
 										myState.isPrinting = false;
+										myState.title = '';
+										myState.filename = 'massmapper.pdf';
 									}}
 								>
 									<Cancel /> Cancel

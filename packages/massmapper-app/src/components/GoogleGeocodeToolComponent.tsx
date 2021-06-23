@@ -40,6 +40,7 @@ interface GoogleGeocodeToolComponentState {
 	searchResults: google.maps.GeocoderResult[];
 	isSearchLoading: boolean;
 	noOptionsText: string;
+	inputValue: string;
 }
 
 const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentProps> = () => {
@@ -49,7 +50,8 @@ const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentPr
 			searchString: '',
 			searchResults: [],
 			isSearchLoading: false,
-			noOptionsText: ''
+			noOptionsText: '',
+			inputValue: '',
 		}
 	});
 
@@ -93,17 +95,22 @@ const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentPr
 						options={ myState.searchResults }
 						noOptionsText={myState.noOptionsText}
 						getOptionLabel={(o:google.maps.GeocoderResult) => { return o.formatted_address || ''}}
+						inputValue={myState.inputValue}
 						onFocus={() => {
 							myState.isFocused = true;
 							window.setTimeout(() => {
 								myState.noOptionsText = 'Enter address above...';
 							}, 10);
 						}}
+						onInputChange={(e, val) => {
+							myState.inputValue = val;
+						}}
 						onBlur={(e) => {
 							myState.isFocused = false;
 							myState.isSearchLoading = false;
 							myState.noOptionsText = '';
 							myState.searchResults = [];
+							myState.inputValue = '';
 						}}
 						onKeyUp={(e) => {
 							const val = (e.target as HTMLInputElement).value;

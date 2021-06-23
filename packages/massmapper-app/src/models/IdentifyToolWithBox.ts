@@ -103,6 +103,10 @@ class IdentifyToolWithBox extends Tool {
 				return;
 			}
 
+			if (l.layerType === 'tiled_overlay' && l.queryName === l.name) {
+				return;
+			}
+
 			const selService = this._services.get(SelectionService);
 			selService.addIdentifyResult(l, bbox);
 		});
