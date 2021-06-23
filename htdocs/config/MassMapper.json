@@ -1,6 +1,15 @@
 {
 	"folderSet" : "https://massgis.2creek.com/oliver-data/temp/massmapper_folderset.xml",
+	"initialExtent" : [
+		42.067627975,-71.7182675
+	],
+	"initialZoomLevel" : 8,
 	"tools": [
+		{
+			"id": "zoom-max-extent-tool",
+			"position": "topleft",
+			"class" : "ZoomToMaxExtentTool"
+		},
 		{
 			"id": "identify-tool-point",
 			"position": "topleft",

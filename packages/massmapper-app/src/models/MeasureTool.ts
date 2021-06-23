@@ -1,4 +1,4 @@
-import { FeatureGroup, Draw, GeometryUtil } from 'leaflet';
+import { FeatureGroup, Draw, GeometryUtil, DivIcon, divIcon, Point } from 'leaflet';
 import draw from 'leaflet-draw';
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
@@ -70,9 +70,9 @@ class MeasureTool extends Tool {
 
 	private _updateMeasureUI(evt: any) {
 		const handler = this._measureHandler;
-		if (handler) {
+		if (handler && this._active) {
 			if (this.measureMode === 'Length') {
-				const total = parseFloat(handler['_getTooltipText']().subtext);
+				const total = parseFloat(handler['_getMeasurementString']());
 				if (total) {
 					this._totalLength = total;
 				}
@@ -82,6 +82,8 @@ class MeasureTool extends Tool {
 					this._totalArea = GeometryUtil.geodesicArea(handler['_poly'].getLatLngs());
 				}
 			}
+
+			console.log(handler);
 		}
 	}
 
@@ -144,10 +146,14 @@ class MeasureTool extends Tool {
 			if (this.measureMode === 'Length') {
 				this._measureHandler = ms.leafletMap['measureLine'];
 				this._measureHandler.setOptions({
-					showLength: true,
+					showLength: false,
 					metric: false,
 					feet: true,
 					repeatMode: true,
+					icon: new DivIcon({
+						iconSize: new Point(10, 10),
+						className: 'leaflet-div-icon leaflet-editing-icon'
+					}),
 				})
 			} else {
 				this._measureHandler = ms.leafletMap['measureArea'];

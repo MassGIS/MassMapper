@@ -56,10 +56,10 @@ abstract class Tool {
 	protected abstract _deactivate(): Promise<void>;
 
 	public async activate(): Promise<void> {
-		if (this._isButton) {
-			await this._activate();
-			return;
-		}
+		// if (this._isButton) {
+		// 	await this._activate();
+		// 	return;
+		// }
 
 		const toolService = this._services.get(ToolService);
 		toolService.tools.forEach((t) => {
