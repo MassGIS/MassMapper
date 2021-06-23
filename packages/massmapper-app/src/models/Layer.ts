@@ -119,14 +119,14 @@ class Layer {
 
 				// Pull out the metadata URL.  This is a bit messy because sometimes the keywords come in as a single array.
 				// Other times as a nested array.
-				let murl = xmlData.KeywordList ? 
+				let murl = xmlData.KeywordList ?
 					(
 						(xmlData.KeywordList[0].Keyword.find && xmlData.KeywordList[0].Keyword.find(
 							(s: string) => /MassgisMetadataUrl/i.test(s)
 						)) ||
 						(xmlData.KeywordList.find && xmlData.KeywordList.find(
 							(s: { Keyword: string; }) => /MassgisMetadataUrl/i.test(s.Keyword)
-						)) 
+						))
 					) :
 					undefined;
 				if (typeof murl === 'object' && murl !== null) {
