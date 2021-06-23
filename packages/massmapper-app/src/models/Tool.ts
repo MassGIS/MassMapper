@@ -4,11 +4,11 @@ import { ContainerInstance } from "typedi";
 import { ToolService } from "../services/ToolService";
 
 enum ToolPosition {
-	topright,
-	bottomright,
-	topleft,
-	bottomleft,
-	none
+	topright = 'topright',
+	bottomright = 'bottomright',
+	topleft = 'topleft',
+	bottomleft = 'bottomleft',
+	none = 'none'
 }
 
 interface ToolComponentProps {

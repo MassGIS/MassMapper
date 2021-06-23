@@ -1,18 +1,19 @@
 import { autorun, computed, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { Tool, ToolPosition } from '../models/Tool';
+import { MapService } from "./MapService";
+
 import { IdentifyToolWithPoint } from "../models/IdentifyToolWithPoint";
 import { MeasureTool } from "../models/MeasureTool";
 import { IdentifyToolWithBox } from "../models/IdentifyToolWithBox";
 import { PermalinkTool } from "../models/PermalinkTool";
 import { LogoTool } from "../models/LogoTool";
-import massmapper from '../images/massmapper.png';
 import { GoogleGeocodeTool } from "../models/GoogleGeocodeTool";
 import { ArcGISGeocodeTool } from "../models/ArcGISGeocodeTool";
 import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
-import { MapService } from "./MapService";
 import { AbuttersTool } from "../models/AbuttersTool";
 import { PrintPdfTool } from "../models/PrintPdfTool";
+import { ConfigService } from "./ConfigService";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -24,6 +25,19 @@ interface ToolDefinition {
 }
 
 const delay = (duration:number) => new Promise(resolve => setTimeout(resolve, duration));
+
+const ToolRegistry:Map<string, typeof Tool> = new Map();
+ToolRegistry.set('IdentifyToolWithPoint', IdentifyToolWithPoint);
+ToolRegistry.set('MeasureTool', MeasureTool);
+ToolRegistry.set('IdentifyToolWithBox', IdentifyToolWithBox);
+ToolRegistry.set('PermalinkTool', PermalinkTool);
+ToolRegistry.set('LogoTool', LogoTool);
+ToolRegistry.set('GoogleGeocodeTool', GoogleGeocodeTool);
+ToolRegistry.set('ArcGISGeocodeTool', ArcGISGeocodeTool);
+ToolRegistry.set('ShowCoordinatesTool', ShowCoordinatesTool);
+ToolRegistry.set('AbuttersTool', AbuttersTool);
+ToolRegistry.set('PrintPdfTool', PrintPdfTool);
+
 @Service()
 class ToolService {
 
@@ -65,74 +79,40 @@ class ToolService {
 			delay: 10,
 		});
 
-		(async () => {
-			await delay(0); // have to wait for the constructor to finish initing, and get added to the service to get registered
-			const tools:Array<ToolDefinition> = [
+		autorun(async (r) => {
+			// await delay(0); // have to wait for the constructor to finish initing, and get added to the service to get registered
+
+			const cs = this._services.get(ConfigService);
+			if (!cs.ready) {
+				return;
+			}
+
+			const pathParts = document.location.pathname.split('/');
+			const fileName = pathParts[pathParts.length - 1];
+			const resp = await fetch(
+				`config/${fileName.split('.')[0]}.json`,
 				{
-					id: 'identify-tool-point',
-					position: ToolPosition.topleft,
-					class: IdentifyToolWithPoint,
-					isDefault: true
-				},
-				{
-					id: 'identify-tool-box',
-					position: ToolPosition.topleft,
-					class: IdentifyToolWithBox,
-				},
-				{
-					id: 'measure-tool',
-					position: ToolPosition.topleft,
-					class: MeasureTool,
-				},
-				{
-					id: 'permalink-tool',
-					position: ToolPosition.topleft,
-					class:PermalinkTool,
-				},
-				{
-					id: 'google-geocode-tool',
-					position: ToolPosition.topright,
-					class: GoogleGeocodeTool
-				},
-				{
-					id: 'oliver-logo-tool',
-					position: ToolPosition.bottomright,
-					class: LogoTool,
-					options: {
-						logoUrl: massmapper,
-						logoTooltip: 'MassMapper - by MassGIS',
-						logoLink: "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
-					}
-				},
-				{
-					id: 'arcgis-geocode-tool',
-					position: ToolPosition.topleft,
-					class: ArcGISGeocodeTool
-				},
-				{
-					id: 'show-coordinates-tool',
-					position: ToolPosition.bottomright,
-					class: ShowCoordinatesTool
-				},
-				{
-					id: 'abutters-tool',
-					position: ToolPosition.topleft,
-					class: AbuttersTool,
-					options: {
-						abuttersLayer: 'Basemaps_L3Parcels'
-					}
-				},
-				{
-					id: 'print-pdf-tool',
-					position: ToolPosition.topleft,
-					class: PrintPdfTool
-				},
-			];
-			tools.forEach((toolDef) => {
+					'cache': 'no-cache'
+				}
+			);
+
+			const config = await resp.json() as any;
+
+			// const tools:Array<ToolDefinition> = cs.toolDefs;
+			const tools:Array<ToolDefinition> = config.tools;
+
+			for (const toolDef of tools) {
+				if (!ToolRegistry.has(toolDef.class as any as string)) {
+					console.error("error: couldn't resolve tool class" + toolDef.class);
+					continue;
+				}
+				toolDef.class = ToolRegistry.get(toolDef.class as any as string)!;
 				this.addToolFromDefinition(toolDef);
-			});
+			}
+
 			this._ready = true;
-		})();
+			r.dispose();
+		});
 	}
 
 	public addToolFromDefinition(def:ToolDefinition) {

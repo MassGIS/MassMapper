@@ -1,10 +1,11 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, autorun, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import parser from 'fast-xml-parser';
 import he from 'he';
 import XMLParser from 'react-xml-parser';
+import { ConfigService } from "./ConfigService";
 
-type CatalogServiceAnnotations = '_layerTree' | '_ready' | 'setReady' | '_uniqueLayers';
+type CatalogServiceAnnotations = '_layerTree' | '_ready' | '_uniqueLayers';
 
 type CatalogTreeNode = {
 	title: string;
@@ -45,23 +46,25 @@ class CatalogService {
 				_layerTree: observable,
 				_uniqueLayers: observable,
 				_ready: observable,
-				setReady: action
 			}
 		);
 
-		(async () => {
-			await this.init();
-			this.setReady(true);
-		})();
+		autorun(async (r) => {
+			const cs = this._services.get(ConfigService);
+			if (!cs.ready) {
+				return;
+			}
+
+			await this.init(cs);
+			this._ready = true;
+			r.dispose();
+		});
 	}
 
-	private setReady(isReady: boolean) {
-		this._ready = isReady;
-	}
-
-	private async init(): Promise<void> {
+	private async init(cs:ConfigService): Promise<void> {
 		// Stack order:  bottom-to-top.
-		fetch('https://massgis.2creek.com/oliver-data/temp/massmapper_folderset.xml', { cache: "no-store" })
+
+		await fetch(cs.folderSet, { cache: "no-store" })
 			.then(response => response.text())
 			.then(text => {
 				// I don't know how many of these are important!

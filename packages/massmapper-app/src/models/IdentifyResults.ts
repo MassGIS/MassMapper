@@ -176,22 +176,22 @@ class IdentifyResult {
 		return this._features || [];
 	}
 
-	public async exportToKML(selectedOnly: boolean) {
-		const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
-			layers=${this.layer.queryName}&
-			service=WMS&
-			version=1.1.0&
-			request=GetMap&
-			bbox=${this.statePlaneMetersPolygonWKT}&
-			srs=EPSG:26986&
-			height=100&
-			width=100&
-			styles=&
-			format=application/vnd.google-earth.kml+xml
-			`.replace(/\n/g,'');
+	// public async exportToKML(selectedOnly: boolean) {
+	// 	const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
+	// 		layers=${this.layer.queryName}&
+	// 		service=WMS&
+	// 		version=1.1.0&
+	// 		request=GetMap&
+	// 		bbox=${this.statePlaneMetersPolygonWKT}&
+	// 		srs=EPSG:26986&
+	// 		height=100&
+	// 		width=100&
+	// 		styles=&
+	// 		format=application/vnd.google-earth.kml+xml
+	// 		`.replace(/\n/g,'');
 
-		console.log(exportUrl);
-	}
+	// 	console.log(exportUrl);
+	// }
 
 	public async exportToUrl(fileType: 'csv' | 'xlsx' | 'shp' , selectedOnly:boolean) {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
