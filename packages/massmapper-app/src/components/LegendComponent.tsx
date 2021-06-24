@@ -1,20 +1,21 @@
 import {
 	Button,
-	Grid,
 	Checkbox,
-	Tooltip,
 	CircularProgress,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	Grid,
 	IconButton,
-	Paper,
 	Slider,
+	Tooltip,
 	Typography
 } from '@material-ui/core';
 import {
-	ArrowRight,
 	Close,
 	DeleteOutline,
 	ErrorOutline,
-	TimeToLeaveRounded,
 	TuneOutlined
 } from '@material-ui/icons';
 import { makeStyles } from '@material-ui/core/styles';
@@ -43,67 +44,169 @@ interface LegendComponentState {
 	activeOpacity?: number;
 }
 
-const LegendOpacityEditor: FunctionComponent<{layer: Layer, state: LegendComponentState}> = observer(({layer, state}) => {
+const LegendCustomPropertiesEditor: FunctionComponent<{layer: Layer, state: LegendComponentState}> = observer(({layer, state}) => {
 	return (
-		<Paper
-			elevation={5}
-			style={{
-				position: 'relative',
-				float: 'right',
-				width: '200px',
-				zIndex: 100,
-				right: '94px',
-				top: '10px',
-
-			}}
+		<Dialog
+			open
+			maxWidth="xs"
 		>
-			<Grid>
-				<Grid
+			<DialogActions>
+				<Button
 					style={{
-						position: 'absolute',
-						right: '0px',
-						top: '4px',
+						float: 'right'
+					}}
+					variant="text"
+					onClick={() => {
+						state.layerOpacityToEdit = undefined;
 					}}
 				>
-					<Button
-						variant="text"
-						onClick={() => {
-							state.layerOpacityToEdit = undefined;
-						}}
-					>
-						<Close />
-					</Button>
-				</Grid>
+					<Close />
+				</Button>
+			</DialogActions>
+			<DialogTitle>
+				Customize Layer Settings
+			</DialogTitle>
+			<DialogContent>
+
 				<Grid
-					style={{
-						margin: '1em'
-					}}
+					container
+					direction="row"
 				>
-					<Typography
-						id="opacity-slider"
-						gutterBottom
+					<Grid
+						style={{
+							margin: '1em 2em',
+							width: '100%'
+						}}
 					>
-						Opacity
-					</Typography>
-					<Slider
-						color="secondary"
-						value={state.activeOpacity}
-						valueLabelDisplay="auto"
-						min={0}
-						max={100}
-						onChange={(e, v) => {
-							state.activeOpacity = v as number;
-						}}
-						onChangeCommitted={(e, v) => {
-							state.activeOpacity = v as number;
-							layer.opacity = v as number;
-						}}
-					/>
+						<Typography
+							gutterBottom
+						>
+							Opacity
+						</Typography>
+						<Slider
+							color="secondary"
+							value={state.activeOpacity}
+							valueLabelDisplay="auto"
+							min={0}
+							max={100}
+							onChange={(e, v) => {
+								state.activeOpacity = v as number;
+							}}
+							onChangeCommitted={(e, v) => {
+								state.activeOpacity = v as number;
+								layer.opacity = v as number;
+							}}
+						/>
+					</Grid>
+					{layer.layerType !== 'tiled_overlay' && (
+						<Grid
+							style={{
+								margin: '1em 2em'
+							}}
+							item
+						>
+							<Typography
+								gutterBottom
+							>
+								Custom Color
+							</Typography>
+							<Grid>
+								{COLOR_PALETTE.map(({name, hex}) => {
+									return (<Button
+										value={name}
+										onClick={() => {
+											layer.customColor = name;
+										}}
+										style={{
+											backgroundColor: layer.customColor === name ? 'grey': ''
+										}}
+									>
+										<div
+											style={{
+												backgroundColor: hex,
+												border: '1px solid black',
+												height: '15px',
+												width: '15px',
+											}}
+										/>
+									</Button>)
+								})}
+							</Grid>
+							<Grid>
+								{layer.customColor && (
+									<Button
+										onClick={() => {
+											layer.customColor = undefined;
+										}}
+									>
+										<Typography
+											id="opacity-slider"
+											gutterBottom
+											variant="caption"
+										>
+											clear custom color
+										</Typography>
+									</Button>
+								)}
+							</Grid>
+						</Grid>
+					)}
 				</Grid>
-			</Grid>
-		</Paper>
+			</DialogContent>
+		</Dialog>
 	)
 });
+
+const COLOR_PALETTE = [
+	{
+		name: "White",
+		hex: "white"
+	},
+	{
+		name: "Tan",
+		hex: "tan"
+	},
+	{
+		name: "Grey",
+		hex: 'grey'
+	},
+	{
+		name: "Pink",
+		hex: 'pink'
+	},
+	{
+		name: "Red",
+		hex: "red"
+	},
+	{
+		name: "Orange",
+		hex: "orange"
+	},
+	{
+		name: "Yellow",
+		hex: "yellow"
+	},
+	{
+		name: "Green",
+		hex: "green"
+	},
+	{
+		name: "Blue",
+		hex: "blue"
+	},
+	{
+		name: "Dark_Blue",
+		hex: "darkblue"
+	},
+	{
+		name: "Purple",
+		hex: "purple"
+	},
+	{
+		name: "Black",
+		hex: "black"
+	}
+];
 
 const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) => {
 
@@ -175,7 +278,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 										>
 											<Observer>{() => {
 												if (myState.layerOpacityToEdit === l) {
-													return (<LegendOpacityEditor layer={l} state={myState} />);
+													return (<LegendCustomPropertiesEditor layer={l} state={myState} />);
 												}
 												return null;
 											}}</Observer>
@@ -215,7 +318,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																	</IconButton>
 																</Tooltip>
 
-																<Tooltip title="Change layer opacity">
+																<Tooltip title="Customize Layer Settings">
 																	<IconButton
 																		className={classes.button}
 																		onClick={() => {

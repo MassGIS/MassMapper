@@ -241,6 +241,7 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 		<>
 			<Grid
 				container
+				direction="row"
 				style={{
 					height: '85%',
 					padding: '0 2em',

@@ -1,4 +1,4 @@
-import { computed, makeObservable, observable } from "mobx";
+import { autorun, computed, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
 import parser from 'fast-xml-parser';
 import he from 'he';
@@ -49,6 +49,7 @@ class Layer {
 	get metadataUrl(): string {
 		return this._layerData.metadataUrl;
 	}
+
 	private customStyle(): string {
 		const t2s = {
 			'tiled_overlay': '',
@@ -57,8 +58,8 @@ class Layer {
 			'line': 'Lines',
 			'poly': 'Polys'
 		};
-		if (this._customColor && t2s[this.layerType]) {
-			return this._customColor + '_' + t2s[this.layerType];
+		if (this.customColor && t2s[this.layerType]) {
+			return this.customColor + '_' + t2s[this.layerType];
 		}
 		return '';
 	}
@@ -73,7 +74,7 @@ class Layer {
 		minZoom: 0,
 		maxZoom: 18
 	};
-	private _customColor: string; // 'Green';
+	public customColor?: string;
 	public opacity: number = 100;
 
 	constructor(
@@ -84,6 +85,7 @@ class Layer {
 		public readonly src:string,
 		public readonly queryName:string,
 	) {
+		this.customColor = undefined;
 		makeObservable<Layer, '_isLoading' | '_layerData'>(
 			this,
 			{
@@ -93,9 +95,19 @@ class Layer {
 				enabled: observable,
 				isLoading: computed,
 				opacity: observable,
+				customColor: observable,
 			}
 		);
 		this.id = 'layer-' + Math.random();
+
+		autorun(() => {
+			if (this.customColor || !this.customColor) {
+				this.enabled = false;
+				window.setTimeout(() => {
+					this.enabled = true;
+				}, 10)
+			}
+		})
 	}
 
 	public async makeMappable(mapService:MapService): Promise<void> {

@@ -113,7 +113,11 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 						/>
 					</Grid>
 					<Grid style={{maxHeight: '100vh'}} component={Paper} item square xs={3}>
-						<Grid container style={{height: '100%'}} direction="column">
+						<Grid
+							container
+							direction="column"
+							style={{height: '100%'}}
+						>
 							<Grid
 								item
 								style={{
