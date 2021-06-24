@@ -72,13 +72,14 @@ class PrintPdfTool extends Tool {
 		const image = await this._ss.takeScreen('image', {});
 		const pdf = new jsPDF('l', 'pt', [ms.leafletMap!.getSize().x - 0, ms.leafletMap!.getSize().y]);
 
-		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, {align: 'center'});
+		pdf.setFontSize(26);
+		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 37, {align: 'center'});
 
 		const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
 		const ratio = mapWidth / pdf.internal.pageSize.getWidth();
 		const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
-		pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 3, 129, 69);
+		pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 14, 129, 69);
 
 		let legends: any[] = [];
 		const layers = ls.enabledLayers.map(async (l, i) => {
@@ -115,6 +116,7 @@ class PrintPdfTool extends Tool {
 		return Promise.all(layers).then(() => {
 			let y = titleHeight + 20;
 
+			pdf.setFontSize(16);
 			legends.forEach(leg => {
 				// Word wrap (trying near character(s) 20); H/T https://stackoverflow.com/a/51506718
 				const title = leg.title.replace(
