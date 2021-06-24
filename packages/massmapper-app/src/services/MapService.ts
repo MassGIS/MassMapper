@@ -38,6 +38,10 @@ class MapService {
 		}
 	}
 
+	get activeBaseLayer() {
+		return this._activeBaseLayer;
+	}
+
 	get ready(): boolean {
 		return this._ready;
 	}
@@ -51,7 +55,6 @@ class MapService {
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
 	private _mapCenter: string = '';
-	private _activeBaseLayer: string;
 	private _layerControl:Control.Layers;
 	private _selectedFeatures: Array<LeafletLayer> = [];
 	private _basemaps = [
@@ -62,7 +65,8 @@ class MapService {
 				{
 					maxZoom: 19
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: '2019 Color Orthos (USGS)',
@@ -71,7 +75,8 @@ class MapService {
 				{
 					maxZoom: 20
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: 'USGS Topographic Quadrangle Maps',
@@ -80,59 +85,67 @@ class MapService {
 				{
 					maxZoom: 18
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: 'OpenStreetMap Basemap',
 			layer: new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 19,
 				attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-			})
+			}),
+			pdfOk: true
 		},
 		{
 			name: 'Google Roads Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'roadmap'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Satellite Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'satellite'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Hybrid Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'hybrid'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Terrain Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'terrain'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'ESRI Streets Basemap',
-			layer: new BasemapLayer('Streets')
+			layer: new BasemapLayer('Streets'),
+			pdfOk: true
 		},
 		{
 			name: 'ESRI Light Gray Basemap',
-			layer: new BasemapLayer('Gray')
+			layer: new BasemapLayer('Gray'),
+			pdfOk: true
 		},
 	];
+	private _activeBaseLayer = this._basemaps.find((bm) => bm.name === 'MassGIS Statewide Basemap');
 
 	get permalink(): string {
 		const zoom = this._mapZoom || '';
 		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
 
-		return `bl=${encodeURIComponent(this._activeBaseLayer)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
-		this._activeBaseLayer = 'MassGIS Statewide Basemap';
 
 		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
 			this,
@@ -229,18 +242,18 @@ class MapService {
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
-			this._activeBaseLayer = e.name;
+			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
 		});
 
 		this._layerControl = new Control.Layers().addTo(this._map);
 
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
-			this._activeBaseLayer = '' + hs.get('bl');
+			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === hs.get('bl'));
 		}
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);
-			if (o.name === this._activeBaseLayer) {
+			if (o.name === this._activeBaseLayer!.name) {
 				o.layer.addTo(this._map);
 			}
 		});
