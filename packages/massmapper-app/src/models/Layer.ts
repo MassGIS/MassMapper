@@ -34,7 +34,7 @@ class Layer {
 		return this.layerType === 'tiled_overlay' ? '' :
 			'https://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&' +
 			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&' +
-			`LAYER=${this.name}&STYLE=${this.style}`;
+			`LAYER=${this.name}&STYLE=${this.customStyle() || this.style}`
 	}
 	get minScale(): number {
 		return this._layerData.minScale;
@@ -49,6 +49,19 @@ class Layer {
 	get metadataUrl(): string {
 		return this._layerData.metadataUrl;
 	}
+	private customStyle(): string {
+		const t2s = {
+			'tiled_overlay': '',
+			'wms': '',
+			'pt': 'Points',
+			'line': 'Lines',
+			'poly': 'Polys'
+		};
+		if (this._customColor && t2s[this.layerType]) {
+			return this._customColor + '_' + t2s[this.layerType];
+		}
+		return '';
+	}
 
 	private _mapService:MapService;
 	private _isLoading = false;
@@ -60,6 +73,7 @@ class Layer {
 		minZoom: 0,
 		maxZoom: 18
 	};
+	private _customColor: string; // 'Green';
 	public opacity: number = 100;
 
 	constructor(
@@ -197,7 +211,7 @@ class Layer {
 			{
 					pane: this.id,
 					layers: this.options!.layers,
-					styles: this.options!.styles,
+					styles: this.customStyle() || this.options!.styles,
 					transparent: true,
 					format: "image/png"
 			}
