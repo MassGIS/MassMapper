@@ -15,6 +15,7 @@ import { ShowCoordinatesTool } from "../models/ShowCoordinatesTool";
 import { AbuttersTool } from "../models/AbuttersTool";
 import { PrintPdfTool } from "../models/PrintPdfTool";
 import { ZoomToMaxExtentTool } from '../models/ZoomToMaxExtentTool';
+import { ExportWizardTool } from "../models/ExportWizardTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -37,6 +38,7 @@ ToolRegistry.set('ShowCoordinatesTool', ShowCoordinatesTool);
 ToolRegistry.set('AbuttersTool', AbuttersTool);
 ToolRegistry.set('PrintPdfTool', PrintPdfTool);
 ToolRegistry.set('ZoomToMaxExtentTool', ZoomToMaxExtentTool);
+ToolRegistry.set('ExportWizardTool', ExportWizardTool)
 
 @Service()
 class ToolService {
