@@ -40,7 +40,12 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 	const myTool = tool as PrintPdfTool;
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
-		myState.isOpen = true;
+		if (mapService.activeBaseLayer?.pdfOk) {
+			myState.isOpen = true;
+		}
+		else {
+			alert("We're sorry, but the " + mapService.activeBaseLayer?.name + " cannot be printed. Please select another basemap.")
+		}
 	});
 
 	return (
