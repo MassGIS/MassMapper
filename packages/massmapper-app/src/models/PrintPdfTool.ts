@@ -122,10 +122,20 @@ class PrintPdfTool extends Tool {
 				const title = leg.title.replace(
 					/(?![^\n]{1,20}$)([^\n]{1,20})\s/g, '$1\n'
 				);
-				// Write it.
-				pdf.text(title, leftMargin + mapWidth + 10, y);
+
 				// Number of newlines
 				const c = (title.match(/\n/g) || []).length;
+
+				// Figure out if the bottom of the legend title + legend image would be off the page.
+				// If so, start a new page, and assume that one title + image would fit on one page.
+				const bottom = y + c * 20  + (leg.img ? (5 + leg.img.height) : 0);
+				if (y > (titleHeight + 20) && (bottom > pdf.internal.pageSize.getHeight())) {
+					pdf.addPage();
+					y = titleHeight + 20;
+				}
+
+				// Write it.
+				pdf.text(title, leftMargin + mapWidth + 10, y);
 				y += c * 20;
 				if (leg.img) {
 					y += 5;
