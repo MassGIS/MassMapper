@@ -291,10 +291,11 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 														key={`layer-${l.id}`}
 													>
 
-														<div style={{whiteSpace: 'pre'}}>
+														<div>
 															<div style={{
 																display: 'inline-block',
-																position: 'relative'
+																position: 'relative',
+																verticalAlign: 'top'
 															}}>
 																<Tooltip title={l.enabled ? 'Click to disable layer' : 'Click to enable layer'}>
 																	<Checkbox
@@ -339,7 +340,8 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																		display: 'inline-block',
 																		fontSize: '16px',
 																		paddingLeft: '3px',
-																		paddingTop: '2px'
+																		paddingTop: '2px',
+																		maxWidth: '210px'
 																	}}
 																>
 																	<a
