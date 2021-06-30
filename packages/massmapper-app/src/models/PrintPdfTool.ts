@@ -62,7 +62,7 @@ class PrintPdfTool extends Tool {
 	}
 
 	public async makePDF(title: string, filename: string): Promise<void> {
-		const legendWidth = 200;
+		const legendWidth = 320;
 		const titleHeight = 50;
 		const leftMargin = 20;
 
