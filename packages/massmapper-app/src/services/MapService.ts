@@ -216,6 +216,26 @@ class MapService {
 		});
 
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
+
+		const MS = Control.extend({
+			onAdd: function () {
+				const div = document.createElement('div');
+				div.id = 'map-scale';
+				// Copied style from Control.Scale.
+				div.style.background = "rgba(255, 255, 255, 0.5)";
+				div.style.fontSize = "11px";
+				div.style.lineHeight = "1.1";
+				div.style.padding = "2px 5px 1px";
+				return div;
+			},
+			onRemove: function () {
+			},
+		});
+		const MapScaleControl = function(opts: Leaflet.ControlOptions | undefined) {
+			return new MS(opts);
+		};
+		MapScaleControl({position: 'bottomleft'}).addTo(this._map);
+
 		const NA = Control.extend({
 			onAdd: function () {
 				const img = document.createElement('img');
@@ -239,6 +259,7 @@ class MapService {
 		m.addEventListener('moveend zoomend', () => {
 			this._mapZoom = this._map?.getZoom() || 0;
 			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
+			document.getElementById('map-scale')!.innerHTML = 'Scale: ' + String(Math.round(this.currentScale)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
