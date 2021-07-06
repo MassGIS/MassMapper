@@ -239,6 +239,7 @@ class MapService {
 		m.addEventListener('moveend zoomend', () => {
 			this._mapZoom = this._map?.getZoom() || 0;
 			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
+			console.log('MAP SCALE: ' + this.currentScale);
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
