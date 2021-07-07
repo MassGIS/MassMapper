@@ -76,7 +76,7 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 19
+					maxZoom: 20
 				}
 			),
 			pdfOk: true
