@@ -29,8 +29,11 @@ class MapService {
 		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
 		const EARTH_RADIUS = 6378137;
 		const SCREEN_PPI = 96;
+		// Original OLIVER assumed all scales were calculated at the equator.  Assume the same here so that
+		// all layer scaleOK calcs will be identical.
+		const centerLat = 0; // this._map.getCenter().lat
 		if (this._map) {
-			return (Math.cos(this._map.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) /
+			return (Math.cos(centerLat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) /
 				(256 * Math.pow(2, this._mapZoom) * 0.0254);
 		}
 		else {
