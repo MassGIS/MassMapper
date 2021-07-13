@@ -1,6 +1,11 @@
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 
+import {
+	LatLng,
+	LatLngBounds,
+} from 'leaflet';
+
 import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
 import { ZoomOutMap } from '@material-ui/icons';
 import { ConfigService } from "../services/ConfigService";
@@ -20,8 +25,10 @@ class ZoomToMaxExtentTool extends Tool {
 			return;
 		}
 
-		ms.leafletMap?.panTo(cs.initialExtent);
-		ms.leafletMap?.setZoom(cs.initialZoomLevel);
+		ms.leafletMap?.fitBounds(new LatLngBounds(
+			new LatLng(cs.initialExtent[1], cs.initialExtent[0]), 
+			new LatLng(cs.initialExtent[3], cs.initialExtent[2])
+		))
 	}
 
 	public component() {

@@ -88,11 +88,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 	window['selectionService'] = selectionService;
 	window['toolService'] = toolService;
 
-	const c = historyService.has('c') ?
-		(historyService.get('c') as string).split(',').map(s => parseFloat(s)) :
+	const b = historyService.has('b') ?
+		(historyService.get('b') as string).split(',').map(s => parseFloat(s)) :
 		configService.initialExtent;
-	const center = new LatLng(c[0], c[1]);
-	const zoom = parseInt(historyService.get('z') as string) || configService.initialZoomLevel;
 
 	return (
 		<div className={classes.root}>
@@ -103,12 +101,10 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 					<Grid className={classes.mapContainer} item>
 						<ToolsOverlayComponent />
 						<MapContainer
-							center={center}
-							zoom={zoom}
 							className={classes.map}
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
-								mapService.initLeafletMap(map);
+								mapService.initLeafletMap(map, b);
 							}}
 						/>
 					</Grid>
