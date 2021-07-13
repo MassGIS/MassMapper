@@ -9,6 +9,7 @@ import {
 	polygon,
 	circleMarker,
 	LatLng,
+	LatLngBounds,
 } from 'leaflet';
 import { autorun, computed, has, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
@@ -57,7 +58,7 @@ class MapService {
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
-	private _mapCenter: string = '';
+	private _mapExtent: number[] = [0, 0, 0, 0];
 	private _layerControl:Control.Layers;
 	private _selectedFeatures: Array<LeafletLayer> = [];
 	private _basemaps = [
@@ -141,30 +142,29 @@ class MapService {
 	private _activeBaseLayer = this._basemaps.find((bm) => bm.name === 'MassGIS Statewide Basemap');
 
 	get permalink(): string {
-		const zoom = this._mapZoom || '';
 		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
 
-		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
 
-		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
+		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapExtent' | '_leafletLayers' | '_activeBaseLayer'>(
 			this,
 			{
 				_activeBaseLayer: observable,
 				_leafletLayers: observable,
 				_map: observable,
-				_mapCenter: observable,
 				_mapZoom: observable,
+				_mapExtent: observable,
 				_ready: observable,
 				currentScale: computed,
 			}
 		);
 	}
 
-	public async initLeafletMap(m: LeafletMap): Promise<void> {
+	public async initLeafletMap(m: LeafletMap, b: number[]): Promise<void> {
 		// read the url
 		this._map = m;
 
@@ -174,6 +174,12 @@ class MapService {
 
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
+
+		// setup the initial extent [lon0, lat0, lon1, lat1]
+		this._map.fitBounds(new LatLngBounds(
+			new LatLng(b[1], b[0]), 
+			new LatLng(b[3], b[2])
+		));
 
 		// need to load layers
 		autorun((r) => {
@@ -261,7 +267,12 @@ class MapService {
 
 		m.addEventListener('moveend zoomend', () => {
 			this._mapZoom = this._map?.getZoom() || 0;
-			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
+			this._mapExtent = [
+				this.leafletMap?.getBounds().getSouthWest().lng || 0,
+				this.leafletMap?.getBounds().getSouthWest().lat || 0,
+				this.leafletMap?.getBounds().getNorthEast().lng || 0,
+				this.leafletMap?.getBounds().getNorthEast().lat || 0,
+			]
 			document.getElementById('map-scale')!.innerHTML = '1:' + String(Math.round(this.currentScale)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		});
 

@@ -17,12 +17,8 @@ class ConfigService {
 		return this._config.xGridLicenseKey;
 	}
 
-	get initialExtent(): [number, number] {
-		return this._config.initialExtent || [ 42.067627975,-71.7182675 ]
-	}
-
-	get initialZoomLevel(): number {
-		return this._config.initialZoomLevel || 8;
+	get initialExtent(): [number, number, number, number] {
+		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
 	}
 
 	get folderSet():string {
@@ -36,15 +32,13 @@ class ConfigService {
 	private _ready: boolean = false;
 	private _config: {
 		folderSet: string,
-		initialExtent: [number, number],
-		initialZoomLevel: number,
+		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
 	} = {
 		folderSet: '',
-		initialExtent: [42.067627975,-71.7182675],
-		initialZoomLevel: 8,
+		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
 		tools: []
 	};
 
