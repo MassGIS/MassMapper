@@ -67,7 +67,8 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 19
+					maxZoom: 19,
+					minZoom: 7
 				}
 			),
 			pdfOk: true
@@ -77,7 +78,8 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 20
+					maxZoom: 20,
+					minZoom: 7
 				}
 			),
 			pdfOk: true
@@ -87,7 +89,8 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 18
+					maxZoom: 18,
+					minZoom: 12
 				}
 			),
 			pdfOk: true
