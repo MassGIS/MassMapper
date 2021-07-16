@@ -169,6 +169,11 @@ class AbuttersTool extends Tool {
 		);
 		const targetFeatures = await targetParcels.getResults();
 
+		if (targetFeatures.length > 3) {
+			alert("We're sorry, but you have exceeded the maximum number of features (3) that you may select to buffer.  Please reduce your selection and try again.");
+			return;
+		}
+
 		const excludeIds = targetFeatures.map(f => f.id);
 
 		// union together the target features
