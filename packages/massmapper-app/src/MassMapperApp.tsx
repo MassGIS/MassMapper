@@ -10,6 +10,10 @@ import { MapContainer } from 'react-leaflet';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { useService } from './services/useService';
 
+import { toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import '../toastify.css';
+
 import 'leaflet/dist/leaflet.css';
 import '../leaflet.css';
 
@@ -26,7 +30,6 @@ import IdentifyResultsModal from './components/IdentifyResultsModal';
 import ToolsOverlayComponent from './components/ToolsOverlayComponent';
 import LegendComponent from './components/LegendComponent';
 import CatalogComponent from './components/CatalogComponent';
-
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -83,6 +86,11 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 	if (!legendService.ready || !catalogService.ready || !toolService.ready || !configService.ready) {
 		return (<>Loading...</>);
 	}
+
+	toast.configure({
+		autoClose: 10000,
+		position: "top-center"
+	});
 
 	window['mapService'] = mapService;
 	window['selectionService'] = selectionService;

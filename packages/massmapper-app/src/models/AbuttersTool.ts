@@ -11,7 +11,7 @@ import buffer from '@turf/buffer';
 import proj4, { TemplateCoordinates } from 'proj4';
 import { IdentifyResult } from "./IdentifyResults";
 import { Position } from "@turf/turf";
-
+import { toast } from 'react-toastify';
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
 const EPSG_4326 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -162,7 +162,7 @@ class AbuttersTool extends Tool {
 		const abuttersLayer = legendService.layers.filter(l => this._abuttersLayer === l.name);
 		if (abuttersLayer.length === 0) {
 			debugger;
-			alert("error: can't find abutters layer " + this._abuttersLayer + " in layer list");
+			toast("error: can't find abutters layer " + this._abuttersLayer + " in layer list");
 			return;
 		}
 
@@ -175,7 +175,7 @@ class AbuttersTool extends Tool {
 		const targetFeatures = await targetParcels.getResults();
 
 		if (targetFeatures.length > 3) {
-			alert("We're sorry, but you have exceeded the maximum number of features (3) that you may select to buffer.  Please reduce your selection and try again.");
+			toast("We're sorry, but you have exceeded the maximum number of features (3) that you may select to buffer.  Please reduce your selection and try again.");
 			return;
 		}
 
