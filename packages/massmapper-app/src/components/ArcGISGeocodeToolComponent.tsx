@@ -18,6 +18,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from "react";
 import { MapService } from '../services/MapService';
 import { useService } from '../services/useService';
+import { toast } from 'react-toastify';
 
 interface ArcGISGecodeResult {
 	address: string;
@@ -222,7 +223,7 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 				onClick={async () => {
 					uiState.results = await arcgisGeocode(uiState.street, uiState.city, uiState.zip);
 					if (uiState.results.length === 0) {
-						alert("No matches found.  Please try again.");
+						toast("No matches found.  Please try again.");
 					}
 				}}
 				disabled={!uiState.street || (!uiState.city && !uiState.zip)}

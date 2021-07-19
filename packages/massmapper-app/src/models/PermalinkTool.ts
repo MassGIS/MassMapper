@@ -1,9 +1,9 @@
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import link from '../images/link.png';
-
 import './MeasureTool.module.css';
 import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
+import { toast } from 'react-toastify';
 
 class PermalinkTool extends Tool {
 
@@ -27,7 +27,7 @@ class PermalinkTool extends Tool {
 
 		/* Copy the text inside the text field */
 		document.execCommand('copy');
-		alert('A link to this record has been copied to your clipboard. Paste your permalink using Edit -> Paste, or <Ctrl + V>');
+		toast('A link to this record has been copied to your clipboard. Paste your permalink using Edit -> Paste, or <Ctrl + V>.');
 	}
 
 	public component() {
