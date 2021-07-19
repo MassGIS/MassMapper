@@ -148,7 +148,7 @@ class AbuttersTool extends Tool {
 		let bbox;
 		if (!endPoint) {
 			// it's a click, not a drag
-			const geoPoint = ms.leafletMap!.layerPointToLatLng(startPoint);
+			const geoPoint = ms.leafletMap!.containerPointToLatLng(startPoint);
 			bbox = new LatLngBounds(
 				{lng: geoPoint.lng - .00000000001, lat: geoPoint.lat - .00000000001},
 				{lng: geoPoint.lng + .00000000001, lat: geoPoint.lat + .00000000001}
@@ -158,6 +158,15 @@ class AbuttersTool extends Tool {
 				ms.leafletMap!.containerPointToLatLng(startPoint),
 				ms.leafletMap!.containerPointToLatLng(endPoint));
 		}
+
+		// Problems w/ queries?  Uncomment next lines to see what's being passed to the backend.
+		/*
+			ms.leafletMap?.addLayer(
+				new Polyline(
+					[bbox.getSouthWest(), bbox.getNorthEast()]
+				)
+			)
+		*/
 
 		const abuttersLayer = legendService.layers.filter(l => this._abuttersLayer === l.name);
 		if (abuttersLayer.length === 0) {
