@@ -48,6 +48,11 @@ const BoxIdentify = (window.L.Map as any).BoxZoom.extend({
 		this._resetStateTimeout = setTimeout(Util.bind(this._resetState, this), 0);
 
 		this.actionHandler(this._startPoint, this._point);
+
+		// If we don't explicitly delete this._point, the last point from a previous bbox
+		// will linger and gum up and subsequent point queries.  Perhaps this artifact is
+		// a side-effect commenting out the !this._moved line.
+		delete this._point;
 	},
 });
 
