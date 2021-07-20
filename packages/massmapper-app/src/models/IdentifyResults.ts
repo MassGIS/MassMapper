@@ -7,7 +7,6 @@ import { v4 as uuid } from 'uuid';
 import proj4 from 'proj4';
 import * as turf from '@turf/turf';
 import * as wkt from 'wellknown';
-import { ContactsOutlined } from "@material-ui/icons";
 import { toast } from "react-toastify";
 
 
