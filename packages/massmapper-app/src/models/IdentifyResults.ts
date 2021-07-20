@@ -134,7 +134,7 @@ class IdentifyResult {
 			'srsname=' + this._outputCRS,
 			'resultType=hits',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds} and poly_type not in ('ROW', 'PRIV_ROW')`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
 		];
 		Object.entries(params);
 
@@ -165,7 +165,7 @@ class IdentifyResult {
 			'srsname=' + this._outputCRS,
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
-			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds} and poly_type not in ('ROW', 'PRIV_ROW')`
+			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
 
 
 		];
