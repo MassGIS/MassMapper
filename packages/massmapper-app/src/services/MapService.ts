@@ -405,6 +405,19 @@ class MapService {
 								fillColor : "#ffae00",
 								fillOpacity : .3,
 							});
+					} else if (f.geometry.type === 'MultiPolygon') {
+						let latLngs = [];
+						for (let i = 0; i < f.geometry.coordinates[0].length; i++) {
+							latLngs.push(f.geometry.coordinates[0][i].map((f:Array<number>) => new LatLng(f[1], f[0])));
+						}
+						mapFeature = polygon(
+							latLngs,
+							{
+								color: "#ffae00",
+								fillColor : "#ffae00",
+								fillOpacity : .3,
+							});
+
 					} else if (f.geometry.type === 'LineString') {
 						const latLngs = f.geometry.coordinates.map((f:Array<number>) => new LatLng(f[1], f[0]));
 						mapFeature = polyline(

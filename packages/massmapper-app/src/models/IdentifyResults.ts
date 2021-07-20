@@ -15,7 +15,7 @@ interface IdentifyResultFeature {
 	properties: object;
 	geometry_name: "shape",
 	geometry: {
-		type: "Point" | "LineString" | "Polygon",
+		type: "Point" | "LineString" | "Polygon" | "MultiPolygon",
 		coordinates: Array<any>
 	}
 };
