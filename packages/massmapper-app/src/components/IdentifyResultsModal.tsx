@@ -243,7 +243,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 										selected={result.layer.id === selectionService.selectedIdentifyResult?.layer.id}
 										onClick={(e) => {
 											selectionService.selectedIdentifyResult = result;
-											result.getResults();
+											result.getResults(false);
 										}}
 										key={result.layer.id}
 									>

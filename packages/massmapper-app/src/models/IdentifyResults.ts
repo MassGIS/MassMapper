@@ -7,12 +7,13 @@ import { v4 as uuid } from 'uuid';
 import proj4 from 'proj4';
 import * as turf from '@turf/turf';
 import * as wkt from 'wellknown';
+import { toast } from "react-toastify";
 
 
 interface IdentifyResultFeature {
 	id: string;
 	isSelected: boolean;
-	properties: object;
+	properties: any;
 	geometry_name: "shape",
 	geometry: {
 		type: "Point" | "LineString" | "Polygon" | "MultiPolygon",
@@ -148,7 +149,8 @@ class IdentifyResult {
 		return this._numFeatures;
 	}
 
-	public async getResults(): Promise<IdentifyResultFeature[]> {
+	public async getResults(filterPolyType: boolean): Promise<IdentifyResultFeature[]> {
+		console.log(this.numFeaturesDisplay);
 		this._isLoading = true;
 
 		const intersectionWkt = this._intersectsShape ?
@@ -166,8 +168,6 @@ class IdentifyResult {
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
 			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
-
-
 		];
 		Object.entries(params);
 
@@ -180,7 +180,20 @@ class IdentifyResult {
 		(jsonRes.features as IdentifyResultFeature[]).forEach((feature) => {
 			feature.id = feature.id || uuid();
 		})
-		this._features = jsonRes.features;
+
+		let offensivePolyTypes = 0;
+		this._features = [];
+		for (let i = 0; i < jsonRes.features.length; i++) {
+			if (filterPolyType && /^(ROW|PRIV_ROW)$/.test(jsonRes.features[i].properties.poly_type)) {
+				offensivePolyTypes++;
+			}
+			else {
+				this._features?.push(jsonRes.features[i]);
+			}
+		}
+		if (offensivePolyTypes > 0) {
+			toast("Parcels of type ROW or PRIV_ROW were dropped from the buffered features.");
+		}
 
 		this._isLoading = false;
 

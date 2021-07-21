@@ -181,7 +181,7 @@ class AbuttersTool extends Tool {
 			bbox,
 			// 'EPSG:26986'
 		);
-		const targetFeatures = await targetParcels.getResults();
+		const targetFeatures = await targetParcels.getResults(false);
 
 		if (targetFeatures.length > 3) {
 			toast("We're sorry, but you have exceeded the maximum number of features (3) that you may select to buffer.  Please reduce your selection and try again.");
@@ -192,16 +192,29 @@ class AbuttersTool extends Tool {
 
 		// union together the target features
 		let abuttersQueryShape:turf.Polygon | turf.MultiPolygon | undefined;
+
+		// keep track of any offensive poly_type's
+		let filteredPolyTypes = 0;
 		targetFeatures.forEach(f => {
-			const turfPoly = geojsonFeatureToTurfFeature(f);
-			if (!abuttersQueryShape) {
-				abuttersQueryShape = turfPoly;
-			} else {
-				abuttersQueryShape = turf.union(abuttersQueryShape, turfPoly).geometry;
+			if (f.properties.poly_type === "ROW") {
+				filteredPolyTypes++;
+			}
+			else {
+				const turfPoly = geojsonFeatureToTurfFeature(f);
+				if (!abuttersQueryShape) {
+					abuttersQueryShape = turfPoly;
+				} else {
+					abuttersQueryShape = turf.union(abuttersQueryShape, turfPoly).geometry;
+				}
 			}
 		});
+
+		if (filteredPolyTypes > 0) {
+			toast("Parcels of type ROW were dropped from the selected features.");
+		}
+
 		if (!abuttersQueryShape) {
-			// no shape?
+			toast("There are no features eligible for buffering. Please retry.");
 			return;
 		}
 
@@ -233,14 +246,13 @@ class AbuttersTool extends Tool {
 		abuttersIdResult.excludeIds = excludeIds;
 		abuttersIdResult.getNumFeatures();
 		selService.selectedIdentifyResult = abuttersIdResult;
-		abuttersIdResult.getResults();
-
+		abuttersIdResult.getResults(true);
 	}
 }
 
 function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):turf.Polygon {
 	return turf.polygon([f.geometry.coordinates[0]]).geometry;
-}
+}	
 
 // function turfToLeaflet<T>(f:T, shapetypeConstructor:any):T {
 // 	const fshp = f as any;
@@ -249,7 +261,6 @@ function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):t
 // 			if (p instanceof Array) {
 // 				return turfToLeaflet(p[1] as number, p[0] as number);
 // 			} else {
-
 // 			}
 // 		})
 // 	);
@@ -259,6 +270,5 @@ const round = (number: number, decimalPlaces: number) => {
 	const factorOfTen = Math.pow(10, decimalPlaces)
 	return Math.round(number * factorOfTen) / factorOfTen
 }
-
 
 export { AbuttersTool };
