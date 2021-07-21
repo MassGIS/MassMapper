@@ -109,7 +109,7 @@ class IdentifyToolWithPoint extends Tool {
 		if (selService.identifyResults.length === 1) {
 			//just one layer enabled, pre-click it
 			selService.selectedIdentifyResult = selService.identifyResults[0];
-			selService.identifyResults[0].getResults();
+			selService.identifyResults[0].getResults(false);
 		}
 	}}
 
