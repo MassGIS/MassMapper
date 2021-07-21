@@ -240,8 +240,8 @@ class IdentifyResult {
 
 		const exportData = await res.text();
 
-		// Specify host since getstore went through a proxy.
-		return '//' + document.location.host + exportData;
+		// All download results live on maps.massgis.state.ma.us.
+		return '//' + 'maps.massgis.state.ma.us' + exportData;
 	}
 
 	public async exportToMkzip(fileType: string) {
