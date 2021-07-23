@@ -139,9 +139,11 @@ class IdentifyResult {
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs?' + params.join('&'),
+		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
 			{
-				method: 'GET'
+				method: 'POST',
+				body: params.join('&'),
+				headers: {'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'}
 			});
 		const respBody = await res.text();
 		this._numFeatures = getNumFeaturesFromHitsResponse(respBody);
@@ -171,9 +173,11 @@ class IdentifyResult {
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs?' + params.join('&'),
+		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
 			{
-				method: 'GET'
+				method: 'POST',
+				body: params.join('&'),
+				headers: {'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'}
 			});
 
 		const jsonRes = await res.json();
