@@ -225,13 +225,16 @@ class IdentifyResult {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
 		// Get rid of any leading prefix:.
 		const name = this.layer.name.replace(/^[^:]*:/, '');
-		const url = `https://maps.massgis.state.ma.us/map_ol/getstore.php?name=${name}.${fileType}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		// Geoserver zip's up shapefile goodies.
+		const ext = fileType === 'shp' ? 'zip' : fileType;
+		const url = `https://maps.massgis.state.ma.us/map_ol/getstore.php?name=${name}.${ext}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
 			'csv': 'csv',
 			'shp' : 'shape-zip',
 		}
+		const shpPropertyName = fileType === 'shp' ? '<ogc:PropertyName>shape</ogc:PropertyName>' : '';
 		const xml = `<wfs:GetFeature
 	outputFormat="${outputFormatMap[fileType]}"
 	xmlns:wfs="http://www.opengis.net/wfs"
@@ -242,6 +245,7 @@ class IdentifyResult {
 	xmlns:ogc="http://www.opengis.net/ogc">
 	<wfs:Query typeName="${this.layer.name}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
 		${this.properties.filter(p => p !== 'bbox').map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
+		${shpPropertyName}
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
 			${this.rows.filter(r => r.isSelected || !selectedOnly).map(r => `<ogc:FeatureId fid="${r.id}"/>`).join('')}
 		</ogc:Filter>
