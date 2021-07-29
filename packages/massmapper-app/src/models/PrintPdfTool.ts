@@ -69,7 +69,10 @@ class PrintPdfTool extends Tool {
 		const ls = this._services.get(LegendService);
 		const ms = this._services.get(MapService);
 
+		// Not sure why but Safari will only show the overlays properly if we do a dry run (that we won't use)!
+		await this._ss.takeScreen('image', {});
 		const image = await this._ss.takeScreen('image', {});
+
 		const pdf = new jsPDF('l', 'pt', [ms.leafletMap!.getSize().x - 0, ms.leafletMap!.getSize().y]);
 
 		pdf.setFontSize(26);
@@ -139,7 +142,7 @@ class PrintPdfTool extends Tool {
 				y += c * 20;
 				if (leg.img) {
 					y += 5;
-					pdf.addImage(String(leg.img.data), 'PNG', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
+					pdf.addImage(String(leg.img.data), 'GIF', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
 					y += leg.img.height;
 				}
 				y += 25;

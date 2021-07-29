@@ -32,7 +32,7 @@ class Layer {
 	}
 	get legendURL(): string {
 		return this.layerType === 'tiled_overlay' ? '' :
-			'https://giswebservices.massgis.state.ma.us/geoserver/wms?TRANSPARENT=TRUE&' +
+			'https://giswebservices.massgis.state.ma.us/geoserver/wms?' +
 			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&' +
 			`LAYER=${this.name}&STYLE=${this.customStyle() || this.style}`
 	}
