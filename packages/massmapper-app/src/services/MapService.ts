@@ -146,7 +146,7 @@ class MapService {
 
 	get permalink(): string {
 		const layers = this._services.get(LegendService).layers.map(
-			l => l.name + '__' + l.style
+			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF')
 		).join(",");
 
 		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
@@ -205,12 +205,17 @@ class MapService {
 
 			// Only add layers we recognize, according to permalink order.
 			let toAdd: any[] = [];
+			// Keep track of any layers that should start off not enabled.
+			let notEnabled: any[] = [];
 			layers.forEach(l => {
 				const catlyr = cs.uniqueLayers.find(cl => {
-					return l === cl.name + "__" + cl.style;
+					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*' + '$').test(l);
 				});
 				if (catlyr) {
 					toAdd.unshift(catlyr);
+					if (/__OFF$/.test(l)) {
+						notEnabled.push(catlyr.name + '__' + catlyr.style);
+					}
 				}
 			})
 
@@ -224,6 +229,9 @@ class MapService {
 					v.query || v.name!
 				);
 				await ls.addLayer.bind(ls)(l);
+				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
+					l.enabled = false;
+				}
 			};
 
 			toAdd.length > 0 && r.dispose();
