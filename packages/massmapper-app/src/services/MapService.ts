@@ -145,7 +145,9 @@ class MapService {
 	private _activeBaseLayer = this._basemaps.find((bm) => bm.name === 'MassGIS Statewide Basemap');
 
 	get permalink(): string {
-		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
+		const layers = this._services.get(LegendService).layers.map(
+			l => l.name + '__' + l.style
+		).join(",");
 
 		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
 	}
@@ -185,7 +187,7 @@ class MapService {
 		));
 
 		// need to load layers
-		autorun((r) => {
+		autorun(async (r) => {
 			const cs = this._services.get(CatalogService);
 			if (!cs.ready || !ls.ready) {
 				return;
@@ -208,11 +210,11 @@ class MapService {
 					return l === cl.name + "__" + cl.style;
 				});
 				if (catlyr) {
-					toAdd.push(catlyr);
+					toAdd.unshift(catlyr);
 				}
 			})
 
-			toAdd.forEach((v) => {
+			for await (let v of toAdd) {
 				const l = new Layer(
 					v.name!,
 					v.style!,
@@ -221,8 +223,8 @@ class MapService {
 					v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 					v.query || v.name!
 				);
-				ls.addLayer.bind(ls)(l);
-			});
+				await ls.addLayer.bind(ls)(l);
+			};
 
 			toAdd.length > 0 && r.dispose();
 		});
