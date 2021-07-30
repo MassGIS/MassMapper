@@ -21,8 +21,9 @@ class ConfigService {
 		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
 	}
 
-	get availableNonMassGISStatewideBasemaps(): string[] {
-		return this._config.availableNonMassGISStatewideBasemaps || [
+	get availableBasemaps(): string[] {
+		return this._config.availableBasemaps || [
+			'MassGIS Statewide Basemap',
 			'2019 Color Orthos (USGS)',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',
@@ -48,7 +49,7 @@ class ConfigService {
 		folderSet: string,
 		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
-		availableNonMassGISStatewideBasemaps: string[],
+		availableBasemaps: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
 
@@ -56,7 +57,8 @@ class ConfigService {
 		folderSet: '',
 		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
 		tools: [],
-		availableNonMassGISStatewideBasemaps: [
+		availableBasemaps: [
+			'MassGIS Statewide Basemap',
 			'2019 Color Orthos (USGS)',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',

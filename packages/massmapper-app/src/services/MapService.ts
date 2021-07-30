@@ -143,7 +143,7 @@ class MapService {
 			pdfOk: true
 		},
 	];
-	private _activeBaseLayer = this._basemaps.find((bm) => bm.name === 'MassGIS Statewide Basemap');
+	private _activeBaseLayer: any = {};
 
 	get permalink(): string {
 		const layers = this._services.get(LegendService).layers.map(
@@ -180,6 +180,7 @@ class MapService {
 
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
+		const cs = this._services.get(ConfigService);
 
 		// setup the initial extent [lon0, lat0, lon1, lat1]
 		this._map.fitBounds(new LatLngBounds(
@@ -297,8 +298,9 @@ class MapService {
 		this._layerControl = new Control.Layers().addTo(this._map);
 
 		this._basemaps = this._basemaps.filter((bm) => 
-			bm.name === 'MassGIS Statewide Basemap' || this._services.get(ConfigService).availableNonMassGISStatewideBasemaps.indexOf(bm.name) >= 0
+			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
+		this._activeBaseLayer = this._basemaps[0];
 
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
