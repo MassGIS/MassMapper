@@ -22,6 +22,7 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
+import { ConfigService } from './ConfigService';
 import north from '../images/north_arrow.png';
 
 @Service()
@@ -294,6 +295,10 @@ class MapService {
 		});
 
 		this._layerControl = new Control.Layers().addTo(this._map);
+
+		this._basemaps = this._basemaps.filter((bm) => 
+			bm.name === 'MassGIS Statewide Basemap' || this._services.get(ConfigService).availableNonMassGISStatewideBasemaps.indexOf(bm.name) >= 0
+		);
 
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {

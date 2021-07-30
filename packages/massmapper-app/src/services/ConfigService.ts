@@ -21,6 +21,20 @@ class ConfigService {
 		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
 	}
 
+	get availableNonMassGISStatewideBasemaps(): string[] {
+		return this._config.availableNonMassGISStatewideBasemaps || [
+			'2019 Color Orthos (USGS)',
+			'USGS Topographic Quadrangle Maps',
+			'OpenStreetMap Basemap',
+			'Google Roads Basemap',
+			'Google Satellite Basemap',
+			'Google Hybrid Basemap',
+			'Google Terrain Basemap',
+			'ESRI Streets Basemap',
+			'ESRI Light Gray Basemap'
+		];
+	}
+
 	get folderSet():string {
 		return this._config.folderSet;
 	}
@@ -34,12 +48,25 @@ class ConfigService {
 		folderSet: string,
 		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
+		availableNonMassGISStatewideBasemaps: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
+
 	} = {
 		folderSet: '',
 		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
-		tools: []
+		tools: [],
+		availableNonMassGISStatewideBasemaps: [
+			'2019 Color Orthos (USGS)',
+			'USGS Topographic Quadrangle Maps',
+			'OpenStreetMap Basemap',
+			'Google Roads Basemap',
+			'Google Satellite Basemap',
+			'Google Hybrid Basemap',
+			'Google Terrain Basemap',
+			'ESRI Streets Basemap',
+			'ESRI Light Gray Basemap'
+		]
 	};
 
 	constructor(private readonly _services: ContainerInstance) {
