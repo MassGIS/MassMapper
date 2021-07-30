@@ -341,7 +341,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																		fontSize: '16px',
 																		paddingLeft: '3px',
 																		paddingTop: '2px',
-																		maxWidth: '270px'
+																		maxWidth: 'calc(100% - 110px)'
 																	}}
 																>
 																	<a

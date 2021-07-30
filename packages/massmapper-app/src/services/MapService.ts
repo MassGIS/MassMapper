@@ -145,7 +145,9 @@ class MapService {
 	private _activeBaseLayer = this._basemaps.find((bm) => bm.name === 'MassGIS Statewide Basemap');
 
 	get permalink(): string {
-		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
+		const layers = this._services.get(LegendService).layers.map(
+			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF')
+		).join(",");
 
 		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
 	}
@@ -185,7 +187,7 @@ class MapService {
 		));
 
 		// need to load layers
-		autorun((r) => {
+		autorun(async (r) => {
 			const cs = this._services.get(CatalogService);
 			if (!cs.ready || !ls.ready) {
 				return;
@@ -203,16 +205,21 @@ class MapService {
 
 			// Only add layers we recognize, according to permalink order.
 			let toAdd: any[] = [];
+			// Keep track of any layers that should start off not enabled.
+			let notEnabled: any[] = [];
 			layers.forEach(l => {
 				const catlyr = cs.uniqueLayers.find(cl => {
-					return l === cl.name + "__" + cl.style;
+					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*' + '$').test(l);
 				});
 				if (catlyr) {
-					toAdd.push(catlyr);
+					toAdd.unshift(catlyr);
+					if (/__OFF$/.test(l)) {
+						notEnabled.push(catlyr.name + '__' + catlyr.style);
+					}
 				}
 			})
 
-			toAdd.forEach((v) => {
+			for await (let v of toAdd) {
 				const l = new Layer(
 					v.name!,
 					v.style!,
@@ -221,8 +228,11 @@ class MapService {
 					v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 					v.query || v.name!
 				);
-				ls.addLayer.bind(ls)(l);
-			});
+				await ls.addLayer.bind(ls)(l);
+				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
+					l.enabled = false;
+				}
+			};
 
 			toAdd.length > 0 && r.dispose();
 		});
