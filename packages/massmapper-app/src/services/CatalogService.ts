@@ -88,14 +88,25 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
-
-				const xmlLayers = new XMLParser().parseFromString(text);
+				
+				// This is painfully inefficient, but the original xmlLayers.getElementsByTagName wouldn't ignore comments!
 				let layers: any[] = [];
-				xmlLayers.getElementsByTagName('Layer').forEach((o: { attributes: { title: any; }; }) => {
-					if (!layers.find(l => l.title === o.attributes.title)) {
-						layers.push(o.attributes);
+				const f = function(obj: any, stack: any) {
+					for (var property in obj) {
+						if (obj.hasOwnProperty(property)) {
+							if (typeof obj[property] === "object") {
+								f(obj[property], stack + '.' + property);
+							} 
+							else if (/\.Layer\.\d+$/.test(stack)) {
+								// Only record unique titles.
+								if (!layers.find(l => l.title === obj.title)) {
+									layers.push(obj);
+								}
+							}
+						}
 					}
-				});
+				}
+				f(xml.FolderSet[0], 'ROOT')
 				this._uniqueLayers = layers.sort((a, b) => {
 					return a.title.toLowerCase() > b.title.toLowerCase() ? 1 : -1;
 				});
