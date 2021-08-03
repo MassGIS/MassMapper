@@ -70,5 +70,17 @@
 			"position": "topleft",
 			"class": "PrintPdfTool"
 		}
+	],
+	"availableBasemaps": [
+		"MassGIS Statewide Basemap",
+		"2019 Color Orthos (USGS)",
+		"USGS Topographic Quadrangle Maps",
+		"OpenStreetMap Basemap",
+		"Google Roads Basemap",
+		"Google Satellite Basemap",
+		"Google Hybrid Basemap",
+		"Google Terrain Basemap",
+		"ESRI Streets Basemap",
+		"ESRI Light Gray Basemap"
 	]
 }
