@@ -225,6 +225,8 @@ class IdentifyResult {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
 		// Get rid of any leading prefix:.
 		const name = this.layer.name.replace(/^[^:]*:/, '');
+		// Special lookup for tiled overlays.
+		const queryName = this.layer.layerType === 'tiled_overlay' ? this.layer.queryName : this.layer.name;
 		// Geoserver zip's up shapefile goodies.
 		const ext = fileType === 'shp' ? 'zip' : fileType;
 		const url = `https://maps.massgis.state.ma.us/map_ol/getstore.php?name=${name}.${ext}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
@@ -243,7 +245,7 @@ class IdentifyResult {
 	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ogc="http://www.opengis.net/ogc">
-	<wfs:Query typeName="${this.layer.name}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
+	<wfs:Query typeName="${queryName}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
 		${this.properties.filter(p => p !== 'bbox').map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
 		${shpPropertyName}
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
