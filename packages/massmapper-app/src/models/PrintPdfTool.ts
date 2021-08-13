@@ -82,7 +82,15 @@ class PrintPdfTool extends Tool {
 		const ratio = mapWidth / pdf.internal.pageSize.getWidth();
 		const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
-		pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 14, 129, 69);
+		const watermarkScaleFactor = 0.5;
+		pdf.addImage(
+			massmapper, 
+			'PNG', 
+			leftMargin + mapWidth - 129 * watermarkScaleFactor - 3, 
+			titleHeight + mapHeight - 69 * watermarkScaleFactor - 14, 
+			129 * watermarkScaleFactor, 
+			69 * watermarkScaleFactor
+		);
 
 		let legends: any[] = [];
 		const layers = ls.enabledLayers.map(async (l, i) => {
