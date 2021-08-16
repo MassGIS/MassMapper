@@ -170,7 +170,7 @@ class AbuttersTool extends Tool {
 		const abuttersLayer = legendService.layers.filter(l => this._abuttersLayer === l.name);
 		if (abuttersLayer.length === 0) {
 			debugger;
-			toast("error: can't find abutters layer " + this._abuttersLayer + " in layer list");
+			toast('Please add the layer "Property Tax Parcels" to the map');
 			return;
 		}
 
