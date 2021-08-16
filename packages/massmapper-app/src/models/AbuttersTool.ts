@@ -8,9 +8,8 @@ import { AbuttersToolComponent } from "../components/AbuttersToolComponent";
 import { ContainerInstance } from "typedi";
 import * as turf from '@turf/turf';
 import buffer from '@turf/buffer';
-import proj4, { TemplateCoordinates } from 'proj4';
+// import proj4, { TemplateCoordinates } from 'proj4';
 import { IdentifyResult } from "./IdentifyResults";
-import { Position } from "@turf/turf";
 import { toast } from 'react-toastify';
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
@@ -204,7 +203,7 @@ class AbuttersTool extends Tool {
 				if (!abuttersQueryShape) {
 					abuttersQueryShape = turfPoly;
 				} else {
-					abuttersQueryShape = turf.union(abuttersQueryShape, turfPoly).geometry;
+					abuttersQueryShape = turf.union(abuttersQueryShape, turfPoly)!.geometry;
 				}
 			}
 		});
@@ -252,7 +251,7 @@ class AbuttersTool extends Tool {
 
 function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):turf.Polygon {
 	return turf.polygon([f.geometry.coordinates[0]]).geometry;
-}	
+}
 
 // function turfToLeaflet<T>(f:T, shapetypeConstructor:any):T {
 // 	const fshp = f as any;

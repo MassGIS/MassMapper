@@ -18,7 +18,7 @@ import {
 	Tooltip,
 } from '@material-ui/core';
 import { DataGrid, GridSelectionModelChangeParams } from '@material-ui/data-grid';
-import { XGrid, LicenseInfo } from '@material-ui/x-grid';
+import { XGrid, LicenseInfo, GridSelectionModel } from '@material-ui/x-grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
@@ -271,9 +271,9 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							}}
 							columns={columns}
 							headerHeight={35}
-							onSelectionModelChange={(p:GridSelectionModelChangeParams) => {
+							onSelectionModelChange={(p:any) => {
 								selectionService.selectedIdentifyResult?.clearSelected();
-								p.selectionModel.forEach(fid => { selectionService.selectedIdentifyResult?.setSelected(fid as string, true) })
+								(p.selectionModel as GridSelectionModel).forEach(fid => { selectionService.selectedIdentifyResult?.setSelected(fid as string, true) })
 							}}
 							rowHeight={35}
 							rows={selectionService.selectedIdentifyResult.rows}
