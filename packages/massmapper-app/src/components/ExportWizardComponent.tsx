@@ -1,3 +1,4 @@
+import { IdentifyResult } from '../models/IdentifyResults';
 import {
 	Box,
 	Grid,
@@ -19,8 +20,11 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+	Add,
+	Check,
 	Close,
 	Delete,
+	Error,
 	GetApp,
 	NavigateBefore,
 	NavigateNext,
@@ -28,6 +32,7 @@ import {
 	SaveAlt,
 } from '@material-ui/icons';
 
+import { makeObservable, runInAction } from 'mobx';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
 
@@ -39,20 +44,25 @@ import { LegendService } from '../services/LegendService';
 import { ConfigService } from '../services/ConfigService';
 import { ToolComponentProps } from '../models/Tool';
 import { Layer } from '../models/Layer';
-import { CatalogService } from '../services/CatalogService';
+import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
+import { MapService } from '../services/MapService';
+import { LatLngBounds } from 'leaflet';
 
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
+
+const MAX_EXPORT_FEATURES = 25000;
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
 		container: {
 			flexGrow: 1,
-			height: '80vh',
+			height: '70vh',
+			width: '70vw'
 		},
 		table: {
-			width: '90vh',
+			// width: '90vh',
 			'& .MuiTableBody-root .MuiTableRow-root:hover': {
 				backgroundColor: hoverColor,
 			},
@@ -98,27 +108,80 @@ const HowtoComponent: FunctionComponent = () => (
 interface ExportWizardComponentState {
 	activeStep: number | undefined;
 	exportFileUrl?: string;
-	exportLayers: Layer[];
+	exportLayers: Map<string,Layer>;
+	exportLayersFeatureCount: Map<string, number>;
 	isExporting: boolean;
+	isReadyForNextStep: boolean;
+}
+
+const calculateNumFeatures = (state:ExportWizardComponentState, bbox: LatLngBounds):boolean => {
+	runInAction(() => {
+		state.exportLayersFeatureCount.clear();
+		state.isReadyForNextStep = false;
+	});
+
+	let canDoExport = true;
+	const queries:any[] = [];
+	Array.from(state.exportLayers).forEach(async ([name, layer]) => {
+		const idResults = new IdentifyResult(
+			layer,
+			bbox
+		);
+
+		const idResult = idResults.getNumFeatures();
+		queries.push(idResult);
+		const numFeatures = await idResult;
+		runInAction(() => {
+			state.exportLayersFeatureCount.set(layer.name, numFeatures);
+		});
+	});
+
+	Promise.all(queries).then(() => {
+		Array.from(state.exportLayersFeatureCount.keys()).forEach((key) => {
+			if (state.exportLayersFeatureCount.get(key)! > MAX_EXPORT_FEATURES)
+				canDoExport = false;
+		})
+
+		runInAction(() => {
+			state.isReadyForNextStep = canDoExport;
+		})
+	});
+
+
+	return true;
 }
 
 const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
 
 	const classes = useStyles();
 
-	const [ legendService, selectionService, configService, catalogService ] = useService([ LegendService, SelectionService, ConfigService, CatalogService ]);
+	const [ legendService, mapService, catalogService ] = useService([ LegendService, MapService, CatalogService ]);
 	const myState = useLocalObservable<ExportWizardComponentState>(() => {
+		const exportLayers = new Map<string, Layer>();
+		const exportLayersFeatureCount = new Map<string, number>();
 		return {
 			activeStep : undefined,
-			exportLayers: legendService.enabledLayers,
+			exportLayers,
+			exportLayersFeatureCount,
 			exportResultsUrl: undefined,
-			isExporting: false
+			isExporting: false,
+			isReadyForNextStep: true
 		}
 	});
 
-	const ExportButton = MakeToolButtonComponent(GetApp, 'Export data layers', () => {
-		myState.activeStep = 1;
-	});
+	const ExportButton = MakeToolButtonComponent(
+		GetApp,
+		'Export data layers',
+		() => {
+			runInAction(() => {
+				Array.from(legendService.enabledLayers).forEach(l => {
+					myState.exportLayers.set(l.name, l);
+				});
+				myState.isReadyForNextStep = true;
+				myState.activeStep = 1;
+			})
+		}
+	);
 
 	return (
 		<>
@@ -127,7 +190,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 				open={!!myState.activeStep}
 				maxWidth='lg'
 				onClose={() => {
-					myState.activeStep = undefined;
+					runInAction(() => {
+						myState.activeStep = undefined;
+					});
 				}}
 				// PaperComponent={PaperComponent}
 			>
@@ -138,7 +203,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							float: 'right'
 						}}
 						onClick={() => {
-							myState.activeStep = undefined;
+							runInAction(() => {
+								myState.activeStep = undefined;
+							});
 						}}
 					>
 						<Close />
@@ -170,9 +237,14 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					<Grid
 						className={classes.container}
 						container
-						direction="column"
+						direction="row"
 					>
-						<Grid item xs={6}>
+						<Grid item xs={6} style={{
+							minWidth: '50%',
+							height: '100%',
+							overflow: 'auto',
+							paddingRight: '3em'
+						}}>
 							<TableContainer>
 								<Table
 									className={classes.table}
@@ -181,13 +253,13 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								>
 									<TableHead>
 										<TableRow>
-											<TableCell padding="default"></TableCell>
-											<TableCell padding="default">Data Layer Name</TableCell>
-											<TableCell padding="default"></TableCell>
+											<TableCell padding="normal"></TableCell>
+											<TableCell padding="normal">Layers to Export</TableCell>
+											<TableCell padding="normal"></TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
-									{myState.exportLayers.map((layer) => (
+									{Array.from(myState.exportLayers).map(([id, layer]) => (
 										<TableRow
 											hover
 											key={layer.id}
@@ -197,7 +269,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 											<TableCell>
 												<Button
 													onClick={() => {
-														alert("remove layer " + layer.title);
+														runInAction(() => {
+															myState.exportLayers.delete(layer.name);
+														});
 													}}
 												>
 													<Delete />
@@ -210,7 +284,10 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</TableContainer>
 						</Grid>
 
-						<Grid item xs={6}>
+						<Grid item xs={6} style={{
+							height: '100%',
+							overflow: 'auto'
+						}}>
 							<TableContainer>
 								<Table
 									className={classes.table}
@@ -219,18 +296,162 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								>
 									<TableHead>
 										<TableRow>
-											<TableCell padding="default"></TableCell>
-											<TableCell padding="default">Data Layer Name</TableCell>
+											<TableCell padding="normal"></TableCell>
+											<TableCell padding="normal">Include More Layers?</TableCell>
+											<TableCell padding="normal"></TableCell>
 										</TableRow>
 									</TableHead>
 									<TableBody>
-									{catalogService.uniqueLayers.map((layer) => (
+									{catalogService.uniqueLayers.filter((l) => {
+										return l['type'] !== 'tiled_overlay' || l['queryName'];
+
+									}).map((node) => (
+										<TableRow
+											hover
+											key={node.id}
+										>
+											<TableCell>{node.queryName ? 'polygon' : node.type}</TableCell>
+											<TableCell>{node.title}</TableCell>
+											<TableCell>
+												<Button
+													size="small"
+													onClick={() => {
+														runInAction(() => {
+															const layer = new Layer(
+																node.name!,
+																node.style!,
+																node.title!,
+																node.type!,
+																node.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
+																node.query || node.name!
+															);
+															myState.exportLayers.set(layer.name, layer);
+														});
+													}}
+												>
+													<Add />
+												</Button>
+											</TableCell>
+										</TableRow>
+									))}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</Grid>
+					</Grid>
+				)}
+
+				{myState.activeStep === 3 && (
+					<Grid
+					className={classes.container}
+					container
+					direction="row"
+					>
+						<Grid item xs={12} style={{
+							height: '100%',
+							overflow: 'auto',
+							paddingRight: '3em'
+						}}>
+							<TableContainer>
+								<Table
+									className={classes.table}
+									size="small" // "medium"
+									aria-label="enhanced table"
+								>
+									<TableHead>
+										<TableRow>
+											<TableCell padding="normal"></TableCell>
+											<TableCell padding="normal">Data Layer Name</TableCell>
+											<TableCell padding="normal">Feature(s) Found</TableCell>
+											<TableCell padding="normal">OK to export?</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+									{Array.from(myState.exportLayers).map(([id, layer]) => (
 										<TableRow
 											hover
 											key={layer.id}
 										>
 											<TableCell>{layer.queryName ? 'polygon' : layer.layerType}</TableCell>
 											<TableCell>{layer.title}</TableCell>
+											<TableCell>
+												{!myState.exportLayersFeatureCount.has(layer.name) && (
+													<span>loading...</span>
+												)}
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)
+												}
+											</TableCell>
+											<TableCell>
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)! > MAX_EXPORT_FEATURES &&
+													(<div><Error /><div style={{ display: 'inline-block', verticalAlign: "super"}}>&gt; max # features </div></div>)
+												}
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)! <= MAX_EXPORT_FEATURES &&
+													(<div><Check /><div style={{ display: 'inline-block', verticalAlign: "super"}}>OK </div></div>)
+												}
+											</TableCell>
+										</TableRow>
+									))}
+									</TableBody>
+								</Table>
+							</TableContainer>
+						</Grid>
+					</Grid>
+				)}
+
+{myState.activeStep === 3 && (
+					<Grid
+					className={classes.container}
+					container
+					direction="row"
+					>
+						<Grid item xs={12} style={{
+							height: '100%',
+							overflow: 'auto',
+							paddingRight: '3em'
+						}}>
+							<TableContainer>
+								<Table
+									className={classes.table}
+									size="small" // "medium"
+									aria-label="enhanced table"
+								>
+									<TableHead>
+										<TableRow>
+											<TableCell padding="normal"></TableCell>
+											<TableCell padding="normal">Data Layer Name</TableCell>
+											<TableCell padding="normal">Feature(s) Found</TableCell>
+											<TableCell padding="normal">OK to export?</TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+									{Array.from(myState.exportLayers).map(([id, layer]) => (
+										<TableRow
+											hover
+											key={layer.id}
+										>
+											<TableCell>{layer.queryName ? 'polygon' : layer.layerType}</TableCell>
+											<TableCell>{layer.title}</TableCell>
+											<TableCell>
+												{!myState.exportLayersFeatureCount.has(layer.name) && (
+													<span>loading...</span>
+												)}
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)
+												}
+											</TableCell>
+											<TableCell>
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)! > MAX_EXPORT_FEATURES &&
+													(<div><Error /><div style={{ display: 'inline-block', verticalAlign: "super"}}>&gt; max # features </div></div>)
+												}
+												{myState.exportLayersFeatureCount.has(layer.name) &&
+													myState.exportLayersFeatureCount.get(layer.name)! <= MAX_EXPORT_FEATURES &&
+													(<div><Check /><div style={{ display: 'inline-block', verticalAlign: "super"}}>OK </div></div>)
+												}
+											</TableCell>
 										</TableRow>
 									))}
 									</TableBody>
@@ -248,7 +469,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								float: 'right'
 							}}
 							onClick={() => {
-								myState.activeStep = myState.activeStep! - 1;
+								runInAction(() => {
+									myState.activeStep = myState.activeStep! - 1;
+								});
 							}}
 						>
 							<NavigateBefore /> Prev
@@ -259,8 +482,12 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						style={{
 							float: 'right'
 						}}
+						disabled={!myState.isReadyForNextStep}
 						onClick={() => {
-							myState.activeStep = myState.activeStep! + 1;
+							runInAction(() => {
+								myState.activeStep = myState.activeStep! + 1;
+								myState.activeStep === 3 && calculateNumFeatures(myState, mapService.leafletMap!.getBounds());
+							})
 						}}
 					>
 						Next <NavigateNext />

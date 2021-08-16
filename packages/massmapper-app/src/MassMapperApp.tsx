@@ -95,6 +95,8 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 	window['mapService'] = mapService;
 	window['selectionService'] = selectionService;
 	window['toolService'] = toolService;
+	window['legendService'] = legendService;
+	window['catalogService'] = catalogService;
 
 	const b = historyService.has('b') ?
 		(historyService.get('b') as string).split(',').map(s => parseFloat(s)) :

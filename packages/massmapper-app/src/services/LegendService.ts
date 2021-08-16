@@ -46,7 +46,9 @@ class LegendService {
 				const lastSplashPageHash = localStorage.getItem('massmapper.splashPageSize');
 				const userSaysSkip = localStorage.getItem('massmapper.skipSplashPage') === 'yes';
 				if (lastSplashPageHash === ("" + this._splashPageContent.length) && userSaysSkip) {
-					this.isSplashPageVisible = false;
+					runInAction(() => {
+						this.isSplashPageVisible = false;
+					})
 				} else {
 					localStorage.removeItem('massmapper.skipSplashPage');
 					localStorage.setItem('massmapper.splashPageSize', this._splashPageContent.length + "");
