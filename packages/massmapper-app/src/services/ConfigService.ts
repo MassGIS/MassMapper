@@ -1,4 +1,4 @@
-import { autorun, makeObservable, observable } from "mobx";
+import { autorun, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { ToolDefinition } from "./ToolService";
 
@@ -91,8 +91,10 @@ class ConfigService {
 			);
 
 			this._config = await resp.json() as any;
+			runInAction(() => {
+				this._ready = true;
+			});
 
-			this._ready = true;
 			r.dispose();
 		});
 	}

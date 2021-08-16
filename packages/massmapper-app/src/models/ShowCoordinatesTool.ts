@@ -1,4 +1,4 @@
-import { autorun, makeObservable, observable } from "mobx";
+import { autorun, makeObservable, observable, runInAction } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
 
@@ -69,17 +69,23 @@ class ShowCoordinatesTool extends Tool {
 		super(_services,id,position,options);
 
 		const mapService = _services.get(MapService);
-		this._coords = latLng(0,0);
+		runInAction(() => {
+			this._coords = latLng(0,0);
+		});
 
 		autorun((r) => {
 			if (!mapService.ready || !mapService.leafletMap) {
 				return;
 			}
 
-			this._coords = mapService.leafletMap.getCenter();
+			runInAction(() => {
+				this._coords = mapService.leafletMap!.getCenter();
+			});
 
 			mapService.leafletMap.on('mousemove', (e) => {
-				this._coords = e['latlng'];
+				runInAction(() => {
+					this._coords = e['latlng'];
+				});
 			});
 			r.dispose();
 		})

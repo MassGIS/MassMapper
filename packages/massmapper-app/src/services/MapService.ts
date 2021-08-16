@@ -11,7 +11,7 @@ import {
 	LatLng,
 	LatLngBounds,
 } from 'leaflet';
-import { autorun, computed, has, makeObservable, observable } from "mobx";
+import { autorun, computed, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { CatalogService } from './CatalogService';
 import { HistoryService } from './HistoryService';
@@ -172,7 +172,10 @@ class MapService {
 
 	public async initLeafletMap(m: LeafletMap, b: number[]): Promise<void> {
 		// read the url
-		this._map = m;
+
+		runInAction(() => {
+			this._map = m;
+		})
 
 		// Chrome needs a gentle nudge to create a PDF if a user doesn't interact w/ the map at all.
 		// A m.invalidateSize() doesn't seem to do the trick either.
@@ -183,8 +186,8 @@ class MapService {
 		const cs = this._services.get(ConfigService);
 
 		// setup the initial extent [lon0, lat0, lon1, lat1]
-		this._map.fitBounds(new LatLngBounds(
-			new LatLng(b[1], b[0]), 
+		this._map!.fitBounds(new LatLngBounds(
+			new LatLng(b[1], b[0]),
 			new LatLng(b[3], b[2])
 		));
 
@@ -258,7 +261,7 @@ class MapService {
 		const MapScaleControl = function(opts: Leaflet.ControlOptions | undefined) {
 			return new MS(opts);
 		};
-		MapScaleControl({position: 'bottomleft'}).addTo(this._map);
+		MapScaleControl({position: 'bottomleft'}).addTo(this._map!);
 
 		const NA = Control.extend({
 			onAdd: function () {
@@ -272,39 +275,49 @@ class MapService {
 		const NorthArrowControl = function(opts: Leaflet.ControlOptions | undefined) {
 			return new NA(opts);
 		};
-		NorthArrowControl({position: 'bottomleft'}).addTo(this._map);
+		NorthArrowControl({position: 'bottomleft'}).addTo(this._map!);
 
 		// clear all layers, if there were any to start
-		this._leafletLayers.clear();
+		runInAction(() => {
+			this._leafletLayers.clear();
+		});
 		m.eachLayer((l) => {
 			m.removeLayer(l);
 		});
 
 		m.addEventListener('moveend zoomend', () => {
-			this._mapZoom = this._map?.getZoom() || 0;
-			this._mapExtent = [
-				this.leafletMap?.getBounds().getSouthWest().lng || 0,
-				this.leafletMap?.getBounds().getSouthWest().lat || 0,
-				this.leafletMap?.getBounds().getNorthEast().lng || 0,
-				this.leafletMap?.getBounds().getNorthEast().lat || 0,
-			]
+			runInAction(() => {
+				this._mapZoom = this._map?.getZoom() || 0;
+				this._mapExtent = [
+					this.leafletMap?.getBounds().getSouthWest().lng || 0,
+					this.leafletMap?.getBounds().getSouthWest().lat || 0,
+					this.leafletMap?.getBounds().getNorthEast().lng || 0,
+					this.leafletMap?.getBounds().getNorthEast().lat || 0,
+				]
+			});
 			document.getElementById('map-scale')!.innerHTML = '1:' + String(Math.round(this.currentScale)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
-			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
+			runInAction(() => {
+				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
+			});
 		});
 
-		this._layerControl = new Control.Layers().addTo(this._map);
+		this._layerControl = new Control.Layers().addTo(this._map!);
 
-		this._basemaps = this._basemaps.filter((bm) => 
+		this._basemaps = this._basemaps.filter((bm) =>
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
-		this._activeBaseLayer = this._basemaps[0];
+		runInAction(() => {
+			this._activeBaseLayer = this._basemaps[0];
+		})
 
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
-			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === hs.get('bl'));
+			runInAction(() => {
+				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === hs.get('bl'));
+			});
 		}
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);
@@ -357,12 +370,16 @@ class MapService {
 				if (type === 'tiled_overlay') {
 					const newLayer = l.createLeafletTileLayer();
 					this._map?.addLayer(newLayer);
-					this._leafletLayers.set(id, newLayer);
+					runInAction(() => {
+						this._leafletLayers.set(id, newLayer);
+					});
 				}
 				else if (['wms', 'pt', 'line', 'poly'].indexOf(type) >= 0) {
 					const newLayer = l.createLeafletWMSLayer();
 					this._map?.addLayer(newLayer);
-					this._leafletLayers.set(id, newLayer);
+					runInAction(() => {
+						this._leafletLayers.set(id, newLayer);
+					});
 				}
 			});
 
@@ -455,7 +472,9 @@ class MapService {
 			delay: 50
 		});
 
-		this._ready = true;
+		runInAction(() => {
+			this._ready = true;
+		});
 	}
 }
 

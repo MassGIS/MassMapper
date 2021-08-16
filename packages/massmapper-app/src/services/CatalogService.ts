@@ -1,4 +1,4 @@
-import { action, autorun, makeObservable, observable } from "mobx";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import parser from 'fast-xml-parser';
 import he from 'he';
@@ -56,7 +56,9 @@ class CatalogService {
 			}
 
 			await this.init(cs);
-			this._ready = true;
+			runInAction(() => {
+				this._ready = true;
+			})
 			r.dispose();
 		});
 	}
@@ -88,7 +90,7 @@ class CatalogService {
 
 				const xml = parser.parse(text, options);
 				this._layerTree = [ xml.FolderSet[0] ];
-				
+
 				// This is painfully inefficient, but the original xmlLayers.getElementsByTagName wouldn't ignore comments!
 				let layers: any[] = [];
 				const f = function(obj: any, stack: any) {
@@ -96,7 +98,7 @@ class CatalogService {
 						if (obj.hasOwnProperty(property)) {
 							if (typeof obj[property] === "object") {
 								f(obj[property], stack + '.' + property);
-							} 
+							}
 							else if (/\.Layer\.\d+$/.test(stack)) {
 								// Only record unique titles.
 								if (!layers.find(l => l.title === obj.title)) {

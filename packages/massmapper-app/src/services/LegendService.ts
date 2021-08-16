@@ -1,4 +1,4 @@
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { MapService } from "./MapService";
 import { Layer } from '../models/Layer';
@@ -19,7 +19,7 @@ class LegendService {
 		return this._ready;
 	}
 
-	private readonly _layers: Layer[];
+	private readonly _layers: Layer[] = [];
 	private _ready: boolean = false;
 	private _splashPageContent: string;
 	get splashPageContent() : string {
@@ -29,7 +29,6 @@ class LegendService {
 	public isSplashPageVisible: boolean = true;
 
 	constructor(private readonly _services: ContainerInstance) {
-		this._layers = [];
 
 		makeObservable<LegendService, LegendServiceAnnotations>(
 			this,
@@ -76,7 +75,9 @@ class LegendService {
 		const mapService = this._services.get(MapService);
 		await l.makeMappable(mapService);
 		l.enabled = true;
-		this._layers.unshift(l);
+		runInAction(() => {
+			this._layers.unshift(l);
+		});
 	}
 
 	public removeLayer(l: Layer): void {

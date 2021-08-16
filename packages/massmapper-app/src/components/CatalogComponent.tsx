@@ -73,10 +73,10 @@ const useStyles = makeStyles({
 	root: {
 		flexGrow: 1,
 		maxWidth: 400,
-	},
-	content : {
-		alignItems: 'start',
 	}
+	// ,content : {
+	// 	alignItems: 'start',
+	// }
 });
 
 interface CatalogComponentState {

@@ -1,5 +1,5 @@
 import { LatLngBounds, LeafletEventHandlerFn, LeafletMouseEvent, Rectangle, rectangle } from "leaflet";
-import { autorun, IReactionPublic } from "mobx";
+import { autorun, IReactionPublic, runInAction } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
@@ -14,7 +14,9 @@ class IdentifyToolWithPoint extends Tool {
 	// private _myRect: Array<Rectangle> = [];
 	private _handleIdentifyClick:LeafletEventHandlerFn = this.handleIdentifyClick.bind(this);
 	protected async _activate() {
-		this._cursor = `url("${idCursor}"), default`;
+		runInAction(() => {
+			this._cursor = `url("${idCursor}"), default`;
+		});
 		const ms = this._services.get(MapService);
 		autorun((r:IReactionPublic) => {
 			if (!ms.leafletMap) {
@@ -30,7 +32,9 @@ class IdentifyToolWithPoint extends Tool {
 				'dragstart',
 				(() => {
 					if (this._active) {
-						this._cursor = `url("${moveCursor}"), default`;
+						runInAction(() => {
+							this._cursor = `url("${moveCursor}"), default`;
+						});
 					}
 				}).bind(this)
 			);
@@ -39,7 +43,9 @@ class IdentifyToolWithPoint extends Tool {
 				'mouseup dragend zoomend moveend',
 				(() => {
 					if (this._active) {
-						this._cursor = `url("${idCursor}"), default`;
+						runInAction(() => {
+							this._cursor = `url("${idCursor}"), default`;
+						});
 					}
 				}).bind(this)
 			);
