@@ -26,7 +26,7 @@
 		"@types/react-router-dom": "^5.1.7",
 		"@types/wellknown" : "^0.5.1",
 		"@types/uuid": "^8.3.0",
-		"webpack": "^4.42.1"
+		"webpack": "^5.50.0"
 	},
 	"dependencies": {
 		"@2creek/leaflet-wms": "^0.2.0",
@@ -43,7 +43,7 @@
 		"fast-xml-parser": "^3.19.0",
 		"fetch-retry": "^4.0.1",
 		"file-saver": "^2.0.5",
-		"fontsource-roboto": "^4.0.0",
+		"@fontsource/roboto": "^4.0.0",
 		"he": "^1.2.0",
 		"isomorphic-fetch": "^2.2.1",
 		"jspdf": "^2.3.1",
@@ -64,6 +64,7 @@
 		"react-leaflet": "^3.1.0",
 		"react-router": "^5.2.0",
 		"react-router-dom": "^5.2.0",
+		"react-toastify": "^7.0.4",
 		"react-xml-parser": "^1.1.8",
 		"typedi": "^0.10.0",
 		"wellknown" : "^0.5.0",

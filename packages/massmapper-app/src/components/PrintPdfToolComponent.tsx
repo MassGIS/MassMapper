@@ -9,7 +9,8 @@ import {
 } from '@material-ui/core'
 import {
 	Cancel,
-	Print
+	Print,
+	CheckCircle
 } from '@material-ui/icons';
 import { latLngBounds, latLng } from 'leaflet';
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -38,6 +39,8 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 		}
 	});
 	const myTool = tool as PrintPdfTool;
+	
+	const mapService = useService(MapService);
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
 		myState.isOpen = true;
@@ -62,12 +65,44 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 					Print Map PDF
 				</DialogTitle>
 				<DialogContent>
-					{myState.isPrinting && (
+					{!mapService.activeBaseLayer?.pdfOk && (
+						<>
+							<Grid
+								style={{
+									height:'85%',
+									padding: '1em',
+									margin: '.5em'
+								}}
+							>
+								We're sorry, but the {mapService.activeBaseLayer?.name} cannot be printed.
+								Please select another basemap.
+							</Grid>
+							<Grid
+								style={{
+									height:'15%',
+									padding: '1em',
+									margin: '.5em',
+									textAlign: 'center'
+								}}
+							>
+								<Button
+									variant="contained"
+									onClick={async () => {
+										myState.isOpen = false;
+									}}
+								>
+									<CheckCircle/> OK
+								</Button>
+							</Grid>
+						</>
+						
+					)}
+					{mapService.activeBaseLayer?.pdfOk && myState.isPrinting && (
 						<LinearProgress
 							title="Printing..."
 						/>
 					)}
-					{!myState.isPrinting && (
+					{mapService.activeBaseLayer?.pdfOk && !myState.isPrinting && (
 						<>
 							<Grid
 								style={{

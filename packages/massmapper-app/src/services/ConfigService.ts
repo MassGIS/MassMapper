@@ -17,12 +17,23 @@ class ConfigService {
 		return this._config.xGridLicenseKey;
 	}
 
-	get initialExtent(): [number, number] {
-		return this._config.initialExtent || [ 42.067627975,-71.7182675 ]
+	get initialExtent(): [number, number, number, number] {
+		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
 	}
 
-	get initialZoomLevel(): number {
-		return this._config.initialZoomLevel || 8;
+	get availableBasemaps(): string[] {
+		return this._config.availableBasemaps || [
+			'MassGIS Statewide Basemap',
+			'2019 Color Orthos (USGS)',
+			'USGS Topographic Quadrangle Maps',
+			'OpenStreetMap Basemap',
+			'Google Roads Basemap',
+			'Google Satellite Basemap',
+			'Google Hybrid Basemap',
+			'Google Terrain Basemap',
+			'ESRI Streets Basemap',
+			'ESRI Light Gray Basemap'
+		];
 	}
 
 	get folderSet():string {
@@ -36,16 +47,28 @@ class ConfigService {
 	private _ready: boolean = false;
 	private _config: {
 		folderSet: string,
-		initialExtent: [number, number],
-		initialZoomLevel: number,
+		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
+		availableBasemaps: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
+
 	} = {
 		folderSet: '',
-		initialExtent: [42.067627975,-71.7182675],
-		initialZoomLevel: 8,
-		tools: []
+		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
+		tools: [],
+		availableBasemaps: [
+			'MassGIS Statewide Basemap',
+			'2019 Color Orthos (USGS)',
+			'USGS Topographic Quadrangle Maps',
+			'OpenStreetMap Basemap',
+			'Google Roads Basemap',
+			'Google Satellite Basemap',
+			'Google Hybrid Basemap',
+			'Google Terrain Basemap',
+			'ESRI Streets Basemap',
+			'ESRI Light Gray Basemap'
+		]
 	};
 
 	constructor(private readonly _services: ContainerInstance) {

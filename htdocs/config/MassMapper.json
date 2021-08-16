@@ -1,9 +1,8 @@
 {
-	"folderSet" : "https://massgis.2creek.com/oliver-data/temp/massmapper_folderset.xml",
+	"folderSet" : "https://maps.massgis.state.ma.us/temp/massmapper_folderset.xml",
 	"initialExtent" : [
-		42.067627975,-71.7182675
+		-73.508142, 41.237964, -69.928393, 42.886589
 	],
-	"initialZoomLevel" : 8,
 	"useXGrid": false,
 	"xGridLicenseKey" : "XGRID LICENSE KEY HERE",
 	"tools": [
@@ -76,5 +75,17 @@
 			"position": "topleft",
 			"class": "ExportWizardTool"
 		}
+	],
+	"availableBasemaps": [
+		"MassGIS Statewide Basemap",
+		"2019 Color Orthos (USGS)",
+		"USGS Topographic Quadrangle Maps",
+		"OpenStreetMap Basemap",
+		"Google Roads Basemap",
+		"Google Satellite Basemap",
+		"Google Hybrid Basemap",
+		"Google Terrain Basemap",
+		"ESRI Streets Basemap",
+		"ESRI Light Gray Basemap"
 	]
 }

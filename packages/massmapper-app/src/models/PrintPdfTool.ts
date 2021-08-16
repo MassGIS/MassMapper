@@ -62,23 +62,27 @@ class PrintPdfTool extends Tool {
 	}
 
 	public async makePDF(title: string, filename: string): Promise<void> {
-		const legendWidth = 200;
+		const legendWidth = 320;
 		const titleHeight = 50;
 		const leftMargin = 20;
 
 		const ls = this._services.get(LegendService);
 		const ms = this._services.get(MapService);
 
+		// Not sure why but Safari will only show the overlays properly if we do a dry run (that we won't use)!
+		await this._ss.takeScreen('image', {});
 		const image = await this._ss.takeScreen('image', {});
+
 		const pdf = new jsPDF('l', 'pt', [ms.leafletMap!.getSize().x - 0, ms.leafletMap!.getSize().y]);
 
-		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 30, {align: 'center'});
+		pdf.setFontSize(26);
+		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 37, {align: 'center'});
 
 		const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
 		const ratio = mapWidth / pdf.internal.pageSize.getWidth();
 		const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
-		pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 3, 129, 69);
+		pdf.addImage(massmapper, 'PNG', leftMargin + mapWidth - 129 - 3, titleHeight + mapHeight - 69 - 14, 129, 69);
 
 		let legends: any[] = [];
 		const layers = ls.enabledLayers.map(async (l, i) => {
@@ -115,19 +119,30 @@ class PrintPdfTool extends Tool {
 		return Promise.all(layers).then(() => {
 			let y = titleHeight + 20;
 
+			pdf.setFontSize(16);
 			legends.forEach(leg => {
 				// Word wrap (trying near character(s) 20); H/T https://stackoverflow.com/a/51506718
 				const title = leg.title.replace(
 					/(?![^\n]{1,20}$)([^\n]{1,20})\s/g, '$1\n'
 				);
-				// Write it.
-				pdf.text(title, leftMargin + mapWidth + 10, y);
+
 				// Number of newlines
 				const c = (title.match(/\n/g) || []).length;
+
+				// Figure out if the bottom of the legend title + legend image would be off the page.
+				// If so, start a new page, and assume that one title + image would fit on one page.
+				const bottom = y + c * 20  + (leg.img ? (5 + leg.img.height) : 0);
+				if (y > (titleHeight + 20) && (bottom > pdf.internal.pageSize.getHeight())) {
+					pdf.addPage();
+					y = titleHeight + 20;
+				}
+
+				// Write it.
+				pdf.text(title, leftMargin + mapWidth + 10, y);
 				y += c * 20;
 				if (leg.img) {
 					y += 5;
-					pdf.addImage(String(leg.img.data), 'PNG', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
+					pdf.addImage(String(leg.img.data), 'GIF', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
 					y += leg.img.height;
 				}
 				y += 25;

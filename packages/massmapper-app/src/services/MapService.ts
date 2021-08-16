@@ -9,6 +9,7 @@ import {
 	polygon,
 	circleMarker,
 	LatLng,
+	LatLngBounds,
 } from 'leaflet';
 import { autorun, computed, has, makeObservable, observable } from "mobx";
 import { ContainerInstance, Service } from "typedi";
@@ -21,6 +22,7 @@ const g = GoogleMutant; // need this to force webpack to realize we're actually 
 import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
+import { ConfigService } from './ConfigService';
 import north from '../images/north_arrow.png';
 
 @Service()
@@ -29,13 +31,20 @@ class MapService {
 		// https://docs.microsoft.com/en-us/bingmaps/articles/bing-maps-tile-system
 		const EARTH_RADIUS = 6378137;
 		const SCREEN_PPI = 96;
+		// Original OLIVER assumed all scales were calculated at the equator.  Assume the same here so that
+		// all layer scaleOK calcs will be identical.
+		const centerLat = 0; // this._map.getCenter().lat
 		if (this._map) {
-			return (Math.cos(this._map.getCenter().lat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) /
+			return (Math.cos(centerLat * Math.PI/180) * 2 * Math.PI * EARTH_RADIUS * SCREEN_PPI) /
 				(256 * Math.pow(2, this._mapZoom) * 0.0254);
 		}
 		else {
 			return 0;
 		}
+	}
+
+	get activeBaseLayer() {
+		return this._activeBaseLayer;
 	}
 
 	get ready(): boolean {
@@ -50,8 +59,7 @@ class MapService {
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
-	private _mapCenter: string = '';
-	private _activeBaseLayer: string;
+	private _mapExtent: number[] = [0, 0, 0, 0];
 	private _layerControl:Control.Layers;
 	private _selectedFeatures: Array<LeafletLayer> = [];
 	private _basemaps = [
@@ -60,95 +68,109 @@ class MapService {
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 19
+					maxZoom: 19,
+					minZoom: 7
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: '2019 Color Orthos (USGS)',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 19
+					maxZoom: 20,
+					minZoom: 7
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: 'USGS Topographic Quadrangle Maps',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}',
 				{
-					maxZoom: 18
+					maxZoom: 18,
+					minZoom: 12
 				}
-			)
+			),
+			pdfOk: true
 		},
 		{
 			name: 'OpenStreetMap Basemap',
 			layer: new TileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				maxZoom: 19,
 				attribution: '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap contributors</a>'
-			})
+			}),
+			pdfOk: true
 		},
 		{
 			name: 'Google Roads Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'roadmap'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Satellite Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'satellite'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Hybrid Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'hybrid'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'Google Terrain Basemap',
 			layer: new Leaflet.gridLayer['googleMutant']({
 				type: 'terrain'
-			})
+			}),
+			pdfOK: false
 		},
 		{
 			name: 'ESRI Streets Basemap',
-			layer: new BasemapLayer('Streets')
+			layer: new BasemapLayer('Streets'),
+			pdfOk: true
 		},
 		{
 			name: 'ESRI Light Gray Basemap',
-			layer: new BasemapLayer('Gray')
+			layer: new BasemapLayer('Gray'),
+			pdfOk: true
 		},
 	];
+	private _activeBaseLayer: any = {};
 
 	get permalink(): string {
-		const zoom = this._mapZoom || '';
-		const layers = Array.from(this._leafletLayers.values()).map(l => l.options!['name'] + '__' + l.options!['style']).join(",");
+		const layers = this._services.get(LegendService).layers.map(
+			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF')
+		).join(",");
 
-		return `bl=${encodeURIComponent(this._activeBaseLayer)}&l=${layers}&c=${this._mapCenter}&z=${zoom}`;
+		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
-		this._activeBaseLayer = 'MassGIS Statewide Basemap';
 
-		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapCenter' | '_leafletLayers' | '_activeBaseLayer'>(
+		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapExtent' | '_leafletLayers' | '_activeBaseLayer'>(
 			this,
 			{
 				_activeBaseLayer: observable,
 				_leafletLayers: observable,
 				_map: observable,
-				_mapCenter: observable,
 				_mapZoom: observable,
+				_mapExtent: observable,
 				_ready: observable,
 				currentScale: computed,
 			}
 		);
 	}
 
-	public async initLeafletMap(m: LeafletMap): Promise<void> {
+	public async initLeafletMap(m: LeafletMap, b: number[]): Promise<void> {
 		// read the url
 		this._map = m;
 
@@ -158,9 +180,16 @@ class MapService {
 
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
+		const cs = this._services.get(ConfigService);
+
+		// setup the initial extent [lon0, lat0, lon1, lat1]
+		this._map.fitBounds(new LatLngBounds(
+			new LatLng(b[1], b[0]), 
+			new LatLng(b[3], b[2])
+		));
 
 		// need to load layers
-		autorun((r) => {
+		autorun(async (r) => {
 			const cs = this._services.get(CatalogService);
 			if (!cs.ready || !ls.ready) {
 				return;
@@ -178,16 +207,21 @@ class MapService {
 
 			// Only add layers we recognize, according to permalink order.
 			let toAdd: any[] = [];
+			// Keep track of any layers that should start off not enabled.
+			let notEnabled: any[] = [];
 			layers.forEach(l => {
 				const catlyr = cs.uniqueLayers.find(cl => {
-					return l === cl.name + "__" + cl.style;
+					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*' + '$').test(l);
 				});
 				if (catlyr) {
-					toAdd.push(catlyr);
+					toAdd.unshift(catlyr);
+					if (/__OFF$/.test(l)) {
+						notEnabled.push(catlyr.name + '__' + catlyr.style);
+					}
 				}
 			})
 
-			toAdd.forEach((v) => {
+			for await (let v of toAdd) {
 				const l = new Layer(
 					v.name!,
 					v.style!,
@@ -196,13 +230,36 @@ class MapService {
 					v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
 					v.query || v.name!
 				);
-				ls.addLayer.bind(ls)(l);
-			});
+				await ls.addLayer.bind(ls)(l);
+				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
+					l.enabled = false;
+				}
+			};
 
 			toAdd.length > 0 && r.dispose();
 		});
 
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
+
+		const MS = Control.extend({
+			onAdd: function () {
+				const div = document.createElement('div');
+				div.id = 'map-scale';
+				// Copied style from Control.Scale.
+				div.style.background = "rgba(255, 255, 255, 0.5)";
+				div.style.fontSize = "11px";
+				div.style.lineHeight = "1.1";
+				div.style.padding = "2px 5px 1px";
+				return div;
+			},
+			onRemove: function () {
+			},
+		});
+		const MapScaleControl = function(opts: Leaflet.ControlOptions | undefined) {
+			return new MS(opts);
+		};
+		MapScaleControl({position: 'bottomleft'}).addTo(this._map);
+
 		const NA = Control.extend({
 			onAdd: function () {
 				const img = document.createElement('img');
@@ -225,22 +282,33 @@ class MapService {
 
 		m.addEventListener('moveend zoomend', () => {
 			this._mapZoom = this._map?.getZoom() || 0;
-			this._mapCenter = this.leafletMap?.getCenter().lat + ',' + this.leafletMap?.getCenter().lng;
+			this._mapExtent = [
+				this.leafletMap?.getBounds().getSouthWest().lng || 0,
+				this.leafletMap?.getBounds().getSouthWest().lat || 0,
+				this.leafletMap?.getBounds().getNorthEast().lng || 0,
+				this.leafletMap?.getBounds().getNorthEast().lat || 0,
+			]
+			document.getElementById('map-scale')!.innerHTML = '1:' + String(Math.round(this.currentScale)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
-			this._activeBaseLayer = e.name;
+			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
 		});
 
 		this._layerControl = new Control.Layers().addTo(this._map);
 
+		this._basemaps = this._basemaps.filter((bm) => 
+			cs.availableBasemaps.indexOf(bm.name) >= 0
+		);
+		this._activeBaseLayer = this._basemaps[0];
+
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
-			this._activeBaseLayer = '' + hs.get('bl');
+			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === hs.get('bl'));
 		}
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);
-			if (o.name === this._activeBaseLayer) {
+			if (o.name === this._activeBaseLayer!.name) {
 				o.layer.addTo(this._map);
 			}
 		});
@@ -354,6 +422,19 @@ class MapService {
 								fillColor : "#ffae00",
 								fillOpacity : .3,
 							});
+					} else if (f.geometry.type === 'MultiPolygon') {
+						let latLngs = [];
+						for (let i = 0; i < f.geometry.coordinates[0].length; i++) {
+							latLngs.push(f.geometry.coordinates[0][i].map((f:Array<number>) => new LatLng(f[1], f[0])));
+						}
+						mapFeature = polygon(
+							latLngs,
+							{
+								color: "#ffae00",
+								fillColor : "#ffae00",
+								fillOpacity : .3,
+							});
+
 					} else if (f.geometry.type === 'LineString') {
 						const latLngs = f.geometry.coordinates.map((f:Array<number>) => new LatLng(f[1], f[0]));
 						mapFeature = polyline(

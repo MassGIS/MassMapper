@@ -7,15 +7,16 @@ import { v4 as uuid } from 'uuid';
 import proj4 from 'proj4';
 import * as turf from '@turf/turf';
 import * as wkt from 'wellknown';
+import { toast } from "react-toastify";
 
 
 interface IdentifyResultFeature {
 	id: string;
 	isSelected: boolean;
-	properties: object;
+	properties: any;
 	geometry_name: "shape",
 	geometry: {
-		type: "Point" | "LineString" | "Polygon",
+		type: "Point" | "LineString" | "Polygon" | "MultiPolygon",
 		coordinates: Array<any>
 	}
 };
@@ -138,9 +139,11 @@ class IdentifyResult {
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs?' + params.join('&'),
+		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
 			{
-				method: 'GET'
+				method: 'POST',
+				body: params.join('&'),
+				headers: {'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'}
 			});
 		const respBody = await res.text();
 		this._numFeatures = getNumFeaturesFromHitsResponse(respBody);
@@ -148,7 +151,8 @@ class IdentifyResult {
 		return this._numFeatures;
 	}
 
-	public async getResults(): Promise<IdentifyResultFeature[]> {
+	public async getResults(filterPolyType: boolean): Promise<IdentifyResultFeature[]> {
+		console.log(this.numFeaturesDisplay);
 		this._isLoading = true;
 
 		const intersectionWkt = this._intersectsShape ?
@@ -166,21 +170,34 @@ class IdentifyResult {
 			'outputFormat=application/json',
 			// 'bbox=' +  this.bbox.toBBoxString() + ',EPSG:4326'
 			`cql_filter=INTERSECTS(shape,geomFromWKT(${intersectionWkt})) and ${excludeIds}`
-
-
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs?' + params.join('&'),
+		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
 			{
-				method: 'GET'
+				method: 'POST',
+				body: params.join('&'),
+				headers: {'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'}
 			});
 
 		const jsonRes = await res.json();
 		(jsonRes.features as IdentifyResultFeature[]).forEach((feature) => {
 			feature.id = feature.id || uuid();
 		})
-		this._features = jsonRes.features;
+
+		let offensivePolyTypes = 0;
+		this._features = [];
+		for (let i = 0; i < jsonRes.features.length; i++) {
+			if (filterPolyType && /^(ROW|PRIV_ROW)$/.test(jsonRes.features[i].properties.poly_type)) {
+				offensivePolyTypes++;
+			}
+			else {
+				this._features?.push(jsonRes.features[i]);
+			}
+		}
+		if (offensivePolyTypes > 0) {
+			toast("Parcels of type ROW or PRIV_ROW were dropped from the buffered features.");
+		}
 
 		this._isLoading = false;
 
@@ -208,13 +225,18 @@ class IdentifyResult {
 		console.log('exporting', this.rows.filter(r => r.isSelected || !selectedOnly).length,'features');
 		// Get rid of any leading prefix:.
 		const name = this.layer.name.replace(/^[^:]*:/, '');
-		const url = `https://massgis.2creek.com/oliver-data/getstore.php?name=${name}.${fileType}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		// Special lookup for tiled overlays.
+		const queryName = this.layer.layerType === 'tiled_overlay' ? this.layer.queryName : this.layer.name;
+		// Geoserver zip's up shapefile goodies.
+		const ext = fileType === 'shp' ? 'zip' : fileType;
+		const url = `https://maps.massgis.state.ma.us/map_ol/getstore.php?name=${name}.${ext}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
 			'csv': 'csv',
 			'shp' : 'shape-zip',
 		}
+		const shpPropertyName = fileType === 'shp' ? '<ogc:PropertyName>shape</ogc:PropertyName>' : '';
 		const xml = `<wfs:GetFeature
 	outputFormat="${outputFormatMap[fileType]}"
 	xmlns:wfs="http://www.opengis.net/wfs"
@@ -223,8 +245,9 @@ class IdentifyResult {
 	xsi:schemaLocation="http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ogc="http://www.opengis.net/ogc">
-	<wfs:Query typeName="${this.layer.name}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
+	<wfs:Query typeName="${queryName}" srsName="EPSG:900913" xmlns:massgis="http://massgis.state.ma.us/featuretype">
 		${this.properties.filter(p => p !== 'bbox').map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
+		${shpPropertyName}
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
 			${this.rows.filter(r => r.isSelected || !selectedOnly).map(r => `<ogc:FeatureId fid="${r.id}"/>`).join('')}
 		</ogc:Filter>
@@ -240,8 +263,8 @@ class IdentifyResult {
 
 		const exportData = await res.text();
 
-		// Specify host since getstore went through a proxy.
-		return '//' + document.location.host + exportData;
+		// All download results live on maps.massgis.state.ma.us.
+		return '//' + 'maps.massgis.state.ma.us' + exportData;
 	}
 
 	public async exportToMkzip(fileType: string) {

@@ -18,6 +18,7 @@ import { observer, useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from "react";
 import { MapService } from '../services/MapService';
 import { useService } from '../services/useService';
+import { toast } from 'react-toastify';
 
 interface ArcGISGecodeResult {
 	address: string;
@@ -42,7 +43,7 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 </soap:Body>
 </soap:Envelope>`;
 
-	const proxy = 'https://massgis.2creek.com/cgi-bin/proxy.cgi'
+	const proxy = 'https://maps.massgis.state.ma.us/cgi-bin/proxy.cgi'
 	const url = 'http://gisprpxy.itd.state.ma.us/MassGISGeocodeServiceApplication/MassGISCustomGeocodeService.asmx';
 	const res = await fetch(proxy + "?url=" + url, {
 		method : "POST",
@@ -222,7 +223,7 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 				onClick={async () => {
 					uiState.results = await arcgisGeocode(uiState.street, uiState.city, uiState.zip);
 					if (uiState.results.length === 0) {
-						alert("No matches found.  Please try again.");
+						toast("No matches found.  Please try again.");
 					}
 				}}
 				disabled={!uiState.street || (!uiState.city && !uiState.zip)}

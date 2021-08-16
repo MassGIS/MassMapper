@@ -14,7 +14,7 @@ const bundles = {
 		],
 	},
 	node: {
-		fs: 'empty',
+		// fs: 'empty',
 	},
 	plugins: [
 		// HTML Generation: Snowops Staff Manager (non-admin)
