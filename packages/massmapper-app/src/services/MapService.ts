@@ -147,7 +147,7 @@ class MapService {
 
 	get permalink(): string {
 		const layers = this._services.get(LegendService).layers.map(
-			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF')
+			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF') + '__' + l.opacity
 		).join(",");
 
 		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
@@ -203,6 +203,10 @@ class MapService {
 				[] :
 				'Basemaps_L3Parcels__'.split(',');
 
+			// Permalink format:  NAME__STYLE__STATUS__OPACITY
+			// __STATUS (optional) may be __OFF or __ON.
+			// __OPACITY (optional) may be an __integer from __0 to __100.
+
 			// Incoming permalink layers override defaults.
 			if (hs.has('l')) {
 				layers = (hs.get('l') as string).split(',');
@@ -212,14 +216,22 @@ class MapService {
 			let toAdd: any[] = [];
 			// Keep track of any layers that should start off not enabled.
 			let notEnabled: any[] = [];
+			// Keep track of any layers that have specified opacity.
+			let opacitySet: any = {};
 			layers.forEach(l => {
 				const catlyr = cs.uniqueLayers.find(cl => {
-					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*' + '$').test(l);
+					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*(__\\d+)*' + '$').test(l);
 				});
 				if (catlyr) {
 					toAdd.unshift(catlyr);
-					if (/__OFF$/.test(l)) {
-						notEnabled.push(catlyr.name + '__' + catlyr.style);
+					const a = /(__ON|__OFF)*(__\d+)*$/.exec(l);
+					if (a) {
+						if (a[1] === '__OFF') {
+							notEnabled.push(catlyr.name + '__' + catlyr.style);
+						}
+						if (a.length > 2) {
+							opacitySet[catlyr.name + '__' + catlyr.style] = String(a[2]).replace('__', '');
+						}
 					}
 				}
 			})
@@ -237,6 +249,7 @@ class MapService {
 				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
 					l.enabled = false;
 				}
+				l.opacity = opacitySet[v.name + '__' + v.style] !== undefined ? opacitySet[v.name + '__' + v.style] : 100;
 			};
 
 			toAdd.length > 0 && r.dispose();
