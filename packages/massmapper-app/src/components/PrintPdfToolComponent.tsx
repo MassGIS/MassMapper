@@ -5,7 +5,9 @@ import {
 	Dialog,
 	DialogTitle,
 	DialogContent,
-	LinearProgress
+	LinearProgress,
+	Radio,
+	FormHelperText
 } from '@material-ui/core'
 import {
 	Cancel,
@@ -25,6 +27,7 @@ import { PrintPdfTool } from '../models/PrintPdfTool';
 interface PrintPdfToolComponentState {
 	title:string,
 	filename:string,
+	size:string,
 	isOpen: boolean,
 	isPrinting: boolean,
 }
@@ -36,6 +39,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 			title: '',
 			filename: 'massmapper.pdf',
 			isPrinting: false,
+			size: 'letter'
 		}
 	});
 	const myTool = tool as PrintPdfTool;
@@ -122,12 +126,44 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								<br/><br/>
 								<TextField
 									placeholder="Filename"
-									value={myState.filename}
+									value={myState.filename}	
 									helperText="PDF Filename"
 									onChange={(e) => {
 										myState.filename = e.target.value;
 									}}
 								/>
+								<br/><br/>
+								<div style={{
+									color: 'rgba(0, 0, 0, 0.54)'
+								}}								>
+									Page Size
+								</div>
+								<Radio
+									checked={myState.size === 'letter'}
+									onClick={() => {
+										myState.size = 'letter';
+									}}
+								/>
+								<div style={{
+									width: '4em',
+									display: 'inline-block',
+									color: myState.size === 'letter' ? '' : 'gray'
+								}}>
+									Letter
+								</div>
+								<Radio
+									checked={myState.size === 'legal'}
+									onClick={() => {
+										myState.size = 'legal';
+									}}
+								/>
+								<div style={{
+									width: '4em',
+									display: 'inline-block',
+									color: myState.size === 'legal' ? '' : 'gray'
+								}}>
+									Legal
+								</div>
 							</Grid>
 							<Grid
 								style={{
@@ -144,11 +180,12 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									variant="contained"
 									onClick={async () => {
 										myState.isPrinting = true;
-										await myTool.makePDF(myState.title, myState.filename);
+										await myTool.makePDF(myState.title, myState.filename, myState.size);
 										myState.isOpen = false;
 										myState.title = '';
 										myState.filename = 'massmapper.pdf';
 										myState.isPrinting = false;
+										myState.size = 'letter';
 									}}
 								>
 									<Print /> Print Map
