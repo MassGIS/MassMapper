@@ -8,15 +8,17 @@ import {
 	DialogContent,
 	DialogTitle,
 	LinearProgress,
-	Menu,
-	MenuItem,
 	TableContainer,
 	Table,
 	TableHead,
 	TableBody,
 	TableRow,
 	TableCell,
-	Tooltip,
+	FormControlLabel,
+	Radio,
+	RadioGroup,
+	Typography,
+	TextField,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -28,23 +30,20 @@ import {
 	GetApp,
 	NavigateBefore,
 	NavigateNext,
-	Save,
-	SaveAlt,
 } from '@material-ui/icons';
 
-import { makeObservable, runInAction } from 'mobx';
-import { observer, Observer } from 'mobx-react';
+import { runInAction } from 'mobx';
+import { observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
 
-import React, { FunctionComponent, MouseEvent } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { useService } from '../services/useService';
-import { SelectionService } from '../services/SelectionService';
 import { LegendService } from '../services/LegendService';
 import { ConfigService } from '../services/ConfigService';
 import { ToolComponentProps } from '../models/Tool';
 import { Layer } from '../models/Layer';
-import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
+import { CatalogService } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { MapService } from '../services/MapService';
 import { LatLngBounds } from 'leaflet';
@@ -58,8 +57,8 @@ const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
 		container: {
 			flexGrow: 1,
-			height: '70vh',
-			width: '70vw'
+			height: '70vh'
+			// ,width: '60vw'
 		},
 		table: {
 			// width: '90vh',
@@ -114,7 +113,7 @@ interface ExportWizardComponentState {
 	isReadyForNextStep: boolean;
 }
 
-const calculateNumFeatures = (state:ExportWizardComponentState, bbox: LatLngBounds):boolean => {
+const calculateNumFeatures = (state:ExportWizardComponentState, bbox: LatLngBounds, gsurl: string):boolean => {
 	runInAction(() => {
 		state.exportLayersFeatureCount.clear();
 		state.isReadyForNextStep = false;
@@ -125,7 +124,8 @@ const calculateNumFeatures = (state:ExportWizardComponentState, bbox: LatLngBoun
 	Array.from(state.exportLayers).forEach(async ([name, layer]) => {
 		const idResults = new IdentifyResult(
 			layer,
-			bbox
+			bbox,
+			gsurl
 		);
 
 		const idResult = idResults.getNumFeatures();
@@ -155,7 +155,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 	const classes = useStyles();
 
-	const [ legendService, mapService, catalogService ] = useService([ LegendService, MapService, CatalogService ]);
+	const [ legendService, mapService, catalogService, configService ] = useService([ LegendService, MapService, CatalogService, ConfigService ]);
 	const myState = useLocalObservable<ExportWizardComponentState>(() => {
 		const exportLayers = new Map<string, Layer>();
 		const exportLayersFeatureCount = new Map<string, number>();
@@ -240,7 +240,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						direction="row"
 					>
 						<Grid item xs={6} style={{
-							minWidth: '50%',
+							minWidth: '40%',
 							height: '100%',
 							overflow: 'auto',
 							paddingRight: '3em'
@@ -322,8 +322,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 																node.style!,
 																node.title!,
 																node.type!,
-																node.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
-																node.query || node.name!
+																node.agol || configService.geoserverUrl + '/geoserver/wms',
+																node.query || node.name!,
+																configService.geoserverUrl,
 															);
 															myState.exportLayers.set(layer.name, layer);
 														});
@@ -401,62 +402,169 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					</Grid>
 				)}
 
-{myState.activeStep === 3 && (
+				{myState.activeStep === 4 && (
 					<Grid
-					className={classes.container}
-					container
-					direction="row"
+						className={classes.container}
+						container
+						direction="row"
 					>
 						<Grid item xs={12} style={{
-							height: '100%',
-							overflow: 'auto',
-							paddingRight: '3em'
+							padding: '1em'
 						}}>
-							<TableContainer>
-								<Table
-									className={classes.table}
-									size="small" // "medium"
-									aria-label="enhanced table"
-								>
-									<TableHead>
-										<TableRow>
-											<TableCell padding="normal"></TableCell>
-											<TableCell padding="normal">Data Layer Name</TableCell>
-											<TableCell padding="normal">Feature(s) Found</TableCell>
-											<TableCell padding="normal">OK to export?</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody>
-									{Array.from(myState.exportLayers).map(([id, layer]) => (
-										<TableRow
-											hover
-											key={layer.id}
+							<Typography variant="h6" id="tableTitle" component="div">
+								Vector Data Export Format
+							</Typography>
+							<RadioGroup aria-label="vector-format" name="vector-format">
+								{/* value={value} onChange={handleChange} */}
+								<TableContainer >
+									<Table
+										className={classes.table}
+										size="small" // "medium"
+										aria-label="enhanced table"
 										>
-											<TableCell>{layer.queryName ? 'polygon' : layer.layerType}</TableCell>
-											<TableCell>{layer.title}</TableCell>
-											<TableCell>
-												{!myState.exportLayersFeatureCount.has(layer.name) && (
-													<span>loading...</span>
-												)}
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)
-												}
-											</TableCell>
-											<TableCell>
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)! > MAX_EXPORT_FEATURES &&
-													(<div><Error /><div style={{ display: 'inline-block', verticalAlign: "super"}}>&gt; max # features </div></div>)
-												}
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)! <= MAX_EXPORT_FEATURES &&
-													(<div><Check /><div style={{ display: 'inline-block', verticalAlign: "super"}}>OK </div></div>)
-												}
-											</TableCell>
-										</TableRow>
-									))}
-									</TableBody>
-								</Table>
-							</TableContainer>
+										<TableHead>
+											<TableRow>
+												<TableCell padding="normal"></TableCell>
+												<TableCell padding="normal"></TableCell>
+												<TableCell padding="normal"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											<TableRow hover>
+												<TableCell>
+													<FormControlLabel value="shp" control={<Radio />} label="ShapeFile (.shp)" />
+												</TableCell>
+												<TableCell>
+													<FormControlLabel value="kml" control={<Radio />} label="Google Earth (.kml)" />
+												</TableCell>
+												<TableCell>
+													<FormControlLabel value="xlsx" control={<Radio />} label="Excel (.xlsx)" />
+												</TableCell>
+											</TableRow>
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="xls" control={<Radio />} label="Excel 97-2003 (.xls)" />
+												</TableCell>
+												<TableCell>
+													<FormControlLabel value="csv" control={<Radio />} label="CSV (.csv)" />
+												</TableCell>
+												<TableCell></TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</RadioGroup>
+						</Grid>
+
+						<Grid item xs={12} style={{
+							padding: '1em'
+						}}>
+							<Typography variant="h6" id="tableTitle" component="div">
+								Raster Data Export Format
+							</Typography>
+							<RadioGroup aria-label="raster-format" name="raster-format">
+								{/* value={value} onChange={handleChange} */}
+								<TableContainer >
+									<Table
+										className={classes.table}
+										size="small" // "medium"
+										aria-label="enhanced table"
+										>
+										<TableHead>
+											<TableRow>
+												<TableCell padding="normal"></TableCell>
+												<TableCell padding="normal"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											<TableRow hover>
+												<TableCell>
+													<FormControlLabel value="xlsx" control={<Radio checked disabled />} label="GeoTIFF (available in NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986 coordinate system only)" />
+												</TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</RadioGroup>
+						</Grid>
+
+						<Grid item xs={12} style={{
+							padding: '1em'
+						}}>
+							<Typography variant="h6" id="tableTitle" component="div">
+								Output Coordinate System
+							</Typography>
+							<RadioGroup aria-label="raster-format" name="raster-format">
+								{/* value={value} onChange={handleChange} */}
+								<TableContainer >
+									<Table
+										className={classes.table}
+										size="small" // "medium"
+										aria-label="enhanced table"
+									>
+										<TableHead>
+											<TableRow>
+												<TableCell padding="normal"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="26986" control={<Radio />} label="NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986" />
+												</TableCell>
+											</TableRow>
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="26918" control={<Radio checked disabled />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
+												</TableCell>
+											</TableRow>
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="26919" control={<Radio checked disabled />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
+												</TableCell>
+											</TableRow>
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="4326" control={<Radio checked disabled />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
+												</TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</RadioGroup>
+						</Grid>
+
+						<Grid item xs={12} style={{
+							padding: '1em'
+						}}>
+							<Typography variant="h6" id="tableTitle" component="div">
+								Output Coordinate System
+							</Typography>
+							<RadioGroup aria-label="raster-format" name="raster-format">
+								{/* value={value} onChange={handleChange} */}
+								<TableContainer >
+									<Table
+										className={classes.table}
+										size="small" // "medium"
+
+										aria-label="enhanced table"
+									>
+										<TableHead>
+											<TableRow>
+												<TableCell padding="normal"></TableCell>
+											</TableRow>
+										</TableHead>
+										<TableBody>
+											<TableRow>
+												<TableCell>
+													Name of zipfile to download:<br/>
+													<TextField id="output-filename" label="Output Filename" />
+												</TableCell>
+											</TableRow>
+										</TableBody>
+									</Table>
+								</TableContainer>
+							</RadioGroup>
 						</Grid>
 					</Grid>
 				)}
@@ -471,6 +579,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							onClick={() => {
 								runInAction(() => {
 									myState.activeStep = myState.activeStep! - 1;
+									myState.activeStep <= 2 && (myState.isReadyForNextStep = true);
 								});
 							}}
 						>
@@ -486,7 +595,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						onClick={() => {
 							runInAction(() => {
 								myState.activeStep = myState.activeStep! + 1;
-								myState.activeStep === 3 && calculateNumFeatures(myState, mapService.leafletMap!.getBounds());
+								myState.activeStep === 3 && calculateNumFeatures(myState, mapService.leafletMap!.getBounds(), configService.geoserverUrl);
 							})
 						}}
 					>

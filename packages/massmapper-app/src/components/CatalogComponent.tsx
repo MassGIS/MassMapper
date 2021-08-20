@@ -20,10 +20,11 @@ import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
 import { Layer } from '../models/Layer';
 import { LegendService } from '../services/LegendService';
 import Autocomplete from '@material-ui/lab/Autocomplete';
+import { ConfigService } from '../services/ConfigService';
 interface CatalogComponentProps extends RouteComponentProps<any> {
 }
 
-const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l:Layer) => Promise<void>) => {
+const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, gsurl: string, addLayer: (l:Layer) => Promise<void>) => {
 	let items: JSX.Element[] = [];
 
 	if (nodes.length === 1) {
@@ -37,7 +38,7 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 					nodeId={node.title + '::' + node.style}
 					label={node.title}
 				>
-					{renderTree([ node ], classes, addLayer)}
+					{renderTree([ node ], classes, gsurl, addLayer)}
 				</TreeItem>
 			)));
 		}
@@ -56,8 +57,9 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, addLayer: (l
 							node.style!,
 							node.title!,
 							node.type!,
-							node.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
-							node.query || node.name!
+							node.agol || gsurl + '/geoserver/wms',
+							node.query || node.name!,
+							gsurl,
 						);
 						addLayer(l);
 					}}
@@ -87,7 +89,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 
 	const classes = useStyles();
 
-	const [ catalogService, legendService ] = useService([ CatalogService, LegendService ]);
+	const [ catalogService, legendService, configService ] = useService([ CatalogService, LegendService, ConfigService ]);
 
 	const myState = useLocalObservable<CatalogComponentState>(() => {
 		return {
@@ -134,8 +136,9 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 						v.style!,
 						v.title!,
 						v.type!,
-						v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
-						v.query || v.name!
+						v.agol || configService.geoserverUrl + '/geoserver/wms',
+						v.query || v.name!,
+						configService.geoserverUrl,
 					);
 					legendService.addLayer.bind(legendService)(l);
 				}}
@@ -161,7 +164,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 				defaultExpandIcon={<ChevronRightIcon/>}
 			>
 				{
-					renderTree(catalogService.layerTree, classes, legendService.addLayer.bind(legendService))
+					renderTree(catalogService.layerTree, classes, configService.geoserverUrl, legendService.addLayer.bind(legendService))
 				}
 			</TreeView>
 		</div>

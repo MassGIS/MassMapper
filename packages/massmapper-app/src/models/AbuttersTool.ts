@@ -11,6 +11,7 @@ import buffer from '@turf/buffer';
 // import proj4, { TemplateCoordinates } from 'proj4';
 import { IdentifyResult } from "./IdentifyResults";
 import { toast } from 'react-toastify';
+import { ConfigService } from "../services/ConfigService";
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
 const EPSG_4326 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -175,10 +176,11 @@ class AbuttersTool extends Tool {
 		}
 
 		// search based on the selected bbox
+		const configService = this._services.get(ConfigService);
 		const targetParcels = new IdentifyResult(
 			abuttersLayer[0],
 			bbox,
-			// 'EPSG:26986'
+			configService.geoserverUrl,
 		);
 		const targetFeatures = await targetParcels.getResults(false);
 

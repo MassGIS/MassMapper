@@ -9,7 +9,6 @@ import * as turf from '@turf/turf';
 import * as wkt from 'wellknown';
 import { toast } from "react-toastify";
 
-
 interface IdentifyResultFeature {
 	id: string;
 	isSelected: boolean;
@@ -92,7 +91,8 @@ class IdentifyResult {
 	constructor(
 		public readonly layer: Layer,
 		public readonly bbox: LatLngBounds,
-		private _outputCRS: string = 'EPSG:4326'
+		private _gsurl: string,
+		private _outputCRS: string = 'EPSG:4326',
 	) {
 		this._isLoading = false;
 		this._numFeatures = -1;
@@ -139,7 +139,7 @@ class IdentifyResult {
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
+		const res = await fetch(this._gsurl + '/geoserver/wfs',
 			{
 				method: 'POST',
 				body: params.join('&'),
@@ -173,7 +173,7 @@ class IdentifyResult {
 		];
 		Object.entries(params);
 
-		const res = await fetch('https://giswebservices.massgis.state.ma.us/geoserver/wfs',
+		const res = await fetch(this._gsurl + '/geoserver/wfs',
 			{
 				method: 'POST',
 				body: params.join('&'),
@@ -205,7 +205,7 @@ class IdentifyResult {
 	}
 
 	// public async exportToKML(selectedOnly: boolean) {
-	// 	const exportUrl = `http://giswebservices.massgis.state.ma.us/geoserver/wms?
+	// 	const exportUrl = `${this._gsurl}/geoserver/wms?
 	// 		layers=${this.layer.queryName}&
 	// 		service=WMS&
 	// 		version=1.1.0&
@@ -229,7 +229,7 @@ class IdentifyResult {
 		const queryName = this.layer.layerType === 'tiled_overlay' ? this.layer.queryName : this.layer.name;
 		// Geoserver zip's up shapefile goodies.
 		const ext = fileType === 'shp' ? 'zip' : fileType;
-		const url = `https://maps.massgis.state.ma.us/map_ol/getstore.php?name=${name}.${ext}&url=https://giswebservices.massgis.state.ma.us/geoserver/wfs`
+		const url = `${this._gsurl}/map_ol/getstore.php?name=${name}.${ext}&url=${this._gsurl}/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
@@ -274,7 +274,7 @@ class IdentifyResult {
 		wmsStyle="Blank_Polys"
 		wmsLayer="GISDATA.L3_TAXPAR_POLY_ASSESS"
 		name="Tax Parcels for Query"
-		baseURL="http://giswebservices.massgis.state.ma.us/geoserver/wms?layers___EQ___massgis:GISDATA.L3_TAXPAR_POLY_ASSESS___AMP___service___EQ___WMS___AMP___version___EQ___1.1.0___AMP___request___EQ___GetMap___AMP___bbox___EQ___160823.171987,876167.17726399,162545.925669,877561.99102299___AMP___srs___EQ___EPSG:26986___AMP___height___EQ___100___AMP___width___EQ___100___AMP___styles___EQ______AMP___format___EQ___application/vnd.google-earth.kml+xml">
+		baseURL="${this._gsurl}/geoserver/wms?layers___EQ___massgis:GISDATA.L3_TAXPAR_POLY_ASSESS___AMP___service___EQ___WMS___AMP___version___EQ___1.1.0___AMP___request___EQ___GetMap___AMP___bbox___EQ___160823.171987,876167.17726399,162545.925669,877561.99102299___AMP___srs___EQ___EPSG:26986___AMP___height___EQ___100___AMP___width___EQ___100___AMP___styles___EQ______AMP___format___EQ___application/vnd.google-earth.kml+xml">
 		<metadata>http://www.mass.gov/info-details/massgis-data-property-tax-parcels</metadata>
 		<metadata>http://maps.massgis.state.ma.us/metadata/GISDATA_L3_TAXPAR_POLY_ASSESS.shp.xml</metadata>
 	</layer>

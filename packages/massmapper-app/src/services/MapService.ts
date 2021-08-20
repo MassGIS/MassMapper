@@ -236,14 +236,16 @@ class MapService {
 				}
 			})
 
+			const configService = this._services.get(ConfigService);
 			for await (let v of toAdd) {
 				const l = new Layer(
 					v.name!,
 					v.style!,
 					v.title!,
 					v.type!,
-					v.agol || 'https://giswebservices.massgis.state.ma.us/geoserver/wms',
-					v.query || v.name!
+					v.agol || configService.geoserverUrl + '/geoserver/wms',
+					v.query || v.name!,
+					configService.geoserverUrl
 				);
 				await ls.addLayer.bind(ls)(l);
 				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
