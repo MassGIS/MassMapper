@@ -61,8 +61,8 @@ class PrintPdfTool extends Tool {
 		return PrintPdfToolComponent;
 	}
 
-	public async makePDF(title: string, filename: string): Promise<void> {
-		const legendWidth = 320;
+	public async makePDF(title: string, filename: string, size: string): Promise<void> {
+		const legendWidth = 200;
 		const titleHeight = 50;
 		const leftMargin = 20;
 
@@ -73,21 +73,37 @@ class PrintPdfTool extends Tool {
 		await this._ss.takeScreen('image', {});
 		const image = await this._ss.takeScreen('image', {});
 
-		const pdf = new jsPDF('l', 'pt', [ms.leafletMap!.getSize().x - 0, ms.leafletMap!.getSize().y]);
+		// https://github.com/MrRio/jsPDF/blob/ddbfc0f0250ca908f8061a72fa057116b7613e78/jspdf.js#L59
+		const pdfSizes = {
+			'letter': [792, 612],
+			'legal': [1008, 612]
+		}
+		const pdfSize = pdfSizes[size];
+		const pdf = new jsPDF('l', 'pt', pdfSize);
 
-		pdf.setFontSize(26);
+		// Scale the map to fit the page.
+		let mapWindow = [pdfSize[0] - legendWidth - leftMargin, pdfSize[1] - titleHeight];
+		let mapSize = [ms.leafletMap!.getSize().x - 0, ms.leafletMap!.getSize().y];
+		if (mapSize[0] > mapWindow[0]) {
+			const scaleFactor = mapWindow[0] / mapSize[0];
+			mapSize = [mapWindow[0], mapSize[1] * scaleFactor];
+			mapWindow = mapSize;
+			if (mapSize[1] > mapWindow[1]) {
+				const scaleFactor = mapWindow[1] / mapSize[1];
+				mapSize = [mapSize[0] * scaleFactor, mapSize[1]];
+			}	
+		}
+
+		pdf.setFontSize(20);
 		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 37, {align: 'center'});
 
-		const mapWidth = pdf.internal.pageSize.getWidth() - legendWidth - leftMargin;
-		const ratio = mapWidth / pdf.internal.pageSize.getWidth();
-		const mapHeight = (pdf.internal.pageSize.getHeight() - titleHeight) * ratio;
-		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapWidth, mapHeight);
+		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapSize[0], mapSize[1]);
 		const watermarkScaleFactor = 0.5;
 		pdf.addImage(
 			massmapper, 
 			'PNG', 
-			leftMargin + mapWidth - 129 * watermarkScaleFactor - 3, 
-			titleHeight + mapHeight - 69 * watermarkScaleFactor - 14, 
+			leftMargin + mapSize[0] - 129 * watermarkScaleFactor - 3, 
+			titleHeight + mapSize[1] - 69 * watermarkScaleFactor - 14, 
 			129 * watermarkScaleFactor, 
 			69 * watermarkScaleFactor
 		);
@@ -110,8 +126,8 @@ class PrintPdfTool extends Tool {
 					title: l.title,
 					img: {
 						data: canvas.toDataURL('image/gif'),
-						width: legImg.width,
-						height: legImg.height
+						width: legImg.width * 0.5,
+						height: legImg.height * 0.5
 					}
 				};
 			}
@@ -125,13 +141,14 @@ class PrintPdfTool extends Tool {
 		});
 
 		return Promise.all(layers).then(() => {
-			let y = titleHeight + 20;
+			const paddingY = 10;
+			let y = titleHeight + paddingY;
 
-			pdf.setFontSize(16);
+			pdf.setFontSize(10);
 			legends.forEach(leg => {
-				// Word wrap (trying near character(s) 20); H/T https://stackoverflow.com/a/51506718
+				// Word wrap (trying near character(s) 40); H/T https://stackoverflow.com/a/51506718
 				const title = leg.title.replace(
-					/(?![^\n]{1,20}$)([^\n]{1,20})\s/g, '$1\n'
+					/(?![^\n]{1,40}$)([^\n]{1,40})\s/g, '$1\n'
 				);
 
 				// Number of newlines
@@ -139,21 +156,21 @@ class PrintPdfTool extends Tool {
 
 				// Figure out if the bottom of the legend title + legend image would be off the page.
 				// If so, start a new page, and assume that one title + image would fit on one page.
-				const bottom = y + c * 20  + (leg.img ? (5 + leg.img.height) : 0);
-				if (y > (titleHeight + 20) && (bottom > pdf.internal.pageSize.getHeight())) {
+				const bottom = y + c * paddingY  + (leg.img ? (5 + leg.img.height) : 0);
+				if (y > (titleHeight + paddingY) && (bottom > pdf.internal.pageSize.getHeight())) {
 					pdf.addPage();
-					y = titleHeight + 20;
+					y = titleHeight + paddingY;
 				}
 
 				// Write it.
-				pdf.text(title, leftMargin + mapWidth + 10, y);
-				y += c * 20;
+				pdf.text(title, leftMargin + mapSize[0] + 10, y);
+				y += c * paddingY;
 				if (leg.img) {
 					y += 5;
-					pdf.addImage(String(leg.img.data), 'GIF', leftMargin + mapWidth + 10, y, leg.img.width, leg.img.height);
+					pdf.addImage(String(leg.img.data), 'GIF', leftMargin + mapSize[0] + 10, y, leg.img.width, leg.img.height);
 					y += leg.img.height;
 				}
-				y += 25;
+				y += paddingY + 5;
 			})
 
 			pdf.save(filename);
