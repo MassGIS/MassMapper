@@ -32,7 +32,7 @@ class Layer {
 	}
 	get legendURL(): string {
 		return this.layerType === 'tiled_overlay' ? '' :
-			'https://giswebservices.massgis.state.ma.us/geoserver/wms?' +
+			this._gsurl + '/geoserver/wms?' +
 			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&' +
 			`LAYER=${this.name}&STYLE=${this.customStyle() || this.style}`
 	}
@@ -84,6 +84,7 @@ class Layer {
 		public readonly layerType: 'tiled_overlay' | 'wms' | 'pt' | 'line' | 'poly',
 		public readonly src:string,
 		public readonly queryName:string,
+		private readonly _gsurl:string,
 	) {
 		this.customColor = undefined;
 		makeObservable<Layer, '_isLoading' | '_layerData'>(
@@ -117,7 +118,7 @@ class Layer {
 		(
 			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
 		);
-		await fetch(`https://maps.massgis.state.ma.us/temp/OL_MORIS_cache/${layerId}.xml`, {
+		await fetch(`http://maps.massgis.state.ma.us/temp/OL_MORIS_cache/${layerId}.xml`, {
 			cache: 'no-cache'
 		})
 			.then(response => response.text())

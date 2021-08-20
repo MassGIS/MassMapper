@@ -4,6 +4,7 @@ import { IdentifyResult } from "../models/IdentifyResults";
 import { LatLngBounds } from "leaflet";
 import { Layer } from "../models/Layer";
 import * as turf from '@turf/turf';
+import { ConfigService } from "./ConfigService";
 
 @Service()
 class SelectionService {
@@ -34,9 +35,11 @@ class SelectionService {
 	}
 
 	public addIdentifyResult(layer: Layer, bbox: LatLngBounds): IdentifyResult {
+		const configService = this._services.get(ConfigService);
 		const idResult = new IdentifyResult(
 			layer,
-			bbox
+			bbox,
+			configService.geoserverUrl,
 		);
 		idResult.getNumFeatures()
 		this._idResults.set(layer.id, idResult);
