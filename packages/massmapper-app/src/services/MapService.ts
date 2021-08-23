@@ -197,8 +197,7 @@ class MapService {
 
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
 			let layers = (hs.has('bl') || hs.has('l')) ?
-				[] :
-				['Basemaps_L3Parcels____ON__100'];
+				[] : cs.defaultLayers;
 
 			// Permalink format:  NAME__STYLE__STATUS__OPACITY
 			// __STATUS (optional) may be __OFF or __ON.

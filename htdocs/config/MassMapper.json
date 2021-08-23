@@ -83,5 +83,8 @@
 		"Google Terrain Basemap",
 		"ESRI Streets Basemap",
 		"ESRI Light Gray Basemap"
+	],
+	"defaultLayers": [
+		"Basemaps_L3Parcels____ON__100"
 	]
 }

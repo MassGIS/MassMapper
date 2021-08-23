@@ -40,6 +40,12 @@ class ConfigService {
 		];
 	}
 
+	get defaultLayers(): string[] {
+		return this._config.defaultLayers || [
+			"Basemaps_L3Parcels____ON__100"
+		]
+	}
+
 	get folderSet():string {
 		return this._config.folderSet;
 	}
@@ -55,9 +61,9 @@ class ConfigService {
 		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
 		availableBasemaps: string[],
+		defaultLayers: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
-
 	} = {
 		geoserverUrl: 'https://giswebservices.massgis.state.ma.us',
 		folderSet: '',
@@ -74,6 +80,9 @@ class ConfigService {
 			'Google Terrain Basemap',
 			'ESRI Streets Basemap',
 			'ESRI Light Gray Basemap'
+		],
+		"defaultLayers": [
+			"Basemaps_L3Parcels____ON__100"
 		]
 	};
 
