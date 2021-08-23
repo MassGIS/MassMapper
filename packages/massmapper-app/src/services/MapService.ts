@@ -64,7 +64,7 @@ class MapService {
 	private _selectedFeatures: Array<LeafletLayer> = [];
 	private _basemaps = [
 		{
-			name: 'MassGIS Statewide Basemap',
+			name: 'MassGIS Basemap',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
 				{
