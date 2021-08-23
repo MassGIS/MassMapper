@@ -75,7 +75,7 @@ class MapService {
 			pdfOk: true
 		},
 		{
-			name: '2019 Color Orthos (USGS)',
+			name: '2019 Aerial Imagery',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{

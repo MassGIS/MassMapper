@@ -28,7 +28,7 @@ class ConfigService {
 	get availableBasemaps(): string[] {
 		return this._config.availableBasemaps || [
 			'MassGIS Statewide Basemap',
-			'2019 Color Orthos (USGS)',
+			'2019 Aerial Imagery',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',
 			'Google Roads Basemap',
@@ -71,7 +71,7 @@ class ConfigService {
 		tools: [],
 		availableBasemaps: [
 			'MassGIS Statewide Basemap',
-			'2019 Color Orthos (USGS)',
+			'2019 Aerial Imagery',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',
 			'Google Roads Basemap',
