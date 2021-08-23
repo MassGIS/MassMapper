@@ -118,7 +118,7 @@ class Layer {
 		(
 			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
 		);
-		await fetch(`http://maps.massgis.state.ma.us/temp/OL_MORIS_cache/${layerId}.xml`, {
+		await fetch(`https://maps.massgis.state.ma.us/temp/OL_MORIS_cache/${layerId}.xml`, {
 			cache: 'no-cache'
 		})
 			.then(response => response.text())
