@@ -181,6 +181,7 @@ class MapService {
 		const hs = this._services.get(HistoryService);
 		const ls = this._services.get(LegendService);
 		const cs = this._services.get(ConfigService);
+		const cat = this._services.get(CatalogService);
 
 		// setup the initial extent [lon0, lat0, lon1, lat1]
 		this._map.fitBounds(new LatLngBounds(
@@ -190,8 +191,7 @@ class MapService {
 
 		// need to load layers
 		autorun(async (r) => {
-			const cs = this._services.get(CatalogService);
-			if (!cs.ready || !ls.ready) {
+			if (!cat.ready || !cs.ready || !ls.ready) {
 				return;
 			}
 
@@ -216,7 +216,7 @@ class MapService {
 			// Keep track of any layers that have specified opacity.
 			let opacitySet: any = {};
 			layers.forEach(l => {
-				const catlyr = cs.uniqueLayers.find(cl => {
+				const catlyr = cat.uniqueLayers.find(cl => {
 					return new RegExp('^' + cl.name + "__" + cl.style + '(__ON|__OFF)*(__\\d+)*' + '$').test(l);
 				});
 				if (catlyr) {
@@ -233,16 +233,15 @@ class MapService {
 				}
 			})
 
-			const configService = this._services.get(ConfigService);
 			for await (let v of toAdd) {
 				const l = new Layer(
 					v.name!,
 					v.style!,
 					v.title!,
 					v.type!,
-					v.agol || configService.geoserverUrl + '/geoserver/wms',
+					v.agol || cs.geoserverUrl + '/geoserver/wms',
 					v.query || v.name!,
-					configService.geoserverUrl
+					cs.geoserverUrl
 				);
 				await ls.addLayer.bind(ls)(l);
 				if (notEnabled.indexOf(v.name + '__' + v.style) >= 0) {
@@ -315,7 +314,7 @@ class MapService {
 		this._basemaps = this._basemaps.filter((bm) => 
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
-		this._activeBaseLayer = this._basemaps[0];
+		this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
 
 		// square away the basemaps
 		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
