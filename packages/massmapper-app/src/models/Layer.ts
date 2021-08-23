@@ -226,7 +226,8 @@ class Layer {
 					layers: this.options!.layers,
 					styles: this.customStyle() || this.options!.styles,
 					transparent: true,
-					format: "image/png"
+					format: "image/png",
+					maxZoom: 20
 			}
 		);
 
