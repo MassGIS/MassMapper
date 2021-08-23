@@ -1,3 +1,6 @@
 [submodule "packages/leaflet.wms"]
 	path = packages/leaflet.wms
 	url = https://github.com/cgalvarino/leaflet.wms
+[submodule "packages/leaflet-history"]
+	path = packages/leaflet-history
+	url = https://github.com/cgalvarino/leaflet-history

@@ -24,6 +24,7 @@ import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
 import { ConfigService } from './ConfigService';
 import north from '../images/north_arrow.png';
+import hc from '@2creek/leaflet-history';
 
 @Service()
 class MapService {
@@ -253,6 +254,9 @@ class MapService {
 		});
 
 		new Control.Scale({position: 'bottomleft'}).addTo(m);
+		new hc.HistoryControl({
+			position: 'topleft'
+		}).addTo(m);
 
 		const MS = Control.extend({
 			onAdd: function () {
