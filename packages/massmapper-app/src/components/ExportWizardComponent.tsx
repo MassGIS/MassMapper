@@ -19,6 +19,8 @@ import {
 	RadioGroup,
 	Typography,
 	TextField,
+	Paper,
+	PaperProps,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
@@ -32,11 +34,11 @@ import {
 	NavigateNext,
 } from '@material-ui/icons';
 
-import { runInAction } from 'mobx';
+import { autorun, reaction, runInAction } from 'mobx';
 import { observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
 
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect } from 'react';
 
 import { useService } from '../services/useService';
 import { LegendService } from '../services/LegendService';
@@ -47,18 +49,36 @@ import { CatalogService } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { MapService } from '../services/MapService';
 import { LatLngBounds } from 'leaflet';
+import { ExportWizardTool } from '../models/ExportWizardTool';
 
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
 
-const MAX_EXPORT_FEATURES = 25000;
-
 const useStyles = makeStyles((theme) => ({
-		appBarSpacer: theme.mixins.toolbar,
+		paper: {
+			'& .MuiPaper-root': {
+				height: '70vh',
+				width: '90vw'
+			}
+		},
 		container: {
 			flexGrow: 1,
-			height: '70vh'
-			// ,width: '60vw'
+			height: '60%',
+		},
+		exportContainer: {
+			flexGrow: 1,
+			height: '60%',
+			overflowY: 'scroll',
+			'& .MuiRadio-root': {
+				padding: '4px'
+			},
+			'& .MuiTableCell-root': {
+				paddingTop: '0px',
+				paddingBottom: '0px',
+			},
+			'& .MuiTypography-body1': {
+				fontSize: '.8rem',
+			}
 		},
 		table: {
 			// width: '90vh',
@@ -75,13 +95,11 @@ const useStyles = makeStyles((theme) => ({
 	}));
 
 
-	// const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
-		// 	return (
-			// 		<Draggable handle="#identify-dialog-title" cancel={'[class*="MuiDialogContent-root"]'}>
-			// 			<Paper {...props} />
-			// 		</Draggable>
-			// 	);
-			// }
+	const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
+			return (
+					<Paper {...props} />
+				);
+			}
 
 const HowtoComponent: FunctionComponent = () => (
 	<Box
@@ -104,70 +122,59 @@ const HowtoComponent: FunctionComponent = () => (
 )
 // For information on accessing full datasets, please check the Help document
 
-interface ExportWizardComponentState {
-	activeStep: number | undefined;
-	exportFileUrl?: string;
-	exportLayers: Map<string,Layer>;
-	exportLayersFeatureCount: Map<string, number>;
-	isExporting: boolean;
-	isReadyForNextStep: boolean;
-}
+// interface ExportWizardComponentState {
+// 	activeStep: number | undefined;
+// 	exportFileUrl?: string;
+// 	exportFileName?: string;
+// 	exportLayers: Map<string,Layer>;
+// 	exportLayersFeatureCount: Map<string, number>;
+// 	isExporting: boolean;
+// 	isReadyForNextStep: boolean;
+// }
 
-const calculateNumFeatures = (state:ExportWizardComponentState, bbox: LatLngBounds, gsurl: string):boolean => {
-	runInAction(() => {
-		state.exportLayersFeatureCount.clear();
-		state.isReadyForNextStep = false;
-	});
+const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 
-	let canDoExport = true;
-	const queries:any[] = [];
-	Array.from(state.exportLayers).forEach(async ([name, layer]) => {
-		const idResults = new IdentifyResult(
-			layer,
-			bbox,
-			gsurl
-		);
-
-		const idResult = idResults.getNumFeatures();
-		queries.push(idResult);
-		const numFeatures = await idResult;
-		runInAction(() => {
-			state.exportLayersFeatureCount.set(layer.name, numFeatures);
-		});
-	});
-
-	Promise.all(queries).then(() => {
-		Array.from(state.exportLayersFeatureCount.keys()).forEach((key) => {
-			if (state.exportLayersFeatureCount.get(key)! > MAX_EXPORT_FEATURES)
-				canDoExport = false;
-		})
-
-		runInAction(() => {
-			state.isReadyForNextStep = canDoExport;
-		})
-	});
-
-
-	return true;
-}
-
-const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
-
+	const tool = _tool as ExportWizardTool;
 	const classes = useStyles();
 
 	const [ legendService, mapService, catalogService, configService ] = useService([ LegendService, MapService, CatalogService, ConfigService ]);
-	const myState = useLocalObservable<ExportWizardComponentState>(() => {
-		const exportLayers = new Map<string, Layer>();
-		const exportLayersFeatureCount = new Map<string, number>();
-		return {
-			activeStep : undefined,
-			exportLayers,
-			exportLayersFeatureCount,
-			exportResultsUrl: undefined,
-			isExporting: false,
-			isReadyForNextStep: true
-		}
-	});
+	// const myState = useLocalObservable<ExportWizardComponentState>(() => {
+	// 	const exportLayers = new Map<string, Layer>();
+	// 	const exportLayersFeatureCount = new Map<string, number>();
+	// 	return {
+	// 		activeStep : undefined,
+	// 		exportLayers,
+	// 		exportLayersFeatureCount,
+	// 		exportResultsUrl: undefined,
+	// 		isExporting: false,
+	// 		isReadyForNextStep: true
+	// 	}
+	// });
+
+	// useEffect(() => {
+	// 	reaction(
+	// 		() => myState.activeStep,
+	// 		async (currentStep, previousStep, reaction) => {
+	// 			if (currentStep === previousStep && currentStep !== 0) {
+	// 				return;
+	// 			}
+	// 			if (currentStep === 1) {
+	// 				myState.isReadyForNextStep = true;
+	// 				return;
+	// 			}
+	// 			myState.isReadyForNextStep = false;
+	// 			if (currentStep === 2) {
+	// 				if (myState.exportLayers.size > 0) {
+	// 					myState.isReadyForNextStep = true;
+	// 				}
+	// 			} else if (currentStep === 3) {
+	// 				myState.isReadyForNextStep = await calculateNumFeatures(myState, mapService.leafletMap!.getBounds(), configService.geoserverUrl);
+	// 			} else if (currentStep === 4) {
+	// 				myState.isReadyForNextStep === !!myState.exportFileName;
+	// 			}
+	// 		}
+	// 	);
+	// })
 
 	const ExportButton = MakeToolButtonComponent(
 		GetApp,
@@ -175,10 +182,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 		() => {
 			runInAction(() => {
 				Array.from(legendService.enabledLayers).forEach(l => {
-					myState.exportLayers.set(l.name, l);
+					tool.exportLayers.set(l.name, l);
 				});
-				myState.isReadyForNextStep = true;
-				myState.activeStep = 1;
+				tool.activeStep = 1;
 			})
 		}
 	);
@@ -187,11 +193,12 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 		<>
 			<ExportButton tool={tool} />
 			<Dialog
-				open={!!myState.activeStep}
+				open={!!tool.activeStep}
 				maxWidth='lg'
+				className={classes.paper}
 				onClose={() => {
 					runInAction(() => {
-						myState.activeStep = undefined;
+						tool.activeStep = undefined;
 					});
 				}}
 				// PaperComponent={PaperComponent}
@@ -204,7 +211,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						}}
 						onClick={() => {
 							runInAction(() => {
-								myState.activeStep = undefined;
+								tool.activeStep = undefined;
 							});
 						}}
 					>
@@ -214,13 +221,14 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				<DialogTitle>
 					Export Wizard - &nbsp;&nbsp;
-					Step {myState.activeStep}/4
+					{tool.activeStep <= 4 && (<>Step {tool.activeStep}/4</>)}
+					{tool.activeStep === 5 && (<>Running Export</>)}
 				</DialogTitle>
 
-				{myState.isExporting && (
+				{tool.isExporting && (
 					<Dialog
 						maxWidth="xl"
-						open={myState.isExporting}
+						open={tool.isExporting}
 					>
 						<DialogTitle id="export-dialog-title">Exporting Data</DialogTitle>
 						<DialogContent>
@@ -229,11 +237,11 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					</Dialog>
 				)}
 
-				{myState.activeStep === 1 && (
+				{tool.activeStep === 1 && (
 					<HowtoComponent />
 				)}
 
-				{myState.activeStep === 2 && (
+				{tool.activeStep === 2 && (
 					<Grid
 						className={classes.container}
 						container
@@ -259,7 +267,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 										</TableRow>
 									</TableHead>
 									<TableBody>
-									{Array.from(myState.exportLayers).map(([id, layer]) => (
+									{Array.from(tool.exportLayers).map(([id, layer]) => (
 										<TableRow
 											hover
 											key={layer.id}
@@ -270,7 +278,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 												<Button
 													onClick={() => {
 														runInAction(() => {
-															myState.exportLayers.delete(layer.name);
+															tool.exportLayers.delete(layer.name);
 														});
 													}}
 												>
@@ -326,7 +334,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 																node.query || node.name!,
 																configService.geoserverUrl,
 															);
-															myState.exportLayers.set(layer.name, layer);
+															tool.exportLayers.set(layer.name, layer);
 														});
 													}}
 												>
@@ -342,7 +350,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					</Grid>
 				)}
 
-				{myState.activeStep === 3 && (
+				{tool.activeStep === 3 && (
 					<Grid
 					className={classes.container}
 					container
@@ -368,7 +376,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 										</TableRow>
 									</TableHead>
 									<TableBody>
-									{Array.from(myState.exportLayers).map(([id, layer]) => (
+									{Array.from(tool.exportLayers).map(([id, layer]) => (
 										<TableRow
 											hover
 											key={layer.id}
@@ -376,20 +384,20 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 											<TableCell>{layer.queryName ? 'polygon' : layer.layerType}</TableCell>
 											<TableCell>{layer.title}</TableCell>
 											<TableCell>
-												{!myState.exportLayersFeatureCount.has(layer.name) && (
+												{!tool.exportLayersFeatureCount.has(layer.name) && (
 													<span>loading...</span>
 												)}
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)
+												{tool.exportLayersFeatureCount.has(layer.name) &&
+													tool.exportLayersFeatureCount.get(layer.name)
 												}
 											</TableCell>
 											<TableCell>
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)! > MAX_EXPORT_FEATURES &&
+												{tool.exportLayersFeatureCount.has(layer.name) &&
+													tool.exportLayersFeatureCount.get(layer.name)! > tool.MAX_EXPORT_FEATURES &&
 													(<div><Error /><div style={{ display: 'inline-block', verticalAlign: "super"}}>&gt; max # features </div></div>)
 												}
-												{myState.exportLayersFeatureCount.has(layer.name) &&
-													myState.exportLayersFeatureCount.get(layer.name)! <= MAX_EXPORT_FEATURES &&
+												{tool.exportLayersFeatureCount.has(layer.name) &&
+													tool.exportLayersFeatureCount.get(layer.name)! <= tool.MAX_EXPORT_FEATURES &&
 													(<div><Check /><div style={{ display: 'inline-block', verticalAlign: "super"}}>OK </div></div>)
 												}
 											</TableCell>
@@ -402,9 +410,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					</Grid>
 				)}
 
-				{myState.activeStep === 4 && (
+				{tool.activeStep === 4 && (
 					<Grid
-						className={classes.container}
+						className={classes.exportContainer}
 						container
 						direction="row"
 					>
@@ -414,8 +422,16 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							<Typography variant="h6" id="tableTitle" component="div">
 								Vector Data Export Format
 							</Typography>
-							<RadioGroup aria-label="vector-format" name="vector-format">
-								{/* value={value} onChange={handleChange} */}
+							<RadioGroup
+								aria-label="vector-format"
+								name="vector-format"
+								value={tool.exportFormat}
+								onChange={(e) => {
+									runInAction(() => {
+										tool.exportFormat = e.target.value;
+									});
+								}}
+							>
 								<TableContainer >
 									<Table
 										className={classes.table}
@@ -463,7 +479,6 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								Raster Data Export Format
 							</Typography>
 							<RadioGroup aria-label="raster-format" name="raster-format">
-								{/* value={value} onChange={handleChange} */}
 								<TableContainer >
 									<Table
 										className={classes.table}
@@ -479,7 +494,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 										<TableBody>
 											<TableRow hover>
 												<TableCell>
-													<FormControlLabel value="xlsx" control={<Radio checked disabled />} label="GeoTIFF (available in NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986 coordinate system only)" />
+													<FormControlLabel value="xlsx" control={<Radio checked />} label="GeoTIFF (available in NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986 coordinate system only)" />
 												</TableCell>
 											</TableRow>
 										</TableBody>
@@ -494,8 +509,16 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							<Typography variant="h6" id="tableTitle" component="div">
 								Output Coordinate System
 							</Typography>
-							<RadioGroup aria-label="raster-format" name="raster-format">
-								{/* value={value} onChange={handleChange} */}
+							<RadioGroup
+								aria-label="coord-system"
+								name="coord-system"
+								value={tool.exportCRS}
+								onChange={(e) => {
+									runInAction(() => {
+										tool.exportCRS = e.target.value;
+									})
+								}}
+							>
 								<TableContainer >
 									<Table
 										className={classes.table}
@@ -515,17 +538,17 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="26918" control={<Radio checked disabled />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
+													<FormControlLabel value="26918" control={<Radio />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="26919" control={<Radio checked disabled />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
+													<FormControlLabel value="26919" control={<Radio />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="4326" control={<Radio checked disabled />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
+													<FormControlLabel value="4326" control={<Radio />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
 												</TableCell>
 											</TableRow>
 										</TableBody>
@@ -538,70 +561,75 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							padding: '1em'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
-								Output Coordinate System
+								Export File Name
 							</Typography>
-							<RadioGroup aria-label="raster-format" name="raster-format">
-								{/* value={value} onChange={handleChange} */}
-								<TableContainer >
-									<Table
-										className={classes.table}
-										size="small" // "medium"
+							<TableContainer >
+								<Table
+									className={classes.table}
+									size="small" // "medium"
 
-										aria-label="enhanced table"
-									>
-										<TableHead>
-											<TableRow>
-												<TableCell padding="normal"></TableCell>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											<TableRow>
-												<TableCell>
-													Name of zipfile to download:<br/>
-													<TextField id="output-filename" label="Output Filename" />
-												</TableCell>
-											</TableRow>
-										</TableBody>
-									</Table>
-								</TableContainer>
-							</RadioGroup>
+									aria-label="enhanced table"
+								>
+									<TableHead>
+										<TableRow>
+											<TableCell padding="normal"></TableCell>
+										</TableRow>
+									</TableHead>
+									<TableBody>
+										<TableRow>
+											<TableCell>
+												<TextField
+													id="output-filename"
+													label="Output Filename"
+													onChange={(e) => {
+														runInAction(() => {
+															tool.exportFileName = e.target.value;
+														});
+													}}
+												/>
+											</TableCell>
+										</TableRow>
+									</TableBody>
+								</Table>
+							</TableContainer>
 						</Grid>
 					</Grid>
 				)}
 
-				<DialogActions>
-					{myState.activeStep !== 1 && (
+				{tool.activeStep !== 5 &&(
+					<DialogActions>
+						{tool.activeStep !== 1 && (
+							<Button
+								size="small"
+								style={{
+									float: 'right'
+								}}
+								onClick={() => {
+									runInAction(() => {
+										tool.activeStep = tool.activeStep! - 1;
+									});
+								}}
+							>
+								<NavigateBefore /> Prev
+							</Button>
+						)}
 						<Button
 							size="small"
 							style={{
 								float: 'right'
 							}}
+							disabled={!tool.isReadyForNextStep}
 							onClick={() => {
 								runInAction(() => {
-									myState.activeStep = myState.activeStep! - 1;
-									myState.activeStep <= 2 && (myState.isReadyForNextStep = true);
-								});
+									tool.activeStep = tool.activeStep! + 1;
+									tool.activeStep === 3 && tool.calculateNumFeatures()
+								})
 							}}
 						>
-							<NavigateBefore /> Prev
+							Next <NavigateNext />
 						</Button>
-					)}
-					<Button
-						size="small"
-						style={{
-							float: 'right'
-						}}
-						disabled={!myState.isReadyForNextStep}
-						onClick={() => {
-							runInAction(() => {
-								myState.activeStep = myState.activeStep! + 1;
-								myState.activeStep === 3 && calculateNumFeatures(myState, mapService.leafletMap!.getBounds(), configService.geoserverUrl);
-							})
-						}}
-					>
-						Next <NavigateNext />
-					</Button>
-				</DialogActions>
+					</DialogActions>
+				)}
 			</Dialog>
 		</>
 	);
