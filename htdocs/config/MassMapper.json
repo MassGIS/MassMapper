@@ -78,8 +78,8 @@
 		}
 	],
 	"availableBasemaps": [
-		"MassGIS Statewide Basemap",
-		"2019 Color Orthos (USGS)",
+		"MassGIS Basemap",
+		"2019 Aerial Imagery",
 		"USGS Topographic Quadrangle Maps",
 		"OpenStreetMap Basemap",
 		"Google Roads Basemap",
@@ -88,5 +88,8 @@
 		"Google Terrain Basemap",
 		"ESRI Streets Basemap",
 		"ESRI Light Gray Basemap"
+	],
+	"defaultLayers": [
+		"Basemaps_L3Parcels____ON__100"
 	]
 }

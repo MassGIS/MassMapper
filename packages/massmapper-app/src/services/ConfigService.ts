@@ -27,8 +27,8 @@ class ConfigService {
 
 	get availableBasemaps(): string[] {
 		return this._config.availableBasemaps || [
-			'MassGIS Statewide Basemap',
-			'2019 Color Orthos (USGS)',
+			'MassGIS Basemap',
+			'2019 Aerial Imagery',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',
 			'Google Roads Basemap',
@@ -38,6 +38,12 @@ class ConfigService {
 			'ESRI Streets Basemap',
 			'ESRI Light Gray Basemap'
 		];
+	}
+
+	get defaultLayers(): string[] {
+		return this._config.defaultLayers || [
+			"Basemaps_L3Parcels____ON__100"
+		]
 	}
 
 	get folderSet():string {
@@ -55,17 +61,17 @@ class ConfigService {
 		initialExtent: [number, number, number, number],
 		tools: ToolDefinition[],
 		availableBasemaps: string[],
+		defaultLayers: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
-
 	} = {
 		geoserverUrl: 'https://giswebservices.massgis.state.ma.us',
 		folderSet: '',
 		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
 		tools: [],
 		availableBasemaps: [
-			'MassGIS Statewide Basemap',
-			'2019 Color Orthos (USGS)',
+			'MassGIS Basemap',
+			'2019 Aerial Imagery',
 			'USGS Topographic Quadrangle Maps',
 			'OpenStreetMap Basemap',
 			'Google Roads Basemap',
@@ -74,6 +80,9 @@ class ConfigService {
 			'Google Terrain Basemap',
 			'ESRI Streets Basemap',
 			'ESRI Light Gray Basemap'
+		],
+		"defaultLayers": [
+			"Basemaps_L3Parcels____ON__100"
 		]
 	};
 
