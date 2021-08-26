@@ -25,7 +25,7 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 							return (
 								<div
 									style={{
-										marginRight:'.5em',
+										marginRight:'.8em',
 									}}
 									key={tool.id}><ToolComponent
 									tool={tool}
@@ -52,7 +52,7 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 						return (
 							<div
 								style={{
-									marginRight:'.5em',
+									marginRight:'.8em',
 								}}
 								key={tool.id}><ToolComponent
 								tool={tool}
@@ -79,7 +79,7 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 						return (
 							<div
 								style={{
-									marginRight:'.5em',
+									marginRight:'.8em',
 								}}
 								key={tool.id}><ToolComponent
 								tool={tool}
