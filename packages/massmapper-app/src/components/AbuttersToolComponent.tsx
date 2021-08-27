@@ -25,6 +25,7 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 		<Button
 			style={{
 				backgroundColor: tool.isActive ? '' : 'white',
+				minWidth: '32px',
 			}}
 			color="default"
 			title={'Click to generate abutters list'}

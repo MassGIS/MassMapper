@@ -112,6 +112,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 			<Button
 				style={{
 					backgroundColor: 'white',
+					minWidth: '32px',
 				}}
 				color="default"
 				variant="contained"

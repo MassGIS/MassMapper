@@ -11,6 +11,7 @@ const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventH
 				<Button
 					style={{
 						backgroundColor: tool.isActive ? '' : 'white',
+						minWidth: '32px',
 					}}
 					disabled={disabled}
 					color="default"
