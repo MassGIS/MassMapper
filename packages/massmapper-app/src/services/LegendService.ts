@@ -41,7 +41,9 @@ class LegendService {
 		);
 
 		(async () => {
-			fetch(`splashpage.txt?${Math.random()}`).then(async (r) =>  {
+			const pathParts = document.location.pathname.split('/');
+			const fileName = pathParts[pathParts.length - 1];
+			fetch(`${fileName.split('.')[0]}-splashpage.txt?${Math.random()}`).then(async (r) =>  {
 				this._splashPageContent = await r.text();
 				const lastSplashPageHash = localStorage.getItem('massmapper.splashPageSize');
 				const userSaysSkip = localStorage.getItem('massmapper.skipSplashPage') === 'yes';

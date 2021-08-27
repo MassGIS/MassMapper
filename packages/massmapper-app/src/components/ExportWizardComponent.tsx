@@ -121,59 +121,12 @@ const HowtoComponent: FunctionComponent = () => (
 )
 // For information on accessing full datasets, please check the Help document
 
-// interface ExportWizardComponentState {
-// 	activeStep: number | undefined;
-// 	exportFileUrl?: string;
-// 	exportFileName?: string;
-// 	exportLayers: Map<string,Layer>;
-// 	exportLayersFeatureCount: Map<string, number>;
-// 	isExporting: boolean;
-// 	isReadyForNextStep: boolean;
-// }
-
 const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 
 	const tool = _tool as ExportWizardTool;
 	const classes = useStyles();
 
-	const [ legendService, mapService, catalogService, configService ] = useService([ LegendService, MapService, CatalogService, ConfigService ]);
-	// const myState = useLocalObservable<ExportWizardComponentState>(() => {
-	// 	const exportLayers = new Map<string, Layer>();
-	// 	const exportLayersFeatureCount = new Map<string, number>();
-	// 	return {
-	// 		activeStep : undefined,
-	// 		exportLayers,
-	// 		exportLayersFeatureCount,
-	// 		exportResultsUrl: undefined,
-	// 		isExporting: false,
-	// 		isReadyForNextStep: true
-	// 	}
-	// });
-
-	// useEffect(() => {
-	// 	reaction(
-	// 		() => myState.activeStep,
-	// 		async (currentStep, previousStep, reaction) => {
-	// 			if (currentStep === previousStep && currentStep !== 0) {
-	// 				return;
-	// 			}
-	// 			if (currentStep === 1) {
-	// 				myState.isReadyForNextStep = true;
-	// 				return;
-	// 			}
-	// 			myState.isReadyForNextStep = false;
-	// 			if (currentStep === 2) {
-	// 				if (myState.exportLayers.size > 0) {
-	// 					myState.isReadyForNextStep = true;
-	// 				}
-	// 			} else if (currentStep === 3) {
-	// 				myState.isReadyForNextStep = await calculateNumFeatures(myState, mapService.leafletMap!.getBounds(), configService.geoserverUrl);
-	// 			} else if (currentStep === 4) {
-	// 				myState.isReadyForNextStep === !!myState.exportFileName;
-	// 			}
-	// 		}
-	// 	);
-	// })
+	const [ legendService, catalogService, configService ] = useService([ LegendService, CatalogService, ConfigService ]);
 
 	const ExportButton = MakeToolButtonComponent(
 		GetApp,

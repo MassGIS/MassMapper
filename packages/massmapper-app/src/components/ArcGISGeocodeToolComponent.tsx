@@ -2,6 +2,8 @@ import XMLParser from 'react-xml-parser';
 import {
 	Button,
 	Dialog,
+	DialogActions,
+	DialogContent,
 	DialogTitle,
 	Grid,
 	TextField,
@@ -135,37 +137,41 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 						myState.results = [];
 					}}
 				>
+					<DialogActions>
+						<Button
+							size="small"
+							style={{
+								float: 'right'
+							}}
+							onClick={() => {
+								myState.isOpen = false;
+								myState.city = '';
+								myState.zip = '';
+								myState.street = '';
+								myState.results = [];
+							}}
+						>
+							<Close />
+						</Button>
+					</DialogActions>
 					<DialogTitle>
 						{myState.results.length > 0 ? 'Search Results' : 'Location Search'}
 					</DialogTitle>
-					<Grid
+					<DialogContent
 						style={{
-							flexGrow: 1,
-							height: '40vh',
+							overflowY: 'hidden'
 						}}
 					>
-						{myState.results.length > 0 && (<ResultsComponent uiState={myState} />)}
-						{myState.results.length === 0 && (<SearchComponent uiState={myState} />)}
 						<Grid
 							style={{
-								height: '15%',
-								textAlign: 'center'
+								flexGrow: 1,
+								height: '40vh',
 							}}
 						>
-							<Button
-								onClick={() => {
-									myState.isOpen = false;
-									myState.city = '';
-									myState.zip = '';
-									myState.street = '';
-									myState.results = [];
-								}}
-								variant="contained"
-							>
-								<Close /> Close
-							</Button>
+							{myState.results.length > 0 && (<ResultsComponent uiState={myState} />)}
+							{myState.results.length === 0 && (<SearchComponent uiState={myState} />)}
 						</Grid>
-					</Grid>
+					</DialogContent>
 				</Dialog>
 			)}
 		</>

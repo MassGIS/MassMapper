@@ -43,7 +43,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 		}
 	});
 	const myTool = tool as PrintPdfTool;
-	
+
 	const mapService = useService(MapService);
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
@@ -55,6 +55,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 			<PrintPdfButton tool={tool}/>
 			<Dialog
 				open={myState.isOpen}
+				maxWidth='lg'
 				onClose={() => {
 					if (myState.isPrinting) {
 						// have to wait
@@ -68,12 +69,16 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 				<DialogTitle>
 					Print Map PDF
 				</DialogTitle>
-				<DialogContent>
+				<DialogContent
+					style={{
+						overflowY: 'hidden'
+					}}
+				>
 					{!mapService.activeBaseLayer?.pdfOk && (
 						<>
 							<Grid
 								style={{
-									height:'85%',
+									height:'70%',
 									padding: '1em',
 									margin: '.5em'
 								}}
@@ -83,7 +88,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</Grid>
 							<Grid
 								style={{
-									height:'15%',
+									height:'30%',
 									padding: '1em',
 									margin: '.5em',
 									textAlign: 'center'
@@ -99,7 +104,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								</Button>
 							</Grid>
 						</>
-						
+
 					)}
 					{mapService.activeBaseLayer?.pdfOk && myState.isPrinting && (
 						<LinearProgress
@@ -110,7 +115,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 						<>
 							<Grid
 								style={{
-									height:'85%',
+									height:'70%',
 									padding: '1em',
 									margin: '.5em'
 								}}
@@ -126,7 +131,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								<br/><br/>
 								<TextField
 									placeholder="Filename"
-									value={myState.filename}	
+									value={myState.filename}
 									helperText="PDF Filename"
 									onChange={(e) => {
 										myState.filename = e.target.value;
@@ -167,7 +172,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</Grid>
 							<Grid
 								style={{
-									height:'15%',
+									height:'30%',
 									padding: '1em',
 									margin: '.5em'
 								}}

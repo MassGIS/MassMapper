@@ -383,7 +383,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						</>
 					)}
 				</Grid>
-				<Grid item xs={12} style={{
+				{/* <Grid item xs={12} style={{
 					textAlign: 'center',
 					marginTop: '1em'
 				}}>
@@ -396,7 +396,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 					>
 						<Close /> Back to Map
 					</Button>
-				</Grid>
+				</Grid> */}
 			</Grid>
 		</Dialog>
 	);
