@@ -80,6 +80,14 @@
 			"id": "back-forward-tool",
 			"position": "topleft-vertical",
 			"class": "ExtentHistoryTool"
+		},
+		{
+			"id": "help-tool",
+			"position": "topleft-vertical",
+			"class": "HelpTool",
+			"options": {
+				"url" : "http://www.google.com"
+			}
 		}
 	],
 	"availableBasemaps": [
