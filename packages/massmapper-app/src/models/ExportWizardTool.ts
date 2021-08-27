@@ -154,7 +154,7 @@ class ExportWizardTool extends Tool {
 
 		let res;
 		try {
-			res = await fetch('http://maps.massgis.state.ma.us/cgi-bin/mkzip', {
+			res = await fetch('/cgi-bin/mkzip', {
 				method : "POST",
 				headers: {
 					'Content-Type':'application/xml; charset=UTF-8'
