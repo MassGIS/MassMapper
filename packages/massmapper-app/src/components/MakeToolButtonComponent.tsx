@@ -3,16 +3,18 @@ import React, { FunctionComponent, MouseEventHandler } from 'react';
 import { ToolComponentProps } from "../models/Tool";
 import { Button } from '@material-ui/core';
 
-const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventHandler, isDisabled?: () => boolean): FunctionComponent<ToolComponentProps> => {
+const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventHandler, isDisabled?: () => boolean, buttonStyle?: React.CSSProperties): FunctionComponent<ToolComponentProps> => {
 	return observer(({tool}) => {
 		const disabled = isDisabled ? isDisabled() : false;
+		const style = {
+			backgroundColor: tool.isActive ? '' : 'white',
+			minWidth: '32px',
+			...buttonStyle
+		}
 		return (
 			<>
 				<Button
-					style={{
-						backgroundColor: tool.isActive ? '' : 'white',
-						minWidth: '32px',
-					}}
+					style={style}
 					disabled={disabled}
 					color="default"
 					title={tooltip}

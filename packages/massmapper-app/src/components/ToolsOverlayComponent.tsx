@@ -38,6 +38,33 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 			<div
 				style={{
 					position: 'absolute',
+					left: '10px',
+					top: '100px',
+					zIndex: 1000,
+					display: 'flex',
+					flexDirection: 'column',
+				}}
+			>
+				{
+					toolService.getTools(ToolPosition.topleftvertical)
+						.map((tool) => {
+							const ToolComponent = tool.component();
+							return (
+								<div
+									style={{
+										marginRight:'.8em',
+									}}
+									key={tool.id}><ToolComponent
+									tool={tool}
+								/></div>
+							);
+						})
+				}
+			</div>
+
+			<div
+				style={{
+					position: 'absolute',
 					right: '80px',
 					top: '10px',
 					zIndex: 1000,

@@ -7,6 +7,7 @@ enum ToolPosition {
 	topright = 'topright',
 	bottomright = 'bottomright',
 	topleft = 'topleft',
+	topleftvertical = 'topleft-vertical',
 	bottomleft = 'bottomleft',
 	none = 'none'
 }

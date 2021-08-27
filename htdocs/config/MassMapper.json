@@ -75,6 +75,11 @@
 			"id": "export-wizard-tool",
 			"position": "topleft",
 			"class": "ExportWizardTool"
+		},
+		{
+			"id": "back-forward-tool",
+			"position": "topleft-vertical",
+			"class": "ExtentHistoryTool"
 		}
 	],
 	"availableBasemaps": [
