@@ -3,10 +3,10 @@ import { ContainerInstance } from "typedi";
 import ExportWizardComponent from "../components/ExportWizardComponent";
 import { Layer } from "./Layer";
 import { computed, makeObservable, observable, runInAction } from "mobx";
-import { LatLngBounds } from "leaflet";
 import { IdentifyResult } from "./IdentifyResults";
 import { MapService } from "../services/MapService";
 import { ConfigService } from "../services/ConfigService";
+import proj4 from 'proj4';
 
 
 class ExportWizardTool extends Tool {
@@ -20,6 +20,7 @@ class ExportWizardTool extends Tool {
 	public exportLayers: Map<string,Layer> = new Map();
 	public exportLayersFeatureCount: Map<string, number> = new Map();
 	public isExporting: boolean = false;
+	public errorMessage?: string;
 
 	public readonly MAX_EXPORT_FEATURES = 25000;
 
@@ -121,6 +122,74 @@ class ExportWizardTool extends Tool {
 		});
 
 		return canDoExport;
+	}
+
+	public doExport = async():Promise<void> => {
+		this.errorMessage = undefined;
+		let xml = '<layers>';
+		const bbox = this._services.get(MapService).leafletMap!.getBounds().toBBoxString().split(",");
+		const ul = [parseFloat(bbox[0]), parseFloat(bbox[1])];
+		const lr = [parseFloat(bbox[2]), parseFloat(bbox[3])];
+
+		const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
+		const [ulX, ulY] = proj4(spMeters).forward(ul);
+		const [lrX, lrY] = proj4(spMeters).forward(lr);
+
+		const bbox26986 = `${ulX} ${ulY}, ${ulX} ${lrY}, ${lrX} ${lrY}, ${lrX} ${ulY}, ${ulX} ${ulY}`;
+		const configService = this._services.get(ConfigService);
+		Array.from(this.exportLayers.values()).forEach(element => {
+			const url = `http://${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
+				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&SRSNAME=EPSG:{this.exportCRS}&typename=${element.queryName}` +
+				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>`;
+			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.title)}" name="${this.encodeSpecialChars(element.name)}" baseURL="${this.encodeSpecialChars(url)}">`;
+			layer += '<metadata>' + this.encodeSpecialChars(element.metadataUrl) + '</metadata>';
+			element.extractDocs.forEach((url:string) => {
+				layer += '<metadata>' + this.encodeSpecialChars(url) + '</metadata>';
+			});
+			layer += '</layer>';
+			xml += layer;
+		});
+
+		xml +=`<zip name="${this.exportFileName}" /></layers>`;
+
+		let res;
+		try {
+			res = await fetch('http://maps.massgis.state.ma.us/cgi-bin/mkzip', {
+				method : "POST",
+				headers: {
+					'Content-Type':'application/xml; charset=UTF-8'
+				},
+				body: xml,
+			});
+
+			if (!res.ok || res.status !== 200) {
+				// there was an error.  Crap.
+				runInAction(() => {
+					this.activeStep = 4
+					this.errorMessage = 'There was an error performing the extract.  Please try again.';
+				});
+				return;
+			}
+
+			this.exportFileUrl = await res.text();
+			runInAction(() => {
+				this.activeStep = 6;
+			})
+		} catch (e) {
+			runInAction(() => {
+				this.activeStep = 4
+				this.errorMessage = 'There was an error performing the extract.  Please try again.';
+			});
+			return;
+		}
+	}
+
+	private encodeSpecialChars(s:string):string {
+		return s.replace(/&/g,'___AMP___')
+			.replace(/</g,'___LT___')
+			.replace(/>/g,'___GT___')
+			.replace(/=/g,'___EQ___')
+			.replace(/"/g,'___QUOT___');
 	}
 }
 

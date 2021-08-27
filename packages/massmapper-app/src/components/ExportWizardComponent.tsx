@@ -1,13 +1,12 @@
-import { IdentifyResult } from '../models/IdentifyResults';
 import {
 	Box,
 	Grid,
+	CircularProgress,
 	Button,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
-	LinearProgress,
 	TableContainer,
 	Table,
 	TableHead,
@@ -27,6 +26,7 @@ import {
 	Add,
 	Check,
 	Close,
+	CloudDownload,
 	Delete,
 	Error,
 	GetApp,
@@ -34,11 +34,10 @@ import {
 	NavigateNext,
 } from '@material-ui/icons';
 
-import { autorun, reaction, runInAction } from 'mobx';
+import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
-import { useLocalObservable } from 'mobx-react-lite';
 
-import React, { FunctionComponent, useEffect } from 'react';
+import React, { FunctionComponent } from 'react';
 
 import { useService } from '../services/useService';
 import { LegendService } from '../services/LegendService';
@@ -48,7 +47,6 @@ import { Layer } from '../models/Layer';
 import { CatalogService } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { MapService } from '../services/MapService';
-import { LatLngBounds } from 'leaflet';
 import { ExportWizardTool } from '../models/ExportWizardTool';
 
 const selectedColor = '#eee';
@@ -68,7 +66,7 @@ const useStyles = makeStyles((theme) => ({
 		exportContainer: {
 			flexGrow: 1,
 			height: '60%',
-			overflowY: 'scroll',
+			overflowY: 'auto',
 			'& .MuiRadio-root': {
 				padding: '4px'
 			},
@@ -104,7 +102,8 @@ const useStyles = makeStyles((theme) => ({
 const HowtoComponent: FunctionComponent = () => (
 	<Box
 		style={{
-			margin: '2em'
+			margin: '2em',
+			height: '100%',
 		}}
 	>
 		<b>Welcome to the data export wizard</b>
@@ -221,21 +220,10 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				<DialogTitle>
 					Export Wizard - &nbsp;&nbsp;
-					{tool.activeStep <= 4 && (<>Step {tool.activeStep}/4</>)}
+					{tool.activeStep! <= 4 && (<>Step {tool.activeStep}/4</>)}
 					{tool.activeStep === 5 && (<>Running Export</>)}
+					{tool.activeStep === 6 && (<>Export Complete</>)}
 				</DialogTitle>
-
-				{tool.isExporting && (
-					<Dialog
-						maxWidth="xl"
-						open={tool.isExporting}
-					>
-						<DialogTitle id="export-dialog-title">Exporting Data</DialogTitle>
-						<DialogContent>
-							<LinearProgress />
-						</DialogContent>
-					</Dialog>
-				)}
 
 				{tool.activeStep === 1 && (
 					<HowtoComponent />
@@ -416,6 +404,15 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						container
 						direction="row"
 					>
+						{tool.errorMessage && (
+							<Grid item xs={12} style={{
+								padding: '1em'
+							}}>
+								<Typography variant="h6" id="tableTitle" style={{color: 'red'}} component="div">
+									{tool.errorMessage}
+								</Typography>
+							</Grid>
+						)}
 						<Grid item xs={12} style={{
 							padding: '1em'
 						}}>
@@ -448,7 +445,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 										<TableBody>
 											<TableRow hover>
 												<TableCell>
-													<FormControlLabel value="shp" control={<Radio />} label="ShapeFile (.shp)" />
+													<FormControlLabel value="SHAPE-ZIP" control={<Radio />} label="ShapeFile (.shp)" />
 												</TableCell>
 												<TableCell>
 													<FormControlLabel value="kml" control={<Radio />} label="Google Earth (.kml)" />
@@ -462,7 +459,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 													<FormControlLabel value="xls" control={<Radio />} label="Excel 97-2003 (.xls)" />
 												</TableCell>
 												<TableCell>
-													<FormControlLabel value="csv" control={<Radio />} label="CSV (.csv)" />
+													<FormControlLabel value="CSV" control={<Radio />} label="CSV (.csv)" />
 												</TableCell>
 												<TableCell></TableCell>
 											</TableRow>
@@ -581,6 +578,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 												<TextField
 													id="output-filename"
 													label="Output Filename"
+													value={tool.exportFileName}
 													onChange={(e) => {
 														runInAction(() => {
 															tool.exportFileName = e.target.value;
@@ -596,7 +594,40 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					</Grid>
 				)}
 
-				{tool.activeStep !== 5 &&(
+				{tool.activeStep === 5 && (
+					<Grid item xs={12} style={{
+						padding: '1em',
+						height: '100%',
+						textAlign: 'center',
+						verticalAlign: 'middle',
+					}}>
+
+						<CircularProgress
+							title="export in progress"
+						/>
+					</Grid>
+				)}
+
+				{tool.activeStep === 6 && (
+					<Grid item xs={12} style={{
+						padding: '1em',
+						height: '100%',
+						textAlign: 'center',
+					}}>
+						<Button
+								size="large"
+								variant="outlined"
+								color="secondary"
+								onClick={() => {
+									window.open(tool.exportFileUrl);
+								}}
+							>
+								Click to download your extract &nbsp;&nbsp;<CloudDownload  />
+							</Button>
+					</Grid>
+				)}
+
+				{tool.activeStep! <= 5 &&(
 					<DialogActions>
 						{tool.activeStep !== 1 && (
 							<Button
@@ -622,11 +653,13 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							onClick={() => {
 								runInAction(() => {
 									tool.activeStep = tool.activeStep! + 1;
-									tool.activeStep === 3 && tool.calculateNumFeatures()
+									tool.activeStep === 3 && tool.calculateNumFeatures();
+									tool.activeStep === 5 && tool.doExport();
 								})
 							}}
 						>
-							Next <NavigateNext />
+							{tool.activeStep !== 4 && (<>Next <NavigateNext /></>)}
+							{tool.activeStep === 4 && (<>Finish</>)}
 						</Button>
 					</DialogActions>
 				)}

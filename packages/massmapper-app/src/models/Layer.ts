@@ -12,6 +12,7 @@ type LayerMetadata = {
 	metadataUrl: string,
 	minZoom: number,
 	maxZoom: number,
+	extractDocs: string[],
 }
 
 class Layer {
@@ -49,6 +50,9 @@ class Layer {
 	get metadataUrl(): string {
 		return this._layerData.metadataUrl;
 	}
+	get extractDocs(): string[] {
+		return this._layerData.extractDocs;
+	}
 
 	private customStyle(): string {
 		const t2s = {
@@ -72,7 +76,8 @@ class Layer {
 		minScale: -1,
 		maxScale: -1,
 		minZoom: 0,
-		maxZoom: 18
+		maxZoom: 18,
+		extractDocs: [],
 	};
 	public customColor?: string;
 	public opacity: number = 100;
@@ -114,9 +119,9 @@ class Layer {
 	public async makeMappable(mapService:MapService): Promise<void> {
 		this._mapService = mapService;
 		this._isLoading = true;
-		const layerId = this.name.replaceAll(':','_') + '.' +
+		const layerId = this.name.replace(/:/g,'_') + '.' +
 		(
-			this.layerType === 'tiled_overlay' ? "" : this.style.replaceAll(':','_')
+			this.layerType === 'tiled_overlay' ? "" : this.style.replace(/:/g,'_')
 		);
 		await fetch(`https://maps.massgis.state.ma.us/temp/OL_MORIS_cache/${layerId}.xml`, {
 			cache: 'no-cache'
@@ -146,21 +151,36 @@ class Layer {
 
 				// Pull out the metadata URL.  This is a bit messy because sometimes the keywords come in as a single array.
 				// Other times as a nested array.
-				let murl = xmlData.KeywordList ?
-					(
+				let murl = undefined;
+				let extractDocs = [];
+				if (xmlData.KeywordList) {
+					murl =
 						(xmlData.KeywordList[0].Keyword.find && xmlData.KeywordList[0].Keyword.find(
 							(s: string) => /MassgisMetadataUrl/i.test(s)
 						)) ||
 						(xmlData.KeywordList.find && xmlData.KeywordList.find(
 							(s: { Keyword: string; }) => /MassgisMetadataUrl/i.test(s.Keyword)
-						))
-					) :
-					undefined;
-				if (typeof murl === 'object' && murl !== null) {
-					murl = murl.Keyword.split('=')[1];
-				}
-				else if (typeof murl === 'string') {
-					murl = murl.split('=')[1]
+						));
+					if (typeof murl === 'object' && murl !== null) {
+						murl = murl.Keyword.split('=')[1];
+					}
+					else if (typeof murl === 'string') {
+						murl = murl.split('=')[1]
+					}
+
+					extractDocs =
+						(xmlData.KeywordList[0].Keyword.find && xmlData.KeywordList[0].Keyword
+							.filter((s:string) => /ExtractDoc/i.test(s))
+							.map(
+								(s: string) => s.split("=")[1]
+							)
+						) ||
+						(xmlData.KeywordList.find && xmlData.KeywordList
+							.filter((s: { Keyword: string; }) => /ExtractDoc/i.test(s.Keyword))
+							.map(
+								(s: { Keyword: string; }) => s.Keyword.split("=")[1]
+							)
+						);
 				}
 
 				// Assume WMS.
@@ -170,7 +190,8 @@ class Layer {
 					srcUrl: this.src,
 					minZoom: this._layerData.minZoom,
 					maxZoom: this._layerData.maxZoom,
-					metadataUrl: murl
+					metadataUrl: murl,
+					extractDocs
 				};
 
 				this.options = {
