@@ -27,7 +27,7 @@ class PermalinkTool extends Tool {
 
 		/* Copy the text inside the text field */
 		document.execCommand('copy');
-		toast('A link to this record has been copied to your clipboard. Paste your permalink using Edit -> Paste, or <Ctrl + V>.');
+		toast('A link to this map has been copied to your clipboard. Paste your permalink using Edit -> Paste, or <Ctrl + V>.');
 	}
 
 	public component() {
