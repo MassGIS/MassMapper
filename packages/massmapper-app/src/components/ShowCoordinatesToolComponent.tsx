@@ -20,21 +20,22 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 	return (
 		<Paper
 			style={{
-				height:'80%',
-				padding: '0 1em',
+				height:'60%',
+				padding: '0 .2em',
 				position: 'relative',
 			}}
 			elevation={3}
 		>
 			<div style={{
 				position: 'relative',
-				top: '11px',
-				fontWeight: 'bold'
+				top: '3px'
 			}}>
 				<Button
 					style={{
 						marginTop: '0',
 						paddingTop: '0',
+						fontWeight: 100,
+						fontSize: 'smaller'
 					}}
 					ref={(r:HTMLButtonElement) => {
 						myTool.buttonRef = r;

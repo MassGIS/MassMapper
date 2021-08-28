@@ -21,6 +21,7 @@ import React, { FunctionComponent } from "react";
 import { MapService } from '../services/MapService';
 import { useService } from '../services/useService';
 import { toast } from 'react-toastify';
+import { Tool, ToolComponentProps } from '../models/Tool';
 
 interface ArcGISGecodeResult {
 	address: string;
@@ -87,9 +88,6 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 	return results;
 }
 
-interface ArcGISGeocodeToolComponentProps {
-}
-
 interface ArcGISGeocodeToolComponentState {
 	street: string;
 	city: string;
@@ -98,7 +96,7 @@ interface ArcGISGeocodeToolComponentState {
 	isOpen: boolean;
 }
 
-const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentProps> = observer(() => {
+const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
 	const myState = useLocalObservable<ArcGISGeocodeToolComponentState>(() => {
 		return {
 			street: '',
@@ -122,6 +120,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 				title="Search and zoom to an address"
 				onClick={() => {
 					myState.isOpen = true;
+					tool.activate();
 				}}
 			>
 				<ImageSearch />

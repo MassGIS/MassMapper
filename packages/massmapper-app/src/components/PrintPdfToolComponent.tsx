@@ -48,6 +48,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
 		myState.isOpen = true;
+		tool.activate();
 	});
 
 	return (
@@ -62,6 +63,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 						return;
 					}
 					myState.isOpen = false;
+					tool.deactivate();
 					myState.title = '';
 					myState.filename = 'massmapper.pdf';
 				}}
