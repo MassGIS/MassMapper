@@ -138,8 +138,8 @@ class ExportWizardTool extends Tool {
 		const bbox26986 = `${ulX} ${ulY}, ${ulX} ${lrY}, ${lrX} ${lrY}, ${lrX} ${ulY}, ${ulX} ${ulY}`;
 		const configService = this._services.get(ConfigService);
 		Array.from(this.exportLayers.values()).forEach(element => {
-			const url = `http://${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
-				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&SRSNAME=EPSG:{this.exportCRS}&typename=${element.queryName}` +
+			const url = `${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
+				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&SRSNAME=EPSG:${this.exportCRS}&typename=${element.queryName}` +
 				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>`;
 			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.title)}" name="${this.encodeSpecialChars(element.name)}" baseURL="${this.encodeSpecialChars(url)}">`;
 			layer += '<metadata>' + this.encodeSpecialChars(element.metadataUrl) + '</metadata>';
