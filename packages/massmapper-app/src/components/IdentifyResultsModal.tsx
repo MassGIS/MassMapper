@@ -221,7 +221,11 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				<Grid item xs={12} style={{
 					height: '35%'
 				}}>
-					<TableContainer>
+					<TableContainer
+						style={{
+							height: '100%'
+						}}
+					>
 						<Table
 							className={classes.table}
 							aria-labelledby="identify-results-counts"
