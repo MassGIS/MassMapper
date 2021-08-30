@@ -229,7 +229,7 @@ class IdentifyResult {
 		const queryName = this.layer.layerType === 'tiled_overlay' ? this.layer.queryName : this.layer.name;
 		// Geoserver zip's up shapefile goodies.
 		const ext = fileType === 'shp' ? 'zip' : fileType;
-		const url = `${this._gsurl}/map_ol/getstore.php?name=${name}.${ext}&url=${this._gsurl}/geoserver/wfs`
+		const url = `/map_ol/getstore.php?name=${name}.${ext}&url=${this._gsurl}/geoserver/wfs`
 		const outputFormatMap = {
 			'xlsx': 'excel2007',
 			'xls': 'excel97',
