@@ -41,7 +41,7 @@ const useStyles = makeStyles((theme) => ({
 			height: '80vh',
 		},
 		table: {
-			width: '90vh',
+			width: '90vw',
 			'& .MuiTableBody-root .MuiTableRow-root:hover': {
 				backgroundColor: hoverColor,
 			},
@@ -146,6 +146,9 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				selectionService.clearIdentifyResults()
 				selectionService.selectedIdentifyResult = undefined;
 			}}
+			BackdropProps={{
+				invisible: true
+			}}
 			PaperComponent={PaperComponent}
 		>
 			<DialogTitle
@@ -247,7 +250,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 										selected={result.layer.id === selectionService.selectedIdentifyResult?.layer.id}
 										onClick={(e) => {
 											selectionService.selectedIdentifyResult = result;
-											result.getResults(false);
+											selectionService.selectedIdentifyResult.numFeatures <= 500 && result.getResults(false);
 										}}
 										key={result.layer.id}
 									>
@@ -264,7 +267,16 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				<Grid item xs={12} style={{
 					height: '45%'
 				}}>
-					{selectionService.selectedIdentifyResult && (
+					{selectionService.selectedIdentifyResult && selectionService.selectedIdentifyResult.numFeatures > 500 && (
+						<>
+							<h3 style={{
+								textAlign: 'center'
+							}}>
+							More than 500 features
+							</h3>
+						</>
+					)}
+					{selectionService.selectedIdentifyResult && selectionService.selectedIdentifyResult.numFeatures <= 500 && (
 						<GridComponent
 							hideFooterRowCount={myState.windowSize === 'xs'}
 							hideFooterSelectedRowCount={myState.windowSize === 'xs'}

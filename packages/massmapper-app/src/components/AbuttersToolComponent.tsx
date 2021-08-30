@@ -70,6 +70,9 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								value={myTool.buffer !== undefined ? myTool.buffer : ''}
 								required
 								helperText="buffer distance"
+								onClick={(x) => {
+									x.target.select();
+								}}
 								onChange={(e) => {
 									myTool.buffer = parseInt(e.target.value) || 0;
 								}}

@@ -57,6 +57,9 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 			<Dialog
 				open={myState.isOpen}
 				maxWidth='lg'
+				BackdropProps={{
+					invisible: true
+				}}
 				onClose={() => {
 					if (myState.isPrinting) {
 						// have to wait

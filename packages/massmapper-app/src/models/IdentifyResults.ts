@@ -43,6 +43,10 @@ class IdentifyResult {
 		return this.isLoading ? 'loading...' : this._numFeatures + "";
 	}
 
+	get numFeatures():number {
+		return this._numFeatures;
+	}
+
 	get features(): IdentifyResultFeature[] {
 		return this._features || [];
 	}
