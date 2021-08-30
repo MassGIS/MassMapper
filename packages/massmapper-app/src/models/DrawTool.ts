@@ -8,7 +8,7 @@ import { Tool, ToolPosition } from "./Tool";
 import { DrawToolComponent } from '../components/DrawToolComponent';
 import { ContainerInstance } from 'typedi';
 
-import './MeasureTool.module.css';
+// import './MeasureTool.module.css';
 
 class DrawTool extends Tool {
 
@@ -18,6 +18,10 @@ class DrawTool extends Tool {
 	public lineColor: string = 'blue';
 
 	private _handleDrawComplete(evt: any) {
+		if (!this._drawnItems['_map']) {
+			const ms = this._services.get(MapService);
+			ms.leafletMap?.addLayer(this._drawnItems);
+		}
 		this._drawnItems.addLayer(evt.layer);
 	}
 
@@ -43,6 +47,7 @@ class DrawTool extends Tool {
 		public readonly options: any
 	) {
 		super(_services,id,position,options);
+		this._drawnItems = new FeatureGroup();
 
 		// makeObservable<DrawTool>(
 		// 	this,
@@ -53,7 +58,7 @@ class DrawTool extends Tool {
 
 	protected async _deactivate() {
 		this._drawDisposer && this._drawDisposer();
-		// this._drawHandler && this._drawHandler.disable();
+		this._drawHandler && this._drawHandler.disable();
 		// this.clearExistingShape();
 
 		const ms = this._services.get(MapService);
@@ -63,8 +68,8 @@ class DrawTool extends Tool {
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
-		this._drawnItems = new FeatureGroup();
-		ms.leafletMap?.addLayer(this._drawnItems);
+		// this._drawnItems = new FeatureGroup();
+		// ms.leafletMap?.addLayer(this._drawnItems);
 
 		this._drawDisposer = autorun(() => {
 			if (!ms.leafletMap) {
@@ -79,7 +84,7 @@ class DrawTool extends Tool {
 			// 	ms.leafletMap.addHandler('measureArea', (window.L as any).Draw.Polygon);
 
 			this._drawHandler?.disable();
-			this.clearExistingShape();
+			// this.clearExistingShape();
 
 			// if (this.measureMode === 'Length') {
 				this._drawHandler = ms.leafletMap['drawLine'];
