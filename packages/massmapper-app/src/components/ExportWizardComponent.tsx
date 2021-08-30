@@ -404,15 +404,15 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 													<FormControlLabel value="kml" control={<Radio />} label="Google Earth (.kml)" />
 												</TableCell>
 												<TableCell>
-													<FormControlLabel value="xlsx" control={<Radio />} label="Excel (.xlsx)" />
+													<FormControlLabel value="excel2007" control={<Radio />} label="Excel (.xlsx)" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="xls" control={<Radio />} label="Excel 97-2003 (.xls)" />
+													<FormControlLabel value="excel97" control={<Radio />} label="Excel 97-2003 (.xls)" />
 												</TableCell>
 												<TableCell>
-													<FormControlLabel value="CSV" control={<Radio />} label="CSV (.csv)" />
+													<FormControlLabel value="csv" control={<Radio />} label="CSV (.csv)" />
 												</TableCell>
 												<TableCell></TableCell>
 											</TableRow>
@@ -572,7 +572,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								variant="outlined"
 								color="secondary"
 								onClick={() => {
-									window.open(tool.exportFileUrl);
+									window.open('//maps.massgis.state.ma.us/' + tool.exportFileUrl);
 								}}
 							>
 								Click to download your extract &nbsp;&nbsp;<CloudDownload  />
