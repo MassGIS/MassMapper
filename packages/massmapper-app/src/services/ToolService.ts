@@ -18,6 +18,7 @@ import { ZoomToMaxExtentTool } from '../models/ZoomToMaxExtentTool';
 import { ExportWizardTool } from "../models/ExportWizardTool";
 import { ExtentHistoryTool } from "../models/ExtentHistoryTool";
 import { HelpTool } from "../models/HelpTool";
+import { DrawTool } from "../models/DrawTool";
 
 type ToolServiceAnnotations = '_tools' | '_ready';
 interface ToolDefinition {
@@ -43,6 +44,7 @@ ToolRegistry.set('ZoomToMaxExtentTool', ZoomToMaxExtentTool);
 ToolRegistry.set('ExportWizardTool', ExportWizardTool)
 ToolRegistry.set('ExtentHistoryTool', ExtentHistoryTool);
 ToolRegistry.set('HelpTool', HelpTool);
+ToolRegistry.set('DrawTool', DrawTool);
 
 @Service()
 class ToolService {

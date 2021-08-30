@@ -67,6 +67,11 @@
 			}
 		},
 		{
+			"id": "draw-tool",
+			"position": "topleft",
+			"class": "DrawTool"
+		},
+		{
 			"id": "print-pdf-tool",
 			"position": "topleft",
 			"class": "PrintPdfTool"

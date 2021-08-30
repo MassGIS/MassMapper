@@ -26,6 +26,7 @@ import { Layer, LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { MapService } from '../services/MapService';
+import ColorPaletteComponent from './ColorPaletteComponent';
 
 interface LegendComponentProps extends RouteComponentProps<any> {
 }
@@ -111,26 +112,11 @@ const LegendCustomPropertiesEditor: FunctionComponent<{layer: Layer, state: Lege
 								Custom Color
 							</Typography>
 							<Grid>
-								{COLOR_PALETTE.map(({name, hex}) => {
-									return (<Button
-										value={name}
-										onClick={() => {
-											layer.customColor = name;
-										}}
-										style={{
-											backgroundColor: layer.customColor === name ? 'grey': ''
-										}}
-									>
-										<div
-											style={{
-												backgroundColor: hex,
-												border: '1px solid black',
-												height: '15px',
-												width: '15px',
-											}}
-										/>
-									</Button>)
-								})}
+								<ColorPaletteComponent
+									onClick={(name, hex) => {
+										layer.customColor = name;
+									}}
+								/>
 							</Grid>
 							<Grid>
 								{layer.customColor && (
@@ -157,56 +143,6 @@ const LegendCustomPropertiesEditor: FunctionComponent<{layer: Layer, state: Lege
 	)
 });
 
-const COLOR_PALETTE = [
-	{
-		name: "White",
-		hex: "white"
-	},
-	{
-		name: "Tan",
-		hex: "tan"
-	},
-	{
-		name: "Grey",
-		hex: 'grey'
-	},
-	{
-		name: "Pink",
-		hex: 'pink'
-	},
-	{
-		name: "Red",
-		hex: "red"
-	},
-	{
-		name: "Orange",
-		hex: "orange"
-	},
-	{
-		name: "Yellow",
-		hex: "yellow"
-	},
-	{
-		name: "Green",
-		hex: "green"
-	},
-	{
-		name: "Blue",
-		hex: "blue"
-	},
-	{
-		name: "Dark_Blue",
-		hex: "darkblue"
-	},
-	{
-		name: "Purple",
-		hex: "purple"
-	},
-	{
-		name: "Black",
-		hex: "black"
-	}
-];
 
 const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) => {
 
