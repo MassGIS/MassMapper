@@ -135,13 +135,21 @@ class ExportWizardTool extends Tool {
 		const [ulX, ulY] = proj4(spMeters).forward(ul);
 		const [lrX, lrY] = proj4(spMeters).forward(lr);
 
-		const bbox26986 = `${ulX} ${ulY}, ${ulX} ${lrY}, ${lrX} ${lrY}, ${lrX} ${ulY}, ${ulX} ${ulY}`;
+		const bbox26986 = `${ulX} ${ulY} ${ulX} ${lrY} ${lrX} ${lrY} ${lrX} ${ulY} ${ulX} ${ulY}`;
+		// Not sure why the following works, unless ul and lr were inverted?
+		const bbox26986String = `${ulX},${ulY},${lrX},${lrY}`;
 		const configService = this._services.get(ConfigService);
 		Array.from(this.exportLayers.values()).forEach(element => {
-			const url = `${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
-				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&SRSNAME=EPSG:${this.exportCRS}&typename=${element.queryName}` +
-				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>`;
-			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.title)}" name="${this.encodeSpecialChars(element.name)}" baseURL="${this.encodeSpecialChars(url)}">`;
+			let url = `${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
+				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&typename=${element.queryName}` +
+				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>` +
+				`&SRSNAME=EPSG:${this.exportCRS}`;
+			if (this.exportFormat === 'kml') {
+				url = `${configService.geoserverUrl}/geoserver/wms?request=getmap` +
+					`&version=1.1.0&format=application/vnd.google-earth.kml+xml&service=wms&height=100&width=100&styles=&srs=EPSG:26986` +
+					`&layers=${element.queryName}&bbox=${bbox26986String}`;
+			}
+			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.name).replace('massgis:', '')}" name="${this.encodeSpecialChars(element.title)}" baseURL="${this.encodeSpecialChars(url.replace('https', 'http'))}">`;
 			layer += '<metadata>' + this.encodeSpecialChars(element.metadataUrl) + '</metadata>';
 			element.extractDocs.forEach((url:string) => {
 				layer += '<metadata>' + this.encodeSpecialChars(url) + '</metadata>';
@@ -154,7 +162,7 @@ class ExportWizardTool extends Tool {
 
 		let res;
 		try {
-			res = await fetch('/cgi-bin/mkzip', {
+			res = await fetch('https://massgis.2creek.com/cgi-bin/mkzip', {
 				method : "POST",
 				headers: {
 					'Content-Type':'application/xml; charset=UTF-8'
