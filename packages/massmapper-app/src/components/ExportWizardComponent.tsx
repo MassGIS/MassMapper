@@ -572,7 +572,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								variant="outlined"
 								color="secondary"
 								onClick={() => {
-									window.open('//maps.massgis.state.ma.us/' + tool.exportFileUrl);
+									window.open('/' + tool.exportFileUrl);
 								}}
 							>
 								Click to download your extract &nbsp;&nbsp;<CloudDownload  />
