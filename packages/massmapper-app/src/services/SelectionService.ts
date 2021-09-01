@@ -3,7 +3,6 @@ import { ContainerInstance, Service } from "typedi";
 import { IdentifyResult } from "../models/IdentifyResults";
 import { LatLngBounds } from "leaflet";
 import { Layer } from "../models/Layer";
-import * as turf from '@turf/turf';
 import { ConfigService } from "./ConfigService";
 
 @Service()
