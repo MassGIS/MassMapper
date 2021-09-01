@@ -58,7 +58,7 @@ class IdentifyToolWithBox extends Tool {
 
 	// no component for this tool
 	public component() {
-		return MakeToolButtonComponent(identify, 'Click to drag a box and identify features');
+		return MakeToolButtonComponent(identify, 'Click to draw a polygon and identify features');
 	}
 
 	private _clearExistingShape() {
@@ -86,7 +86,6 @@ class IdentifyToolWithBox extends Tool {
 			this._clearExistingShape();
 			alert("No layers are available to query right now - add some layers that are visible at this scale first.");
 			window.setTimeout(() => {
-
 				this._handler.enable();
 			}, 100);
 			return;
