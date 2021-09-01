@@ -237,9 +237,9 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						>
 							<TableHead>
 								<TableRow>
-									<TableCell padding="default"></TableCell>
-									<TableCell padding="default">Data Layer Name</TableCell>
-									<TableCell padding="default">Feature(s) Found?</TableCell>
+									<TableCell padding="normal"></TableCell>
+									<TableCell padding="normal">Data Layer Name</TableCell>
+									<TableCell padding="normal">Feature(s) Found?</TableCell>
 								</TableRow>
 							</TableHead>
 							<TableBody>
