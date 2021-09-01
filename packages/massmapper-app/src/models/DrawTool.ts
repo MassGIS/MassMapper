@@ -13,7 +13,7 @@ import { ContainerInstance } from 'typedi';
 class DrawTool extends Tool {
 
 	private _drawDisposer:IReactionDisposer;
-	private _drawnItems:FeatureGroup;
+	private _drawnItems:FeatureGroup = new FeatureGroup();
 	private _drawHandler: Draw.Polyline | Draw.Polygon;
 	public lineColor: string = 'blue';
 
@@ -40,21 +40,21 @@ class DrawTool extends Tool {
 		this._drawHandler.enable();
 	}
 
-	constructor(
-		protected readonly _services:ContainerInstance,
-		public readonly id:string,
-		public position: ToolPosition,
-		public readonly options: any
-	) {
-		super(_services,id,position,options);
-		this._drawnItems = new FeatureGroup();
+	// constructor(
+	// 	protected readonly _services:ContainerInstance,
+	// 	public readonly id:string,
+	// 	public position: ToolPosition,
+	// 	public readonly options: any
+	// ) {
+	// 	super(_services,id,position,options);
+	// 	this._drawnItems ;
 
-		// makeObservable<DrawTool>(
-		// 	this,
-		// 	{
-		// 	}
-		// );
-	}
+	// 	// makeObservable<DrawTool>(
+	// 	// 	this,
+	// 	// 	{
+	// 	// 	}
+	// 	// );
+	// }
 
 	protected async _deactivate() {
 		this._drawDisposer && this._drawDisposer();
@@ -89,6 +89,8 @@ class DrawTool extends Tool {
 			// if (this.measureMode === 'Length') {
 				this._drawHandler = ms.leafletMap['drawLine'];
 				this._drawHandler.setOptions({
+					showArea: false,
+					showLength: false,
 					repeatMode: true,
 					icon: new DivIcon({
 						iconSize: new Point(10, 10),
