@@ -17,8 +17,8 @@ import {
 	TableCell,
 	Tooltip,
 } from '@material-ui/core';
-import { DataGrid, GridSelectionModelChangeParams } from '@material-ui/data-grid';
-import { XGrid, LicenseInfo, GridSelectionModel } from '@material-ui/x-grid';
+import { DataGrid } from '@mui/x-data-grid';
+import { DataGridPro, LicenseInfo, GridSelectionModel } from '@mui/x-data-grid-pro';
 import { makeStyles } from '@material-ui/core/styles';
 import { observer, Observer } from 'mobx-react';
 import { useLocalObservable } from 'mobx-react-lite';
@@ -120,7 +120,8 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 			height: 20,
 			resizable: true,
 			renderCell: (params: any) => {
-				let value = configService.useXGrid ? params.row[p] : params.getValue(p);
+				// let value = configService.useXGrid ? params.row[p] : params.getValue(p);
+				let value = params.row[p];
 				if (typeof(value) === 'string' && /^http.*/.test(value as string)) {
 					value = (<a href={value}>{value}</a>)
 				}
@@ -133,7 +134,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 		};
 	}) || [];
 
-	const GridComponent = configService.useXGrid ? XGrid : DataGrid;
+	const GridComponent = configService.useXGrid ? DataGridPro : DataGrid;
 	if (configService.useXGrid) {
 		LicenseInfo.setLicenseKey(configService.xGridLicenseKey!);
 	}
