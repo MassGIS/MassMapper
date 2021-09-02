@@ -4,6 +4,7 @@ import { IdentifyResult } from "../models/IdentifyResults";
 import { LatLngBounds } from "leaflet";
 import { Layer } from "../models/Layer";
 import { ConfigService } from "./ConfigService";
+import * as turf from '@turf/turf';
 
 @Service()
 class SelectionService {
@@ -33,13 +34,16 @@ class SelectionService {
 		})();
 	}
 
-	public addIdentifyResult(layer: Layer, bbox: LatLngBounds): IdentifyResult {
+	public addIdentifyResult(layer: Layer, bbox: LatLngBounds, shape?: turf.Geometry): IdentifyResult {
 		const configService = this._services.get(ConfigService);
 		const idResult = new IdentifyResult(
 			layer,
 			bbox,
 			configService.geoserverUrl,
 		);
+		if (shape) {
+			idResult.intersectsShape = shape;
+		}
 		idResult.getNumFeatures()
 		this._idResults.set(layer.id, idResult);
 		return idResult;

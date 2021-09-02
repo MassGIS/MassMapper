@@ -8,6 +8,7 @@ import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify-box.png';
 import * as turf from '@turf/turf';
 import draw from 'leaflet-draw';
+import IdentifyResultsModal from "../components/IdentifyResultsModal";
 const d = draw;
 class IdentifyToolWithBox extends Tool {
 
@@ -101,8 +102,7 @@ class IdentifyToolWithBox extends Tool {
 			}
 
 			const selService = this._services.get(SelectionService);
-			const idRes = selService.addIdentifyResult(l, evt.layer.getBounds());
-			idRes.intersectsShape = idFeature;
+			selService.addIdentifyResult(l, evt.layer.getBounds(), idFeature);
 		});
 
 		window.setTimeout(() => {
