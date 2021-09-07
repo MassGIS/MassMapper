@@ -10,6 +10,7 @@ import {
 	circleMarker,
 	LatLng,
 	LatLngBounds,
+	extend
 } from 'leaflet';
 import { autorun, computed, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
@@ -197,6 +198,44 @@ class MapService {
 			if (!cat.ready || !cs.ready || !ls.ready) {
 				return;
 			}
+
+			// To avoid having to do the whole Leaflet submodule dance, override core zoom functionality here to never show
+			// overlays beyond the base layer's minZoom / maxZoom.  As indicated below, assume that the 1st layer is the base layer!
+			// https://github.com/cgalvarino/Leaflet/blob/e8c28b996179373447dde1df479898576a508579/src/layer/Layer.js#L253
+			Leaflet.extend(this._map, {_updateZoomLevels: function () {
+				var minZoom = Infinity,
+					maxZoom = -Infinity,
+					oldZoomSpan = this._getZoomSpan();
+		
+				var baseLayer;
+				for (var i in this._zoomBoundLayers) {
+					// Assume that the base layer is the 1st layer.
+					baseLayer = baseLayer || this._zoomBoundLayers[i];
+
+					var options = this._zoomBoundLayers[i].options;
+		
+					minZoom = baseLayer.options.minZoom === undefined ? minZoom : Math.max(baseLayer.options.minZoom, options.minZoom);
+					maxZoom = baseLayer.options.maxZoom === undefined ? maxZoom : Math.min(baseLayer.options.maxZoom, options.maxZoom);
+				}
+		
+				this._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
+				this._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
+		
+				// @section Map state change events
+				// @event zoomlevelschange: Event
+				// Fired when the number of zoomlevels on the map is changed due
+				// to adding or removing a layer.
+				if (oldZoomSpan !== this._getZoomSpan()) {
+					this.fire('zoomlevelschange');
+				}
+		
+				if (this.options.maxZoom === undefined && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
+					this.setZoom(this._layersMaxZoom);
+				}
+				if (this.options.minZoom === undefined && this._layersMinZoom && this.getZoom() < this._layersMinZoom) {
+					this.setZoom(this._layersMinZoom);
+				}
+			}});
 
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
 			let layers = (hs.has('bl') || hs.has('l')) ?
