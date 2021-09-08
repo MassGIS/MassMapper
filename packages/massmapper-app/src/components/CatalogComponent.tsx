@@ -21,6 +21,24 @@ import { Layer } from '../models/Layer';
 import { LegendService } from '../services/LegendService';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { ConfigService } from '../services/ConfigService';
+
+import polygon from '../images/polygon-icon.png';
+import line from '../images/line-icon.png';
+import point from '../images/point-icon.png';
+import tile from '../images/tile-icon.png';
+
+const imageTypes = new Map<string, {
+	label:string,
+	image: string
+}>();
+imageTypes.set('poly', {label: 'Polygons', image: polygon});
+imageTypes.set('pt', {label: 'Points', image: point});
+imageTypes.set('line', {label: 'Lines', image: line});
+imageTypes.set('tiled_overlay', {label: 'Tiled Data', image: tile});
+
+const iconStyle = {
+	width: '16px'
+};
 interface CatalogComponentProps extends RouteComponentProps<any> {
 }
 
@@ -47,7 +65,10 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, gsurl: strin
 			items = items.concat(node.Layer.map((node) => (
 				<TreeItem
 					classes={classes}
-					icon={<PanoramaHorizontal />}
+					icon={<img
+							style={iconStyle}
+							src={imageTypes.get(node.type as string)!.image}
+						/>}
 					key={node.title + '::' + node.style}
 					nodeId={node.title + '::' + node.style}
 					label={node.title}

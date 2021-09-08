@@ -5,7 +5,6 @@ import {
 	Button,
 	Dialog,
 	DialogActions,
-	DialogContent,
 	DialogTitle,
 	TableContainer,
 	Table,
@@ -23,16 +22,18 @@ import {
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import {
-	Add,
 	Check,
 	Close,
 	CloudDownload,
-	Delete,
 	Error,
 	GetApp,
 	NavigateBefore,
 	NavigateNext,
 } from '@material-ui/icons';
+
+import polygon from '../images/polygon-icon.png';
+import line from '../images/line-icon.png';
+import point from '../images/point-icon.png';
 
 import { runInAction } from 'mobx';
 import { observer } from 'mobx-react';
@@ -51,6 +52,19 @@ import { ExportWizardTool } from '../models/ExportWizardTool';
 
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
+
+const imageTypes = new Map<string, {
+	label:string,
+	image: string
+}>();
+imageTypes.set('poly', {label: 'Polygons', image: polygon});
+imageTypes.set('pt', {label: 'Points', image: point});
+imageTypes.set('line', {label: 'Lines', image: line});
+imageTypes.set('tiled_overlay', {label: 'Polygons', image: polygon});
+
+const iconStyle = {
+	width: '24px'
+};
 
 const useStyles = makeStyles((theme) => ({
 		paper: {
@@ -323,7 +337,13 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 											hover
 											key={layer.id}
 										>
-											<TableCell>{layer.queryName ? 'polygon' : layer.layerType}</TableCell>
+											<TableCell>
+												<img
+													style={iconStyle}
+													title={imageTypes.get(layer.layerType as string)!.label}
+													src={imageTypes.get(layer.layerType as string)!.image}
+												/>
+											</TableCell>
 											<TableCell>{layer.title}</TableCell>
 											<TableCell>
 												{!tool.exportLayersFeatureCount.has(layer.name) && (
