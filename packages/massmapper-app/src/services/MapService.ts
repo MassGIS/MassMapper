@@ -356,11 +356,28 @@ class MapService {
 			});
 		});
 
-		this._layerControl = new Control.Layers().addTo(this._map!);
+		// shove basemap opacity control into the mix
+		this._layerControl = new Control.Layers();
+		Leaflet.extend(this._layerControl, {_initLayout: function() {
+			Control.Layers.prototype._initLayout.call(this);
+			let opacityDiv = DomUtil.create('div', 'leaflet-control-layers-opacity', this._section);
+			opacityDiv.style.textAlign = 'center';
+			this.opacitySlider = DomUtil.create('a', '', opacityDiv);
+			this.opacitySlider.href = 'javascript:void(0)';
+			this.opacitySlider.innerHTML = 'toggle opacity';
+			this.opacitySlider.onclick = function() {
+				basemaps.forEach(o => {
+					o.layer.setOpacity(o.layer.options.opacity == 0.50 ? 1 : 0.50)
+				})
+			}
+		}});
+		this._layerControl.addTo(this._map!);
 
 		this._basemaps = this._basemaps.filter((bm) =>
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
+		// save a pointer to the basemaps so the opacity control can get to it
+		const basemaps = this._basemaps;
 
 		runInAction(() => {
 			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
