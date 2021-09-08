@@ -55,6 +55,8 @@ class IdentifyToolWithBox extends Tool {
 		ms.leafletMap?.off(Draw.Event.CREATED, this._handleIdentify.bind(this));
 		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
 
+		this._clearExistingShape();
+
 	}
 
 	// no component for this tool
