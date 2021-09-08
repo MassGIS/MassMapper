@@ -136,7 +136,8 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 				Array.from(legendService.enabledLayers).forEach(l => {
 					tool.exportLayers.set(l.name, l);
 				});
-				tool.activeStep = 1;
+				tool.activeStep = 3;
+				tool.calculateNumFeatures();
 			})
 		}
 	);
@@ -173,16 +174,16 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				<DialogTitle>
 					Export Wizard - &nbsp;&nbsp;
-					{tool.activeStep! <= 4 && (<>Step {tool.activeStep}/4</>)}
+					{tool.activeStep! <= 4 && (<>Step {tool.activeStep! - 2}/2</>)}
 					{tool.activeStep === 5 && (<>Running Export</>)}
 					{tool.activeStep === 6 && (<>Export Complete</>)}
 				</DialogTitle>
 
-				{tool.activeStep === 1 && (
+				{/* {tool.activeStep === 1 && (
 					<HowtoComponent />
-				)}
+				)} */}
 
-				{tool.activeStep === 2 && (
+				{/* {tool.activeStep === 2 && (
 					<Grid
 						className={classes.container}
 						container
@@ -289,7 +290,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</TableContainer>
 						</Grid>
 					</Grid>
-				)}
+				)} */}
 
 				{tool.activeStep === 3 && (
 					<Grid
@@ -422,7 +423,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</RadioGroup>
 						</Grid>
 
-						<Grid item xs={12} style={{
+						{/* <Grid item xs={12} style={{
 							padding: '1em'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
@@ -451,7 +452,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 									</Table>
 								</TableContainer>
 							</RadioGroup>
-						</Grid>
+						</Grid> */}
 
 						<Grid item xs={12} style={{
 							padding: '1em'
@@ -582,7 +583,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				{tool.activeStep! <= 5 &&(
 					<DialogActions>
-						{tool.activeStep !== 1 && (
+						{tool.activeStep! > 3 && (
 							<Button
 								size="small"
 								style={{
@@ -591,6 +592,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								onClick={() => {
 									runInAction(() => {
 										tool.activeStep = tool.activeStep! - 1;
+										tool.activeStep === 3 && tool.calculateNumFeatures();
 									});
 								}}
 							>
@@ -606,7 +608,6 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							onClick={() => {
 								runInAction(() => {
 									tool.activeStep = tool.activeStep! + 1;
-									tool.activeStep === 3 && tool.calculateNumFeatures();
 									tool.activeStep === 5 && tool.doExport();
 								})
 							}}

@@ -1,4 +1,4 @@
-import { FeatureGroup, Draw, GeometryUtil, DivIcon, Point } from 'leaflet';
+import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon } from 'leaflet';
 import draw from 'leaflet-draw';
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
@@ -8,13 +8,16 @@ import { Tool, ToolPosition } from "./Tool";
 import { DrawToolComponent } from '../components/DrawToolComponent';
 import { ContainerInstance } from 'typedi';
 
-// import './MeasureTool.module.css';
-
+import './DrawTool.module.css';
 class DrawTool extends Tool {
+	public drawMode: 'text' | 'line' = 'line';
+	public showTextEntryDialog:boolean = false;
 
+	private _textClickedLocation?: LatLng;
 	private _drawDisposer:IReactionDisposer;
 	private _drawnItems:FeatureGroup = new FeatureGroup();
-	private _drawHandler: Draw.Polyline | Draw.Polygon;
+	private _markers:Marker[] = [];
+	private _drawLineHandler: Draw.Polyline | Draw.Polygon;
 	public lineColor: string = 'blue';
 
 	private _handleDrawComplete(evt: any) {
@@ -27,68 +30,98 @@ class DrawTool extends Tool {
 
 	public clearExistingShape() {
 		this._drawnItems && this._drawnItems.clearLayers();
+		this._markers.forEach((m) => {
+			const ms = this._services.get(MapService);
+			ms.leafletMap && m.removeFrom(ms.leafletMap);
+		});
+		this._markers.splice(0,this._markers.length);
 	}
 
 	public setLineColor(hex: string) {
 		this.lineColor = hex;
-		this._drawHandler && this._drawHandler.setOptions({
-			shapeOptions: {
-				color: hex
-			}
-		})
-		this._drawHandler.disable();
-		this._drawHandler.enable();
+		if (this.drawMode === 'line') {
+			this._drawLineHandler && this._drawLineHandler.setOptions({
+				shapeOptions: {
+					color: hex
+				}
+			})
+			this._drawLineHandler.disable();
+			this._drawLineHandler.enable();
+		}
 	}
 
-	// constructor(
-	// 	protected readonly _services:ContainerInstance,
-	// 	public readonly id:string,
-	// 	public position: ToolPosition,
-	// 	public readonly options: any
-	// ) {
-	// 	super(_services,id,position,options);
-	// 	this._drawnItems ;
+	public _handleTextClickLocation(evt: any) {
+		this._textClickedLocation = evt.latlng;
+		this.showTextEntryDialog = true;
+	}
 
-	// 	// makeObservable<DrawTool>(
-	// 	// 	this,
-	// 	// 	{
-	// 	// 	}
-	// 	// );
-	// }
+	public addText(text: string) {
+		const ms = this._services.get(MapService);
+
+		const marker = new Marker(this._textClickedLocation!, {
+			opacity: 1.0,
+			icon: new Icon({
+				iconUrl: 'test.png'
+			})
+		}); //opacity may be set to zero
+		marker.bindTooltip(
+			text,
+			{
+				permanent: true,
+				className: "massmapper-draw-text",
+				offset: [0, 0],
+				direction: 'center'
+			});
+		ms.leafletMap && marker.addTo(ms.leafletMap);
+		this._markers.push(marker);
+
+		this._textClickedLocation = undefined;
+		this.showTextEntryDialog = false;
+	}
+
+	constructor(
+		protected readonly _services:ContainerInstance,
+		public readonly id:string,
+		public position: ToolPosition,
+		public readonly options: any
+	) {
+		super(_services,id,position,options);
+		this._drawnItems ;
+
+		makeObservable<DrawTool>(
+			this,
+			{
+				drawMode: observable,
+				showTextEntryDialog: observable,
+			}
+		);
+	}
 
 	protected async _deactivate() {
+
 		this._drawDisposer && this._drawDisposer();
-		this._drawHandler && this._drawHandler.disable();
+		this._drawLineHandler && this._drawLineHandler.disable();
 		// this.clearExistingShape();
 
 		const ms = this._services.get(MapService);
-		// ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this.clearExistingShape.bind(this));
 		ms.leafletMap?.off(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
 	}
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
-		// this._drawnItems = new FeatureGroup();
-		// ms.leafletMap?.addLayer(this._drawnItems);
+		const handleTextComplete = this._handleTextClickLocation.bind(this);
 
 		this._drawDisposer = autorun(() => {
 			if (!ms.leafletMap) {
 				return;
 			}
 
-			// ms.leafletMap.on(Draw.Event.DRAWVERTEX, this.clearExistingShape.bind(this));
+			this._cursor = "";
 
-			if (!ms.leafletMap['drawLine'])
+			if (!ms.leafletMap['drawLine']) {
 				ms.leafletMap.addHandler('drawLine', (window.L as any).Draw.Polyline);
-			// if (!ms.leafletMap['measureArea'])
-			// 	ms.leafletMap.addHandler('measureArea', (window.L as any).Draw.Polygon);
-
-			this._drawHandler?.disable();
-			// this.clearExistingShape();
-
-			// if (this.measureMode === 'Length') {
-				this._drawHandler = ms.leafletMap['drawLine'];
-				this._drawHandler.setOptions({
+				this._drawLineHandler = ms.leafletMap['drawLine'];
+				this._drawLineHandler.setOptions({
 					showArea: false,
 					showLength: false,
 					repeatMode: true,
@@ -100,19 +133,20 @@ class DrawTool extends Tool {
 						color: this.lineColor
 					}
 				})
-			// } else {
-			// 	this._drawHandler = ms.leafletMap['measureArea'];
-			// 	this._drawHandler.setOptions({
-			// 		showArea: true,
-			// 		showLength: false,
-			// 		metric: false,
-			// 		feet: true,
-			// 		repeatMode: true,
-			// 	})
-			// }
+			}
 
-			ms.leafletMap.on(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
-			this._drawHandler.enable();
+			// disable both handlers
+			this._drawLineHandler?.disable();
+			ms.leafletMap.off('click', handleTextComplete);
+
+			// enable the right handler
+			if (this.drawMode === 'line') {
+				ms.leafletMap.on(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
+				this._drawLineHandler.enable();
+			} else {
+				ms.leafletMap.on('click', handleTextComplete)
+				this._cursor = "crosshair";
+			}
 		});
 	}
 

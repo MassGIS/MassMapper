@@ -14,8 +14,8 @@ import ruler from '../images/ruler.png';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { MeasureTool } from '../models/MeasureTool';
 
-const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
-	const myTool = tool as MeasureTool;
+const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
+	const tool = _tool as MeasureTool;
 
 	const MeasureButton = MakeToolButtonComponent(ruler, 'Click to measure distances');
 
@@ -46,20 +46,20 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 							}}
 						>
 							<Radio
-								checked={myTool.measureMode === 'Length'}
+								checked={tool.measureMode === 'Length'}
 								onClick={() => {
-									myTool.measureMode = 'Length';
+									tool.measureMode = 'Length';
 								}}
 							/>
 							<div style={{
 								width: '4em',
 								display: 'inline-block',
-								color: myTool.measureMode === 'Length' ? '' : 'gray'
+								color: tool.measureMode === 'Length' ? '' : 'gray'
 							}}>
 								Length:
 							</div>
 							<TextField
-								value={myTool.totalLength}
+								value={tool.totalLength}
 								onChange={() => {
 									return false;
 								}}
@@ -67,9 +67,9 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 							&nbsp;&nbsp;
 							<TextField
 								select
-								value={myTool.lengthUnits}
+								value={tool.lengthUnits}
 								onChange={(e) => {
-									myTool.lengthUnits = (e.target.value as 'ft' | 'm' | 'mi');
+									tool.lengthUnits = (e.target.value as 'ft' | 'm' | 'mi');
 								}}
 								style={{
 									width: '4em'
@@ -88,29 +88,29 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 							}}
 						>
 							<Radio
-								checked={myTool.measureMode === 'Area'}
+								checked={tool.measureMode === 'Area'}
 								onClick={() => {
-									myTool.measureMode = 'Area';
+									tool.measureMode = 'Area';
 								}}
 							/>
 							<div style={{
 								width: '4em',
 								display: 'inline-block',
-								color: myTool.measureMode === 'Area' ? '' : 'gray'
+								color: tool.measureMode === 'Area' ? '' : 'gray'
 							}}>
 								Area:
 							</div>
 							<TextField
-								value={myTool.measureMode === 'Area' && myTool.totalArea || ''}
+								value={tool.measureMode === 'Area' && tool.totalArea || ''}
 								onChange={() => {
 									return false;
 								}}
 							/>&nbsp;&nbsp;
 							<TextField
 								select
-								value={myTool.areaUnits}
+								value={tool.areaUnits}
 								onChange={(e) => {
-									myTool.areaUnits = (e.target.value as 'sq ft' | 'acres' | 'sq meters' | 'sq mi');
+									tool.areaUnits = (e.target.value as 'sq ft' | 'acres' | 'sq meters' | 'sq mi');
 								}}
 								style={{
 									width: '4em'
