@@ -62,6 +62,7 @@ const ColorPaletteComponent: FunctionComponent<ColorPaletteComponentProps> = obs
     return (
         <> {COLOR_PALETTE.map(({name, hex}) => {
             return (<Button
+				key={hex}
                 value={name}
                 onClick={(e) => {
                     setSelectedColor(name);

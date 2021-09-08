@@ -3,11 +3,15 @@ import {
 	Grid,
 	TextField,
 	Paper,
-	MenuItem,
-	Button
+	Button,
+	RadioGroup,
+	FormControlLabel,
+	Dialog,
+	DialogContent,
+	DialogActions
 } from '@material-ui/core'
 
-import { observer } from 'mobx-react-lite';
+import { observer, useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from "react";
 import { ToolComponentProps } from '../models/Tool';
 
@@ -15,69 +19,146 @@ import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { DrawTool } from '../models/DrawTool';
 import { Delete, Gesture } from '@material-ui/icons';
 import ColorPaletteComponent from './ColorPaletteComponent';
+import { action } from 'mobx';
+
+interface DrawToolComponentState {
+	labelText: string;
+}
 
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as DrawTool;
 
 	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click to draw lines');
 
+	const myState = useLocalObservable<DrawToolComponentState>(() => {
+		return {
+			labelText: '',
+		}
+	});
+
 	return (
 		<>
 			<MeasureButton tool={tool}/>
+			{tool.showTextEntryDialog && (
+				<Dialog
+					open
+					onClose={() => {
+						tool.showTextEntryDialog = false;
+					}}
+				>
+					<DialogContent>
+
+						<TextField
+							autoFocus
+							onChange={(e) => {
+								myState.labelText = e.target.value as string;
+							}}
+						/>
+					</DialogContent>
+					<DialogActions>
+						<Button
+							onClick={(e) => {
+								tool.addText(myState.labelText);
+							}}
+						>
+							Add Text to Map
+						</Button>
+					</DialogActions>
+				</Dialog>
+			)}
 			{tool.isActive && (
 				<Paper
 					style={{
 						position: 'absolute',
 						top: '40px',
 						width:'300px',
-						// width: '28em',
+						margin: '0 1em',
 					}}
 					elevation={3}
 				>
-					<Grid
-						container
-						direction="row"
-						style={{
-							margin: '1em 0'
-						}}
+					<RadioGroup
+						onChange={action((e) => {
+							tool.drawMode = e.target.value as 'line'|'text';
+						})}
 					>
 						<Grid
-							item
+							container
+							direction="row"
 							style={{
-								width: '100%'
+								margin: '1em 0'
 							}}
 						>
-							<ColorPaletteComponent
-								onClick={(name, hex) => {
-									tool.setLineColor(hex);
-								}}
-							/>
-						</Grid>
-						<Grid
-							item
-							style={{
-								textAlign: 'center',
-								width: '100%'
-							}}
-						>
-							<hr />
-							<Button
+							<Grid
+								item
 								style={{
-									backgroundColor: 'white',
-									minWidth: '32px',
-								}}
-								color="default"
-								variant="text"
-								size="small"
-								title="Clear drawn lines"
-								onClick={() => {
-									tool.clearExistingShape();
+									width: '100%',
+									margin: '0 1em'
 								}}
 							>
-								Clear <Delete />
-							</Button>
+								<FormControlLabel value="line" control={<Radio checked={tool.drawMode === 'line'} />} label="Draw Lines" />
+								<br />
+								<ColorPaletteComponent
+									onClick={(name, hex) => {
+										tool.setLineColor(hex);
+									}}
+								/>
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<hr />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%',
+									margin: '0 1em'
+								}}
+							>
+								<FormControlLabel value="text" control={<Radio />} label="Add Text" />
+								<br />
+								{tool.drawMode === 'text' && (
+									<>
+										Click the map to add text
+									</>
+								)}
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<hr />
+							</Grid>
+							<Grid
+								item
+								style={{
+									textAlign: 'center',
+									width: '100%'
+								}}
+							>
+								<Button
+									style={{
+										backgroundColor: 'white',
+										minWidth: '32px',
+									}}
+									color="default"
+									variant="text"
+									size="small"
+									title="Clear drawn lines"
+									onClick={() => {
+										tool.clearExistingShape();
+									}}
+								>
+									Clear <Delete />
+								</Button>
+							</Grid>
 						</Grid>
-					</Grid>
+					</RadioGroup>
 				</Paper>
 			)}
 		</>
