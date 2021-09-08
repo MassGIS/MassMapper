@@ -365,7 +365,7 @@ class MapService {
 			opacity.style.textAlign = 'center';
 			opacity.innerHTML = 'Opacity <span id="basemap-opacity">(100%)</span><br/>0% <input type="range" min="1" max="100" value="100" class="slider" style="height:10px"> 100%';
 			opacity.getElementsByTagName('input')[0].oninput = function() {
-				let value = this['value'];
+				const value = this['value'];
 				basemaps.forEach(o => {
 					o.layer.setOpacity(value / 100);
 				})
