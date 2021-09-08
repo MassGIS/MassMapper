@@ -46,7 +46,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 	const mapService = useService(MapService);
 
-	const PrintPdfButton = MakeToolButtonComponent(Print, 'Print map', () => {
+	const PrintPdfButton = MakeToolButtonComponent(Print, 'Create a PDF map', () => {
 		myState.isOpen = true;
 		tool.activate();
 	});
@@ -72,7 +72,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 				}}
 			>
 				<DialogTitle>
-					Print Map PDF
+					Create PDF
 				</DialogTitle>
 				<DialogContent
 					style={{
@@ -159,7 +159,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									display: 'inline-block',
 									color: myState.size === 'letter' ? '' : 'gray'
 								}}>
-									Letter
+									8.5 X 11
 								</div>
 								<Radio
 									checked={myState.size === 'legal'}
@@ -172,7 +172,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									display: 'inline-block',
 									color: myState.size === 'legal' ? '' : 'gray'
 								}}>
-									Legal
+									11 X 17
 								</div>
 							</Grid>
 							<Grid
@@ -198,7 +198,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 										myState.size = 'letter';
 									}}
 								>
-									<Print /> Print Map
+									<Print /> Create PDF
 								</Button>
 								<Button
 									value="Print"
