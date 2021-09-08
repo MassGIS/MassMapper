@@ -206,21 +206,21 @@ class MapService {
 				var minZoom = Infinity,
 					maxZoom = -Infinity,
 					oldZoomSpan = this._getZoomSpan();
-		
+
 				var baseLayer;
 				for (var i in this._zoomBoundLayers) {
 					// Assume that the base layer is the 1st layer.
 					baseLayer = baseLayer || this._zoomBoundLayers[i];
 
 					var options = this._zoomBoundLayers[i].options;
-		
+
 					minZoom = baseLayer.options.minZoom === undefined ? minZoom : Math.max(baseLayer.options.minZoom, options.minZoom);
 					maxZoom = baseLayer.options.maxZoom === undefined ? maxZoom : Math.min(baseLayer.options.maxZoom, options.maxZoom);
 				}
-		
+
 				this._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
 				this._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
-		
+
 				// @section Map state change events
 				// @event zoomlevelschange: Event
 				// Fired when the number of zoomlevels on the map is changed due
@@ -228,7 +228,7 @@ class MapService {
 				if (oldZoomSpan !== this._getZoomSpan()) {
 					this.fire('zoomlevelschange');
 				}
-		
+
 				if (this.options.maxZoom === undefined && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
 					this.setZoom(this._layersMaxZoom);
 				}
@@ -356,11 +356,28 @@ class MapService {
 			});
 		});
 
-		this._layerControl = new Control.Layers().addTo(this._map!);
+		// shove basemap opacity control into the mix
+		this._layerControl = new Control.Layers();
+		Leaflet.extend(this._layerControl, {_initLayout: function() {
+			Control.Layers.prototype['_initLayout'].call(this);
+			let opacityDiv = DomUtil.create('div', 'leaflet-control-layers-opacity', this._section);
+			opacityDiv.style.textAlign = 'center';
+			this.opacitySlider = DomUtil.create('a', '', opacityDiv);
+			this.opacitySlider.href = 'javascript:void(0)';
+			this.opacitySlider.innerHTML = 'toggle opacity';
+			this.opacitySlider.onclick = function() {
+				basemaps.forEach(o => {
+					o.layer.setOpacity(o.layer.options.opacity == 0.50 ? 1 : 0.50)
+				})
+			}
+		}});
+		this._layerControl.addTo(this._map!);
 
 		this._basemaps = this._basemaps.filter((bm) =>
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
+		// save a pointer to the basemaps so the opacity control can get to it
+		const basemaps = this._basemaps;
 
 		runInAction(() => {
 			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
