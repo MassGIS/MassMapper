@@ -174,7 +174,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				<DialogTitle>
 					Export Wizard - &nbsp;&nbsp;
-					{tool.activeStep! <= 4 && (<>Step {tool.activeStep - 2}/2</>)}
+					{tool.activeStep! <= 4 && (<>Step {tool.activeStep! - 2}/2</>)}
 					{tool.activeStep === 5 && (<>Running Export</>)}
 					{tool.activeStep === 6 && (<>Export Complete</>)}
 				</DialogTitle>
@@ -583,7 +583,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 				{tool.activeStep! <= 5 &&(
 					<DialogActions>
-						{tool.activeStep > 3 && (
+						{tool.activeStep! > 3 && (
 							<Button
 								size="small"
 								style={{
