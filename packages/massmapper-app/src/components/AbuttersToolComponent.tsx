@@ -74,7 +74,12 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									(x.target as HTMLInputElement).select();
 								}}
 								onChange={(e) => {
-									myTool.buffer = parseInt(e.target.value) || 0;
+									const newVal = parseInt(e.target.value);
+									if (newVal === 0) {
+										myTool.buffer = 1;
+									} else {
+										myTool.buffer = newVal || 1;
+									}
 								}}
 							/>
 							&nbsp;&nbsp;

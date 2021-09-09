@@ -68,7 +68,7 @@ class AbuttersTool extends Tool {
 	private _abuttersLayer: string;
 	private _abuttersShape: Polyline;
 
-	public buffer?: number = 0;
+	public buffer?: number = 1;
 	public units: 'ft' | 'm' = 'ft';
 
 	constructor(
@@ -231,7 +231,7 @@ class AbuttersTool extends Tool {
 		// 0 buffer is a no-op
 		// TODO: convert buffer distance to metecrs for map units, later
 		// const bufferDist = this.buffer * xxx
-		const buf = Math.max(this.buffer || 0, 3);
+		const buf = Math.max(this.buffer || 1, 3);
 		const units = this.buffer === 0 ? 'ft' : this.units;
 		abuttersQueryShape = buffer(abuttersQueryShape, buf, {units: units === 'ft' ? 'feet' : 'meters'}).geometry;
 
