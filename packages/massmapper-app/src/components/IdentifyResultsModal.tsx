@@ -31,6 +31,23 @@ import { Close, Save, SaveAlt, AspectRatio, PhotoSizeSelectSmall } from '@materi
 import { SelectionService } from '../services/SelectionService';
 import { ConfigService } from '../services/ConfigService';
 
+import polygon from '../images/polygon-icon.png';
+import line from '../images/line-icon.png';
+import point from '../images/point-icon.png';
+
+const imageTypes = new Map<string, {
+	label:string,
+	image: string
+}>();
+imageTypes.set('poly', {label: 'Polygons', image: polygon});
+imageTypes.set('pt', {label: 'Points', image: point});
+imageTypes.set('line', {label: 'Lines', image: line});
+imageTypes.set('tiled_overlay', {label: 'Polygons', image: polygon});
+
+const iconStyle = {
+	width: '24px'
+};
+
 const selectedColor = '#eee';
 const hoverColor = '#ccc';
 
@@ -255,7 +272,12 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 										}}
 										key={result.layer.id}
 									>
-										<TableCell>{result.layer.queryName ? 'polygon' : result.layer.layerType}</TableCell>
+										<TableCell>
+											<img
+												style={iconStyle}
+												src={imageTypes.get(result.layer.layerType as string)!.image}
+											/>
+										</TableCell>
 										<TableCell>{result.layer.title}</TableCell>
 										<TableCell>{result.numFeaturesDisplay}</TableCell>
 									</TableRow>

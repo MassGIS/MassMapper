@@ -1,4 +1,4 @@
-import { DomEvent, Draw, FeatureGroup, Handler, LatLngBounds, LeafletEventHandlerFn, LeafletMouseEvent, Util } from "leaflet";
+import { Draw, FeatureGroup } from "leaflet";
 import { autorun, IReactionDisposer, IReactionPublic } from "mobx";
 import { MapService } from "../services/MapService";
 import { Tool } from "./Tool";
@@ -8,7 +8,6 @@ import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify-poly.png';
 import * as turf from '@turf/turf';
 import draw from 'leaflet-draw';
-import IdentifyResultsModal from "../components/IdentifyResultsModal";
 const d = draw;
 class IdentifyToolWithBox extends Tool {
 
