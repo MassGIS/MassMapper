@@ -44,10 +44,8 @@ import { useService } from '../services/useService';
 import { LegendService } from '../services/LegendService';
 import { ConfigService } from '../services/ConfigService';
 import { ToolComponentProps } from '../models/Tool';
-import { Layer } from '../models/Layer';
 import { CatalogService } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
-import { MapService } from '../services/MapService';
 import { ExportWizardTool } from '../models/ExportWizardTool';
 
 const selectedColor = '#eee';
