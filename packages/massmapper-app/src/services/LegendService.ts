@@ -32,7 +32,7 @@ class LegendService {
 
 	public isSplashPageVisible: boolean = true;
 
-	private _visitor?;
+	private _visitor?:any;
 
 	constructor(private readonly _services: ContainerInstance) {
 
