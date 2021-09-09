@@ -147,11 +147,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 		'Export data layers',
 		() => {
 			runInAction(() => {
-				Array.from(legendService.enabledLayers).forEach(l => {
-					tool.exportLayers.set(l.name, l);
-				});
-				tool.activeStep = 3;
-				tool.calculateNumFeatures();
+				tool.startExport();
 			})
 		}
 	);

@@ -7,6 +7,7 @@ import { IdentifyResult } from "./IdentifyResults";
 import { MapService } from "../services/MapService";
 import { ConfigService } from "../services/ConfigService";
 import proj4 from 'proj4';
+import { LegendService } from "../services/LegendService";
 
 
 class ExportWizardTool extends Tool {
@@ -35,13 +36,15 @@ class ExportWizardTool extends Tool {
 				return true;
 			}
 		} else if (currentStep === 3) {
-			let canExport = true;
+			let canExportAnyLayer = false;
 			Array.from(this.exportLayersFeatureCount.keys()).forEach((key) => {
-				if (this.exportLayersFeatureCount.get(key)! > this.MAX_EXPORT_FEATURES) {
-					canExport = false;
+				if (this.exportLayersFeatureCount.get(key)! <= this.MAX_EXPORT_FEATURES &&
+					this.exportLayersFeatureCount.get(key)! > 0
+				) {
+					canExportAnyLayer = true;
 				}
 			})
-			return canExport;
+			return canExportAnyLayer;
 		} else if (currentStep === 4) {
 			return !!this.exportFileName && !!this.exportCRS && !!this.exportFormat;
 		}
@@ -82,11 +85,23 @@ class ExportWizardTool extends Tool {
 		// no-op
 	}
 
+	public startExport() {
+		this.activeStep = 3;
+
+		const legendService = this._services.get(LegendService);
+		this.exportLayers.clear();
+		Array.from(legendService.enabledLayers).forEach(l => {
+			this.exportLayers.set(l.name, l);
+		});
+
+		this.calculateNumFeatures();
+	}
+
 	public component() {
 		return ExportWizardComponent;
 	}
 
-	public calculateNumFeatures = async ():Promise<boolean> => {
+	public calculateNumFeatures = async () => {
 
 		const mapService = this._services.get(MapService);
 		const configService = this._services.get(ConfigService);
@@ -97,7 +112,6 @@ class ExportWizardTool extends Tool {
 			this.exportLayersFeatureCount.clear();
 		});
 
-		let canDoExport = true;
 		const queries:any[] = [];
 		Array.from(this.exportLayers).forEach(async ([name, layer]) => {
 			const idResults = new IdentifyResult(
@@ -114,14 +128,12 @@ class ExportWizardTool extends Tool {
 			});
 		});
 
-		await Promise.all(queries).then(() => {
-			Array.from(this.exportLayersFeatureCount.keys()).forEach((key) => {
-				if (this.exportLayersFeatureCount.get(key)! > this.MAX_EXPORT_FEATURES)
-					canDoExport = false;
-			})
-		});
-
-		return canDoExport;
+		// await Promise.all(queries).then(() => {
+		// 	Array.from(this.exportLayersFeatureCount.keys()).forEach((key) => {
+		// 		if (this.exportLayersFeatureCount.get(key)! > this.MAX_EXPORT_FEATURES)
+		// 			canDoExport = false;
+		// 	})
+		// });
 	}
 
 	public doExport = async():Promise<void> => {
@@ -140,6 +152,16 @@ class ExportWizardTool extends Tool {
 		const bbox26986String = `${ulX},${ulY},${lrX},${lrY}`;
 		const configService = this._services.get(ConfigService);
 		Array.from(this.exportLayers.values()).forEach(element => {
+			if (this.exportLayersFeatureCount.get(element.name)! >= this.MAX_EXPORT_FEATURES) {
+				console.debug("too many features in layer", element.name);
+				return;
+			}
+
+			if (this.exportLayersFeatureCount.get(element.name) === 0) {
+				console.debug("no features in layer", element.name);
+				return;
+			}
+
 			let url = `${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
 				`&version=1.1.0&outputformat=${this.exportFormat}&service=wfs&typename=${element.queryName}` +
 				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>` +
