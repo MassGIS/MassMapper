@@ -22,20 +22,22 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 			style={{
 				height:'60%',
 				padding: '0 .2em',
-				position: 'relative',
+				position: 'relative'
 			}}
 			elevation={3}
 		>
 			<div style={{
 				position: 'relative',
-				top: '3px'
+				top: '3px',
 			}}>
 				<Button
 					style={{
 						marginTop: '0',
 						paddingTop: '0',
 						fontWeight: 100,
-						fontSize: 'smaller'
+						fontSize: 'smaller',
+						width: myTool.units === units.DMS ? '27em' : '',
+						justifyContent: 'left'
 					}}
 					ref={(r:HTMLButtonElement) => {
 						myTool.buttonRef = r;
@@ -43,17 +45,29 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 					onClick={() => {
 						myTool.isChangingUnits = true;
 					}}
-					>
-					{myTool.xCoord}
-					,&nbsp;
-					{myTool.yCoord}
-					&nbsp;&nbsp;&nbsp;&nbsp;
-					<Typography
-						variant="caption"
-					>
-						{myTool.units}
-					</Typography>
-					<ArrowDropDown />
+				>
+					<div style={{
+						width: myTool.units === units.DMS ? '15em' : '',
+						textAlign: 'left',
+						marginRight: '1em'
+					}}>
+						{myTool.xCoord}
+						,&nbsp;
+						{myTool.yCoord}
+					</div>
+					<div style={{
+						float: 'right'
+					}}>
+						<Typography
+							variant="caption"
+							style={{
+								verticalAlign: 'super'
+							}}
+						>
+							{myTool.units}
+						</Typography>
+						<ArrowDropDown />
+					</div>
 				</Button>
 				<Menu
 					keepMounted
