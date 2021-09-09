@@ -150,8 +150,8 @@ class MapService {
 		const layers = this._services.get(LegendService).layers.map(
 			l => l.name + '__' + l.style + '__' + (l.enabled ? 'ON' : 'OFF') + '__' + l.opacity
 		).join(",");
-
-		return `bl=${encodeURIComponent(this._activeBaseLayer!.name)}&l=${layers}&b=${this._mapExtent}`;
+		const bl = this._activeBaseLayer!.name + '__' + this._activeBaseLayer!.layer.options.opacity * 100;
+		return `bl=${encodeURIComponent(bl)}&l=${layers}&b=${this._mapExtent}`;
 	}
 
 	constructor(private readonly _services: ContainerInstance) {
@@ -356,6 +356,25 @@ class MapService {
 			});
 		});
 
+		this._basemaps = this._basemaps.filter((bm) =>
+			cs.availableBasemaps.indexOf(bm.name) >= 0
+		);
+		// save a pointer to the basemaps so the opacity control can get to it
+		const _basemaps = this._basemaps;
+
+		runInAction(() => {
+			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
+		})
+
+		// square away the basemaps
+		if (hs.has('bl') && this._basemaps.find((o) => {return String(hs.get('bl')).split('__')[0] === o.name})) {
+			runInAction(() => {
+				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === String(hs.get('bl')).split('__')[0]);
+			});
+		}
+
+		const _basemapOpacity = hs.has('bl') ? Number(String(hs.get('bl')).split('__')[1]) : 100;
+
 		// shove basemap opacity control into the mix
 		this._layerControl = new Control.Layers();
 		Leaflet.extend(this._layerControl, {
@@ -365,7 +384,7 @@ class MapService {
 				DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
 				let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
 				opacity.style.textAlign = 'center';
-				opacity.innerHTML = 'Opacity <span>(100%)</span><br/>0% <input type="range" min="0" max="100" value="100" class="slider" style="height:10px"> 100%';
+				opacity.innerHTML = 'Opacity <span>(' + _basemapOpacity + '%)</span><br/>0% <input type="range" min="0" max="100" value="' + _basemapOpacity + '" class="slider" style="height:10px"> 100%';
 				opacity.getElementsByTagName('input')[0].oninput = function() {
 					const value = this['value'];
 					_basemaps.forEach(o => {
@@ -398,26 +417,10 @@ class MapService {
 		});
 		this._layerControl.addTo(this._map!);
 
-		this._basemaps = this._basemaps.filter((bm) =>
-			cs.availableBasemaps.indexOf(bm.name) >= 0
-		);
-		// save a pointer to the basemaps so the opacity control can get to it
-		const _basemaps = this._basemaps;
-
-		runInAction(() => {
-			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
-		})
-
-
-		// square away the basemaps
-		if (hs.has('bl') && this._basemaps.find((o) => {return hs.get('bl') === o.name})) {
-			runInAction(() => {
-				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === hs.get('bl'));
-			});
-		}
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);
 			if (o.name === this._activeBaseLayer!.name) {
+				o.layer.setOpacity(_basemapOpacity / 100);
 				o.layer.addTo(this._map);
 			}
 		});
