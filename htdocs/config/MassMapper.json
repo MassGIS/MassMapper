@@ -1,4 +1,6 @@
 {
+	"splashImage": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+	"splashImageHeight" : "3em",
 	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
 	"folderSet" : "https://maps.massgis.state.ma.us/temp/massmapper_folderset.xml",
 	"initialExtent" : [
@@ -45,7 +47,8 @@
 			"options": {
 				"logoUrl": "massmapper.png",
 				"logoTooltip": "MassMapper - by MassGIS",
-				"logoLink": "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"
+				"logoLink": "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information",
+				"logoHeight": "3.5em"
 			}
 		},
 		{
@@ -74,7 +77,10 @@
 		{
 			"id": "print-pdf-tool",
 			"position": "topleft",
-			"class": "PrintPdfTool"
+			"class": "PrintPdfTool",
+			"options" : {
+				"watermarkUrl" : ""
+			}
 		},
 		{
 			"id": "export-wizard-tool",

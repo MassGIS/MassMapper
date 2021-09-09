@@ -5,7 +5,7 @@ import {
 import { ToolComponentProps } from "../models/Tool";
 
 const LogoToolComponent: FunctionComponent<ToolComponentProps> = ({tool}) => {
-	const {logoUrl, logoLink, logoTooltip} = tool.options;
+	const {logoUrl, logoLink, logoTooltip, logoHeight} = tool.options;
 	return (
 		<>
 			<Button
@@ -18,7 +18,7 @@ const LogoToolComponent: FunctionComponent<ToolComponentProps> = ({tool}) => {
 			>
 				<img
 					style={{
-						height: '44px',
+						height: logoHeight || '44px',
 					}}
 					src={logoUrl}
 				/>

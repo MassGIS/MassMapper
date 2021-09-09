@@ -17,6 +17,7 @@ class PrintPdfTool extends Tool {
 	protected _isButton = true;
 
 	private _ss:SimpleMapScreenshoter;
+	private _watermarkUrl:string;
 
 	constructor(
 		protected readonly _services:ContainerInstance,
@@ -26,9 +27,7 @@ class PrintPdfTool extends Tool {
 	) {
 		super(_services,id,position,options);
 
-		// makeObservable<PrintPdfTool,>(
-		// 	this,
-		// );
+		this._watermarkUrl = options.watermarkUrl || massmapper;
 
 		const ms = this._services.get(MapService);
 		autorun((r) => {
@@ -91,7 +90,7 @@ class PrintPdfTool extends Tool {
 			if (mapSize[1] > mapWindow[1]) {
 				const scaleFactor = mapWindow[1] / mapSize[1];
 				mapSize = [mapSize[0] * scaleFactor, mapSize[1]];
-			}	
+			}
 		}
 
 		pdf.setFontSize(20);
@@ -99,14 +98,18 @@ class PrintPdfTool extends Tool {
 
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapSize[0], mapSize[1]);
 		const watermarkScaleFactor = 0.5;
-		pdf.addImage(
-			massmapper, 
-			'PNG', 
-			leftMargin + mapSize[0] - 129 * watermarkScaleFactor - 3, 
-			titleHeight + mapSize[1] - 69 * watermarkScaleFactor - 14, 
-			129 * watermarkScaleFactor, 
-			69 * watermarkScaleFactor
-		);
+		try {
+			pdf.addImage(
+				this._watermarkUrl,
+				'PNG',
+				leftMargin + mapSize[0] - 129 * watermarkScaleFactor - 3,
+				titleHeight + mapSize[1] - 69 * watermarkScaleFactor - 14,
+				129 * watermarkScaleFactor,
+				69 * watermarkScaleFactor
+			);
+		} catch (e) {
+			console.error("error adding watermark image", e);
+		}
 
 		let legends: any[] = [];
 		const layers = ls.enabledLayers.map(async (l, i) => {

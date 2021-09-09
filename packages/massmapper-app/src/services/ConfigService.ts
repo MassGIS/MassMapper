@@ -2,6 +2,8 @@ import { autorun, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { ToolDefinition } from "./ToolService";
 
+import massmapper from '../images/massmapper.png';
+
 @Service()
 class ConfigService {
 
@@ -23,6 +25,14 @@ class ConfigService {
 
 	get initialExtent(): [number, number, number, number] {
 		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
+	}
+
+	get splashImage(): string {
+		return this._config.splashImage || massmapper;
+	}
+
+	get splashImageHeight(): string {
+		return this._config.splashImageHeight || '';
 	}
 
 	get availableBasemaps(): string[] {
@@ -64,6 +74,8 @@ class ConfigService {
 		defaultLayers: string[],
 		useXGrid?: boolean,
 		xGridLicenseKey?: string,
+		splashImage?: string,
+		splashImageHeight?: string,
 	} = {
 		geoserverUrl: 'https://giswebservices.massgis.state.ma.us',
 		folderSet: '',

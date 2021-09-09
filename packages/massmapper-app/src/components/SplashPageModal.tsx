@@ -12,8 +12,8 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import { LegendService } from '../services/LegendService';
 import { useService } from '../services/useService';
 
-import { Close, SkipNext, ArrowForward } from '@material-ui/icons';
-import massmapper from '../images/massmapper.png';
+import { ArrowForward } from '@material-ui/icons';
+import { ConfigService } from '../services/ConfigService';
 
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
@@ -63,7 +63,7 @@ interface SplashPageModalProps extends RouteComponentProps<any> {
 const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => {
 
 	const classes = useStyles();
-	const [ legendService ] = useService([ LegendService ]);
+	const [ legendService, configService ] = useService([ LegendService, ConfigService ]);
 
 	return (
 		<Modal
@@ -82,7 +82,12 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 						height: '80%',
 						textAlign: 'center'
 					}}>
-						<img src={massmapper} />
+						<img
+							style={{
+								height: configService.splashImageHeight
+							}}
+							src={configService.splashImage}
+						/>
 						<p dangerouslySetInnerHTML={{
 							__html: legendService.splashPageContent
 						}}></p>
