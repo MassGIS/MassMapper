@@ -39,14 +39,15 @@ class DrawTool extends Tool {
 
 	public setLineColor(hex: string) {
 		this.lineColor = hex;
-		if (this.drawMode === 'line') {
-			this._drawLineHandler && this._drawLineHandler.setOptions({
-				shapeOptions: {
-					color: hex
-				}
-			})
+		this._drawLineHandler && this._drawLineHandler.setOptions({
+			shapeOptions: {
+				color: hex
+			}
+		})
+		this._drawLineHandler.disable();
+		this._drawLineHandler.enable();
+		if (this.drawMode !== 'line') {
 			this._drawLineHandler.disable();
-			this._drawLineHandler.enable();
 		}
 	}
 
