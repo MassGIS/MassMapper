@@ -358,27 +358,51 @@ class MapService {
 
 		// shove basemap opacity control into the mix
 		this._layerControl = new Control.Layers();
-		Leaflet.extend(this._layerControl, {_initLayout: function() {
-			Control.Layers.prototype['_initLayout'].call(this);
-			DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
-			let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
-			opacity.style.textAlign = 'center';
-			opacity.innerHTML = 'Opacity <span id="basemap-opacity">(100%)</span><br/>0% <input type="range" min="0" max="100" value="100" class="slider" style="height:10px"> 100%';
-			opacity.getElementsByTagName('input')[0].oninput = function() {
-				const value = this['value'];
-				basemaps.forEach(o => {
-					o.layer.setOpacity(value / 100);
-				})
-				opacity.getElementsByTagName('span')[0].innerHTML = ' (' + value + '%)';
-			}
-		}});
+		Leaflet.extend(this._layerControl, {
+			_initLayout: function() {
+				// Add opacity control.
+				Control.Layers.prototype['_initLayout'].call(this);
+				DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
+				let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
+				opacity.style.textAlign = 'center';
+				opacity.innerHTML = 'Opacity <span>(100%)</span><br/>0% <input type="range" min="0" max="100" value="100" class="slider" style="height:10px"> 100%';
+				opacity.getElementsByTagName('input')[0].oninput = function() {
+					const value = this['value'];
+					_basemaps.forEach(o => {
+						o.layer.setOpacity(value / 100);
+					})
+					opacity.getElementsByTagName('span')[0].innerHTML = ' (' + value + '%)';
+				}
+			},
+			_checkDisabledLayers: function () {
+				// Control label class based on basemap enabled / disabled.
+				var inputs = this['_layerControlInputs'],
+					input,
+					layer,
+					zoom = this['_map'].getZoom();
+		
+				for (var i = inputs.length - 1; i >= 0; i--) {
+					input = inputs[i];
+					layer = this['_getLayer'](input.layerId).layer;
+					input.disabled = (layer.options.minZoom !== undefined && zoom < layer.options.minZoom) ||
+									 (layer.options.maxZoom !== undefined && zoom > layer.options.maxZoom);
+					const label = input.parentNode.getElementsByTagName('span')[0];
+					if (input.disabled) {
+						DomUtil.addClass(label, 'disabled-basemap');
+					}
+					else {
+						DomUtil.removeClass(label, 'disabled-basemap');
+					}
+				}
+			},
+		});
 		this._layerControl.addTo(this._map!);
 
 		this._basemaps = this._basemaps.filter((bm) =>
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
 		// save a pointer to the basemaps so the opacity control can get to it
-		const basemaps = this._basemaps;
+		const _basemaps = this._basemaps;
 
 		runInAction(() => {
 			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])

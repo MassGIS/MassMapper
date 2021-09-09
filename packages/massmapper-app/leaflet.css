@@ -14,3 +14,7 @@
         height: 256.7px !important;
     }
 }
+
+.disabled-basemap {
+    color: rgb(170, 170, 170);
+}
