@@ -360,8 +360,8 @@ class MapService {
 		this._layerControl = new Control.Layers();
 		Leaflet.extend(this._layerControl, {_initLayout: function() {
 			Control.Layers.prototype['_initLayout'].call(this);
-			DomUtil.create('div', 'leaflet-control-layers-separator', this._section);
-			let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this._section);
+			DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
+			let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
 			opacity.style.textAlign = 'center';
 			opacity.innerHTML = 'Opacity <span id="basemap-opacity">(100%)</span><br/>0% <input type="range" min="0" max="100" value="100" class="slider" style="height:10px"> 100%';
 			opacity.getElementsByTagName('input')[0].oninput = function() {
