@@ -360,7 +360,7 @@ class MapService {
 			cs.availableBasemaps.indexOf(bm.name) >= 0
 		);
 		// save a pointer to the basemaps so the opacity control can get to it
-		const _basemaps = this._basemaps;
+		const basemaps = this._basemaps;
 
 		runInAction(() => {
 			this._activeBaseLayer = this._basemaps.find((bm) => bm.name === cs.availableBasemaps[0])
@@ -373,7 +373,7 @@ class MapService {
 			});
 		}
 
-		const _basemapOpacity = hs.has('bl') ? Number(String(hs.get('bl')).split('__')[1]) : 100;
+		const basemapOpacity = hs.has('bl') ? Number(String(hs.get('bl')).split('__')[1]) : 100;
 
 		// shove basemap opacity control into the mix
 		this._layerControl = new Control.Layers();
@@ -384,10 +384,10 @@ class MapService {
 				DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
 				let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
 				opacity.style.textAlign = 'center';
-				opacity.innerHTML = 'Opacity <span>(' + _basemapOpacity + '%)</span><br/>0% <input type="range" min="0" max="100" value="' + _basemapOpacity + '" class="slider" style="height:10px"> 100%';
+				opacity.innerHTML = 'Opacity <span>(' + basemapOpacity + '%)</span><br/>0% <input type="range" min="0" max="100" value="' + basemapOpacity + '" class="slider" style="height:10px"> 100%';
 				opacity.getElementsByTagName('input')[0].oninput = function() {
 					const value = this['value'];
-					_basemaps.forEach(o => {
+					basemaps.forEach(o => {
 						o.layer.setOpacity(value / 100);
 					})
 					opacity.getElementsByTagName('span')[0].innerHTML = ' (' + value + '%)';
@@ -420,7 +420,7 @@ class MapService {
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);
 			if (o.name === this._activeBaseLayer!.name) {
-				o.layer.setOpacity(_basemapOpacity / 100);
+				o.layer.setOpacity(basemapOpacity / 100);
 				o.layer.addTo(this._map);
 			}
 		});
