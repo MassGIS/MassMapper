@@ -5,7 +5,7 @@ import { Tool } from "./Tool";
 import { LegendService } from "../services/LegendService";
 import { SelectionService } from "../services/SelectionService";
 import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
-import identify from '../images/identify-box.png';
+import identify from '../images/identify-poly.png';
 import * as turf from '@turf/turf';
 import draw from 'leaflet-draw';
 import IdentifyResultsModal from "../components/IdentifyResultsModal";
