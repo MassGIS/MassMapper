@@ -22,7 +22,8 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 			style={{
 				height:'60%',
 				padding: '0 .2em',
-				position: 'relative'
+				position: 'relative',
+				top: '10px'
 			}}
 			elevation={3}
 		>
