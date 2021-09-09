@@ -312,7 +312,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							headerHeight={35}
 							onSelectionModelChange={(p:any) => {
 								selectionService.selectedIdentifyResult?.clearSelected();
-								(p.selectionModel as GridSelectionModel).forEach(fid => { selectionService.selectedIdentifyResult?.setSelected(fid as string, true) })
+								p.forEach(fid => { selectionService.selectedIdentifyResult?.setSelected(fid as string, true) })
 							}}
 							rowHeight={35}
 							rows={selectionService.selectedIdentifyResult.rows}
