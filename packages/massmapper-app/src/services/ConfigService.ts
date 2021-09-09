@@ -7,6 +7,10 @@ import massmapper from '../images/massmapper.png';
 @Service()
 class ConfigService {
 
+	get googleAnalyticsUA(): string | undefined {
+		return this._config.googleAnalyticsUA;
+	}
+
 	get geoserverUrl(): string {
 		return this._config.geoserverUrl;
 	}
@@ -76,6 +80,7 @@ class ConfigService {
 		xGridLicenseKey?: string,
 		splashImage?: string,
 		splashImageHeight?: string,
+		googleAnalyticsUA?: string,
 	} = {
 		geoserverUrl: 'https://giswebservices.massgis.state.ma.us',
 		folderSet: '',

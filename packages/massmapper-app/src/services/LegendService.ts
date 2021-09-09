@@ -1,7 +1,11 @@
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { MapService } from "./MapService";
+import { ConfigService } from "./ConfigService";
 import { Layer } from '../models/Layer';
+// import ua from 'universal-analytics';
+import mpanalytics from 'mpanalytics';
+import { v4 as uuid } from 'uuid';
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';
 
@@ -28,7 +32,21 @@ class LegendService {
 
 	public isSplashPageVisible: boolean = true;
 
+	private _visitor?;
+
 	constructor(private readonly _services: ContainerInstance) {
+
+		const configService = this._services.get(ConfigService)
+		autorun((r) => {
+			if (configService.ready) {
+				this._visitor = mpanalytics.create({
+					tid: configService.googleAnalyticsUA,
+					cid: uuid(),
+					sampleRate: 100
+				})
+				r.dispose();
+			}
+		})
 
 		makeObservable<LegendService, LegendServiceAnnotations>(
 			this,
@@ -74,6 +92,19 @@ class LegendService {
 		if (this._layers.filter((layer) => layer.name === l.name && layer.style === l.style).length > 0) {
 			// already added
 			return;
+		}
+
+		if (this._visitor) {
+			// this._visitor.pageview(document.location.pathname, document.location.href, document.title).send();
+			// this._visitor.event("MassMapperAction","LayerAdd","LayerName",l.name).send();
+			this._visitor.event({
+				category: "MassMapper::LayerAdd",
+				action: l.name,
+			}, (error:any, body:any) => {
+				if (error) {
+					console.error(error);
+				}
+			})
 		}
 
 		const mapService = this._services.get(MapService);
