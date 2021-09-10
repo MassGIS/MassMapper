@@ -80,7 +80,7 @@
 			"position": "topleft",
 			"class": "PrintPdfTool",
 			"options" : {
-				"watermarkUrl" : ""
+				"watermarkUrl" : "http://maps.massgis.state.ma.us/MassMapper/massmapper.png"
 			}
 		},
 		{
