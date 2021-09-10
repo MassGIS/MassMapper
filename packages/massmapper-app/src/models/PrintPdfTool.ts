@@ -60,6 +60,15 @@ class PrintPdfTool extends Tool {
 		return PrintPdfToolComponent;
 	}
 
+	private getImageSize(src: string): Promise<Array<any>> {
+		return new Promise((resolve, reject) => {
+			let img = new Image();
+			img.onload = () => resolve([img.width, img.height]);
+			img.onerror = reject;
+			img.src = src;
+		})
+	}
+
 	public async makePDF(title: string, filename: string, size: string): Promise<void> {
 		const legendWidth = 200;
 		const titleHeight = 50;
@@ -97,15 +106,26 @@ class PrintPdfTool extends Tool {
 		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 37, {align: 'center'});
 
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapSize[0], mapSize[1]);
-		const watermarkScaleFactor = 0.5;
+
+		// Scale the watermark to a width of 35px.  Assume the incoming original image's height >= 35.
+		let watermarkWidth = 0;
+		let watermarkHeight = 0;
+		try {
+			const watermarkSize = await this.getImageSize(this._watermarkUrl);
+			watermarkHeight = 35;
+			watermarkWidth = Math.round(watermarkHeight / watermarkSize[1] * watermarkSize[0]);
+		} catch(e) {
+			console.error("error adding watermark image", e);
+		}
+
 		try {
 			pdf.addImage(
 				this._watermarkUrl,
 				'PNG',
-				leftMargin + mapSize[0] - 129 * watermarkScaleFactor - 3,
-				titleHeight + mapSize[1] - 69 * watermarkScaleFactor - 14,
-				129 * watermarkScaleFactor,
-				69 * watermarkScaleFactor
+				leftMargin + mapSize[0] - watermarkWidth,
+				titleHeight + mapSize[1] - watermarkHeight,
+				watermarkWidth,
+				watermarkHeight
 			);
 		} catch (e) {
 			console.error("error adding watermark image", e);
