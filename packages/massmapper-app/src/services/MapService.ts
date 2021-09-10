@@ -354,6 +354,14 @@ class MapService {
 			runInAction(() => {
 				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
 			});
+
+			// Make all attr links open in a new tab / window.  Might ought to be tied to moveend or zoomend, but OK for now.
+			let anchors = m.attributionControl.getContainer()?.getElementsByTagName('a');
+			if (anchors) {
+				for (let i =  0; i < anchors.length; i++){
+					anchors[i].setAttribute('target', '_blank');
+				}
+			}
 		});
 
 		this._basemaps = this._basemaps.filter((bm) =>
