@@ -132,6 +132,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									onChange={(e) => {
 										myState.title = e.target.value;
 									}}
+									inputProps={{ maxLength: 75 }}
 								/>
 								<br/><br/>
 								<TextField
