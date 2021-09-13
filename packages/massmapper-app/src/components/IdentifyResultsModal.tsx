@@ -420,7 +420,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								</MenuItem>
 								<MenuItem onClick={async () => {
 									myState.isExporting = true;
-									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('shp', false);
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('shp', true);
 									myState.isDisplayingExportResults = true;
 									myState.isExporting = false;
 
