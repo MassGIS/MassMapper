@@ -1,6 +1,4 @@
 <h2>Welcome to the new MassMapper</h2>
 <p>
-You can put whatever content you want in here - by editing the `MassMapper-splashpage.txt` file.
-<br/>
-You can use HTML, if you like, too.
+DISCLAIMER - The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.
 </p>
