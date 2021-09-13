@@ -45,6 +45,7 @@ availableBasemaps: [
   '2019 Aerial Imagery',
   'USGS Topographic Quadrangle Maps',
   ...
+```
 
 3. Add the new layer to the main config file, `./htdocs/config/MassMapper.json`.
 
