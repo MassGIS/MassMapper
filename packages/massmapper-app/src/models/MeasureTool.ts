@@ -25,11 +25,11 @@ class MeasureTool extends Tool {
 		if (this._totalLength === undefined) {
 			return '';
 		} else if (this.lengthUnits === 'ft') {
-			return this._totalLength.toFixed(1) + ' ft';
+			return new Number(this._totalLength.toFixed(1)).toLocaleString() + ' ft';
 		} else if (this.lengthUnits === 'm') {
-			return (this._totalLength * 0.3048).toFixed(1) + " m";
+			return new Number((this._totalLength * 0.3048).toFixed(1)).toLocaleString() + " m";
 		} else if (this.lengthUnits === 'mi') {
-			return (this._totalLength / 5280).toFixed(2) + " mi";
+			return new Number((this._totalLength / 5280).toFixed(2)).toLocaleString() + " mi";
 		}
 		return '';
 	}
@@ -39,13 +39,13 @@ class MeasureTool extends Tool {
 		}
 
 		if (this.areaUnits === 'sq ft') {
-			return (this._totalArea * 10.7639).toFixed(1) + ' sq ft';
+			return new Number((this._totalArea * 10.7639).toFixed(1)).toLocaleString() + ' sq ft';
 		} else if (this.areaUnits === 'acres') {
-			return (this._totalArea * 0.000247105).toFixed(2) + ' acres';
+			return new Number((this._totalArea * 0.000247105).toFixed(2)).toLocaleString() + ' acres';
 		} else if (this.areaUnits === 'sq meters') {
-			return this._totalArea.toFixed(1) + ' sq meters';
+			return new Number(this._totalArea.toFixed(1)).toLocaleString() + ' sq meters';
 		} else if (this.areaUnits === 'sq mi') {
-			return (this._totalArea * 3.86101562499999206e-7).toFixed(3) + ' sq mi';
+			return new Number((this._totalArea * 3.86101562499999206e-7).toFixed(3)).toLocaleString() + ' sq mi';
 		}
 		return '';
 	}
