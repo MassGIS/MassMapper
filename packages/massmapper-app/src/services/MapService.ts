@@ -70,7 +70,8 @@ class MapService {
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/MassGISBasemap/MapServer/tile/{z}/{y}/{x}',
 				{
 					maxZoom: 19,
-					minZoom: 7
+					minZoom: 7,
+					attribution: '<a href="https://www.mass.gov/service-details/massgis-base-map">MassGIS</a>'
 				}
 			),
 			pdfOk: true
@@ -81,7 +82,8 @@ class MapService {
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
 				{
 					maxZoom: 20,
-					minZoom: 7
+					minZoom: 7,
+					attribution: '<a href="https://www.mass.gov/info-details/massgis-data-2019-aerial-imagery">MassGIS 2019 Aerial Imagery</a>'
 				}
 			),
 			pdfOk: true
@@ -92,7 +94,8 @@ class MapService {
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Topo_Quad_Maps/MapServer/tile/{z}/{y}/{x}',
 				{
 					maxZoom: 18,
-					minZoom: 12
+					minZoom: 12,
+					attribution: '<a href="https://www.mass.gov/info-details/massgis-data-usgs-topographic-quadrangle-images">USGS</a>'
 				}
 			),
 			pdfOk: true
@@ -407,7 +410,7 @@ class MapService {
 					input,
 					layer,
 					zoom = this['_map'].getZoom();
-		
+
 				for (var i = inputs.length - 1; i >= 0; i--) {
 					input = inputs[i];
 					layer = this['_getLayer'](input.layerId).layer;
