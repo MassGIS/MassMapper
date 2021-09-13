@@ -437,42 +437,16 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							</RadioGroup>
 						</Grid>
 
-						{/* <Grid item xs={12} style={{
-							padding: '1em'
-						}}>
-							<Typography variant="h6" id="tableTitle" component="div">
-								Raster Data Export Format
-							</Typography>
-							<RadioGroup aria-label="raster-format" name="raster-format">
-								<TableContainer >
-									<Table
-										className={classes.table}
-										size="small" // "medium"
-										aria-label="enhanced table"
-										>
-										<TableHead>
-											<TableRow>
-												<TableCell padding="normal"></TableCell>
-												<TableCell padding="normal"></TableCell>
-											</TableRow>
-										</TableHead>
-										<TableBody>
-											<TableRow hover>
-												<TableCell>
-													<FormControlLabel value="xlsx" control={<Radio checked />} label="GeoTIFF (available in NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986 coordinate system only)" />
-												</TableCell>
-											</TableRow>
-										</TableBody>
-									</Table>
-								</TableContainer>
-							</RadioGroup>
-						</Grid> */}
-
 						<Grid item xs={12} style={{
 							padding: '1em'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
 								Output Coordinate System
+								{!tool.exportSupportsProjection && (
+									<>
+									&nbsp;&nbsp; - only supported for SHP
+									</>
+								)}
 							</Typography>
 							<RadioGroup
 								aria-label="coord-system"
@@ -498,22 +472,22 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 										<TableBody>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="26986" control={<Radio />} label="NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986" />
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26986" control={<Radio />} label="NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="26918" control={<Radio />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26918" control={<Radio />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="26919" control={<Radio />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26919" control={<Radio />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
-													<FormControlLabel value="4326" control={<Radio />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="4326" control={<Radio />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
 												</TableCell>
 											</TableRow>
 										</TableBody>

@@ -25,6 +25,10 @@ class ExportWizardTool extends Tool {
 
 	public readonly MAX_EXPORT_FEATURES = 25000;
 
+	get exportSupportsProjection(): boolean {
+		return this.exportFormat === 'SHAPE-ZIP';
+	}
+
 	get isReadyForNextStep(): boolean {
 		const currentStep = this.activeStep;
 		if (currentStep === 1) {
@@ -60,6 +64,9 @@ class ExportWizardTool extends Tool {
 	) {
 		super(_services,id,position,options);
 
+		this.exportFormat = 'SHAPE-ZIP';
+		this.exportCRS = '26986';
+
 		makeObservable<ExportWizardTool>(
 			this,
 			{
@@ -71,7 +78,8 @@ class ExportWizardTool extends Tool {
 				exportLayers: observable,
 				exportLayersFeatureCount: observable,
 				isExporting: observable,
-				isReadyForNextStep: computed
+				isReadyForNextStep: computed,
+				exportSupportsProjection: computed
 			}
 		);
 
