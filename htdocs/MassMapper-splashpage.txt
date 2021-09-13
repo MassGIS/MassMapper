@@ -1,6 +1,6 @@
 <h2>Welcome to the new MassMapper</h2>
 <p>
-You can put whatever content you want in here - by editing the `htdocs/splashpage.html` file.
+You can put whatever content you want in here - by editing the `MassMapper-splashpage.txt` file.
 <br/>
 You can use HTML, if you like, too.
 </p>
