@@ -418,6 +418,16 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 								}}>
 									CSV (csv)
 								</MenuItem>
+								<MenuItem onClick={async () => {
+									myState.isExporting = true;
+									myState.exportResultsUrl = await selectionService.selectedIdentifyResult?.exportToUrl('shp', false);
+									myState.isDisplayingExportResults = true;
+									myState.isExporting = false;
+
+									setSaveAllAnchorEl(null)
+								}}>
+									Shapefile
+								</MenuItem>
 							</Menu>
 						</>
 					)}
