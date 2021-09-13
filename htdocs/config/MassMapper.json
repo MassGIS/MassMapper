@@ -3,7 +3,7 @@
 	"splashImage": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
 	"splashImageHeight" : "13em",
 	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
-	"folderSet" : "https://maps.massgis.state.ma.us/temp/massmapper_folderset.xml",
+	"folderSet" : "/temp/massmapper_folderset.xml",
 	"initialExtent" : [
 		-73.508142, 41.237964, -69.928393, 42.886589
 	],
