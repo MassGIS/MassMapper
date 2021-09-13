@@ -57,3 +57,6 @@ Around line 105.
   "USGS Topographic Quadrangle Maps",
   ...
 ```
+
+## Handy reference to GitHub's markdown syntax.
+https://guides.github.com/features/mastering-markdown/
