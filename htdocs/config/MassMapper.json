@@ -1,6 +1,6 @@
 {
 	"googleAnalyticsUA": "UA-207196023-1",
-	"splashImage": "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png",
+	"splashImage": "massmapper.png",
 	"splashImageHeight" : "13em",
 	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
 	"folderSet" : "/temp/massmapper_folderset.xml",
