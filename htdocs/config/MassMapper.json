@@ -1,7 +1,7 @@
 {
 	"googleAnalyticsUA": "UA-207196023-1",
 	"splashImage": "massmapper.png",
-	"splashImageHeight" : "13em",
+	"splashImageHeight" : "10em",
 	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
 	"folderSet" : "/temp/massmapper_folderset.xml",
 	"initialExtent" : [
