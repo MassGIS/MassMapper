@@ -18,6 +18,7 @@ class DrawTool extends Tool {
 	private _drawnItems:FeatureGroup = new FeatureGroup();
 	private _markers:Marker[] = [];
 	private _drawLineHandler: Draw.Polyline | Draw.Polygon;
+	private _handleTextCompleteHandler;
 	public lineColor: string = 'blue';
 
 	private _handleDrawComplete(evt: any) {
@@ -88,6 +89,7 @@ class DrawTool extends Tool {
 	) {
 		super(_services,id,position,options);
 		this._drawnItems ;
+		this._handleTextCompleteHandler = this._handleTextClickLocation.bind(this);
 
 		makeObservable<DrawTool>(
 			this,
@@ -99,18 +101,17 @@ class DrawTool extends Tool {
 	}
 
 	protected async _deactivate() {
+		const ms = this._services.get(MapService);
 
 		this._drawDisposer && this._drawDisposer();
 		this._drawLineHandler && this._drawLineHandler.disable();
-		// this.clearExistingShape();
-
-		const ms = this._services.get(MapService);
 		ms.leafletMap?.off(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
+
+		ms.leafletMap?.off('click', this._handleTextCompleteHandler);
 	}
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
-		const handleTextComplete = this._handleTextClickLocation.bind(this);
 
 		this._drawDisposer = autorun(() => {
 			if (!ms.leafletMap) {
@@ -138,14 +139,14 @@ class DrawTool extends Tool {
 
 			// disable both handlers
 			this._drawLineHandler?.disable();
-			ms.leafletMap.off('click', handleTextComplete);
+			ms.leafletMap.off('click', this._handleTextCompleteHandler);
 
 			// enable the right handler
 			if (this.drawMode === 'line') {
 				ms.leafletMap.on(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
 				this._drawLineHandler.enable();
 			} else {
-				ms.leafletMap.on('click', handleTextComplete)
+				ms.leafletMap.on('click', this._handleTextCompleteHandler)
 				this._cursor = "crosshair";
 			}
 		});
