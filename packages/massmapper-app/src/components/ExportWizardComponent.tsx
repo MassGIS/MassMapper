@@ -385,7 +385,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							padding: '1em'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
-								Vector Data Export Format
+								Data Export Format
 							</Typography>
 							<RadioGroup
 								aria-label="vector-format"
