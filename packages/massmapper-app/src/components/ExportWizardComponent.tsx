@@ -449,7 +449,8 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						</Grid>
 
 						<Grid item xs={12} style={{
-							padding: '1em'
+							padding: '1em',
+							display: tool.exportSupportsProjection ? '' : 'none'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
 								Output Coordinate System
