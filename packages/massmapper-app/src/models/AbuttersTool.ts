@@ -184,7 +184,13 @@ class AbuttersTool extends Tool {
 		);
 		const targetFeatures = await targetParcels.getResults(false);
 
-		if (targetFeatures.length > 3) {
+		const uniqueLocIdCount = Array.from(targetFeatures.reduce((p, c) => {
+			p.add(c.properties.loc_id);
+			return p;
+		}, new Set()).values()).length;
+
+		// if (targetFeatures.length > 3) {
+		if (uniqueLocIdCount > 3) {
 			toast("We're sorry, but you have exceeded the maximum number of features (3) that you may select to buffer.  Please reduce your selection and try again.");
 			return;
 		}
