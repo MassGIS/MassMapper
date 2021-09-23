@@ -40,11 +40,11 @@ import { observer } from 'mobx-react';
 
 import React, { FunctionComponent } from 'react';
 
-import { useService } from '../services/useService';
-import { LegendService } from '../services/LegendService';
-import { ConfigService } from '../services/ConfigService';
+// import { useService } from '../services/useService';
+// import { LegendService } from '../services/LegendService';
+// import { ConfigService } from '../services/ConfigService';
+// import { CatalogService } from '../services/CatalogService';
 import { ToolComponentProps } from '../models/Tool';
-import { CatalogService } from '../services/CatalogService';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 import { ExportWizardTool } from '../models/ExportWizardTool';
 
@@ -105,32 +105,32 @@ const useStyles = makeStyles((theme) => ({
 	}));
 
 
-	const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
-			return (
-					<Paper {...props} />
-				);
-			}
+	// const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
+	// 		return (
+	// 				<Paper {...props} />
+	// 			);
+	// 		}
 
-const HowtoComponent: FunctionComponent = () => (
-	<Box
-		style={{
-			margin: '2em',
-			height: '100%',
-		}}
-	>
-		<b>Welcome to the data export wizard</b>
-		<div>
-		This wizard may be used to download geospatial data as shapefiles, Google Earth files (KMLs), or GeoTIFFs. Users
-		may choose their area of interest and subsets of data layers may be downloaded. Metadata and other supporting documents
-		are also packaged with the exported data.
-		</div>
-		<div>
-		A 15 MB size limit has been imposed on each raster data layer, and a 25,000 feature limit has
-		beenimposed on each vector data layer.
+	// const HowtoComponent: FunctionComponent = () => (
+	// 	<Box
+	// 		style={{
+	// 			margin: '2em',
+	// 			height: '100%',
+	// 		}}
+	// 	>
+	// 		<b>Welcome to the data export wizard</b>
+	// 		<div>
+	// 		This wizard may be used to download geospatial data as shapefiles, Google Earth files (KMLs), or GeoTIFFs. Users
+	// 		may choose their area of interest and subsets of data layers may be downloaded. Metadata and other supporting documents
+	// 		are also packaged with the exported data.
+	// 		</div>
+	// 		<div>
+	// 		A 15 MB size limit has been imposed on each raster data layer, and a 25,000 feature limit has
+	// 		beenimposed on each vector data layer.
 
-		</div>
-	</Box>
-)
+	// 		</div>
+	// 	</Box>
+	// )
 // For information on accessing full datasets, please check the Help document
 
 const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
@@ -138,7 +138,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 	const tool = _tool as ExportWizardTool;
 	const classes = useStyles();
 
-	const [ legendService, catalogService, configService ] = useService([ LegendService, CatalogService, ConfigService ]);
+	// const [ legendService, catalogService, configService ] = useService([ LegendService, CatalogService, ConfigService ]);
 
 	const ExportButton = MakeToolButtonComponent(
 		GetApp,
