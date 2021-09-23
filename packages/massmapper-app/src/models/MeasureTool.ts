@@ -17,6 +17,10 @@ class MeasureTool extends Tool {
 	private _measureHandler: Draw.Polyline | Draw.Polygon;
 	private _totalLength?: number;
 	private _totalArea?: number;
+
+	private _clearExistingShapeHandler:any;
+	private _updateMeasureUIHandler:any;
+	private _handleMeasureCompleteHandler:any;
 	public measureMode: 'Length' | 'Area' = 'Length';
 	public lengthUnits : 'ft' | 'm' | 'mi' = 'ft';
 	public areaUnits : 'sq ft' | 'acres' | 'sq meters' | 'sq mi' = 'acres';
@@ -98,6 +102,10 @@ class MeasureTool extends Tool {
 		this._totalLength = undefined;
 		this._totalArea = undefined;
 
+		this._updateMeasureUIHandler = this._updateMeasureUI.bind(this);
+		this._clearExistingShapeHandler = this._clearExistingShape.bind(this);
+		this._handleMeasureCompleteHandler = this._handleMeasureComplete.bind(this);
+
 		makeObservable<MeasureTool, '_totalLength' | '_totalArea' >(
 			this,
 			{
@@ -116,10 +124,10 @@ class MeasureTool extends Tool {
 		this._clearExistingShape();
 
 		const ms = this._services.get(MapService);
-		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
-		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._updateMeasureUI.bind(this));
-		ms.leafletMap?.off(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
-		ms.leafletMap?.off('mousemove', this._updateMeasureUI.bind(this));
+		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearExistingShapeHandler);
+		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._updateMeasureUIHandler);
+		ms.leafletMap?.off(Draw.Event.CREATED, this._handleMeasureCompleteHandler);
+		ms.leafletMap?.off('mousemove', this._updateMeasureUIHandler);
 	}
 
 	protected async _activate() {
@@ -132,8 +140,8 @@ class MeasureTool extends Tool {
 				return;
 			}
 
-			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
-			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._updateMeasureUI.bind(this));
+			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearExistingShapeHandler);
+			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._updateMeasureUIHandler);
 
 			if (!ms.leafletMap['measureLine'])
 				ms.leafletMap.addHandler('measureLine', (window.L as any).Draw.Polyline);
@@ -166,9 +174,9 @@ class MeasureTool extends Tool {
 				})
 			}
 
-			ms.leafletMap.on('mousemove', this._updateMeasureUI.bind(this));
+			ms.leafletMap.on('mousemove', this._updateMeasureUIHandler);
 
-			ms.leafletMap.on(Draw.Event.CREATED, this._handleMeasureComplete.bind(this));
+			ms.leafletMap.on(Draw.Event.CREATED, this._handleMeasureCompleteHandler);
 			this._measureHandler.enable();
 		});
 	}

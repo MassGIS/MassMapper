@@ -14,6 +14,8 @@ class IdentifyToolWithBox extends Tool {
 	private _identifyBoxDisposer:IReactionDisposer;
 	private _handler: Draw.Polygon;
 	private _drawnItems: FeatureGroup = new FeatureGroup();
+	private _handleIdentifyHandler:any;
+	private _clearShapeHandler:any;
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
@@ -21,6 +23,11 @@ class IdentifyToolWithBox extends Tool {
 			if (!ms.leafletMap) {
 				return;
 			}
+
+			debugger;
+
+			this._handleIdentifyHandler = this._handleIdentify.bind(this);
+			this._clearShapeHandler = this._clearExistingShape.bind(this);
 
 			this._cursor = 'crosshair';
 
@@ -33,8 +40,8 @@ class IdentifyToolWithBox extends Tool {
 			ms.leafletMap.on('dblclick', (e:any) => {
 				this._handler.completeShape();
 			})
-			ms.leafletMap.on(Draw.Event.CREATED, this._handleIdentify.bind(this));
-			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
+			ms.leafletMap.on(Draw.Event.CREATED, this._handleIdentifyHandler);
+			ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._clearShapeHandler);
 			ms.leafletMap.doubleClickZoom.disable();
 
 			this._handler.enable();
@@ -51,8 +58,8 @@ class IdentifyToolWithBox extends Tool {
 		this._handler?.disable();
 
 		this._identifyBoxDisposer && this._identifyBoxDisposer();
-		ms.leafletMap?.off(Draw.Event.CREATED, this._handleIdentify.bind(this));
-		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearExistingShape.bind(this));
+		ms.leafletMap?.off(Draw.Event.CREATED, this._handleIdentifyHandler);
+		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearShapeHandler);
 
 		this._clearExistingShape();
 

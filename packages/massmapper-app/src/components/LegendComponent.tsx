@@ -50,6 +50,9 @@ const LegendCustomPropertiesEditor: FunctionComponent<{layer: Layer, state: Lege
 		<Dialog
 			open
 			maxWidth="xs"
+			BackdropProps={{
+				invisible: true
+			}}
 		>
 			<DialogActions>
 				<Button

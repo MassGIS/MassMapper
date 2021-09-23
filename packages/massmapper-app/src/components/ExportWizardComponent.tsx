@@ -162,6 +162,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 						tool.activeStep = undefined;
 					});
 				}}
+				BackdropProps={{
+					invisible: true
+				}}
 				// PaperComponent={PaperComponent}
 			>
 				<DialogActions>

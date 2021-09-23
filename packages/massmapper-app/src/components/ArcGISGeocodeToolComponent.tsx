@@ -135,6 +135,9 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 						myState.street = '';
 						myState.results = [];
 					}}
+					BackdropProps={{
+						invisible: true
+					}}
 				>
 					<DialogActions>
 						<Button
