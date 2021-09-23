@@ -57,6 +57,14 @@ const useStyles = makeStyles((theme) => ({
 			flexGrow: 1,
 			height: '80vh',
 		},
+		dialog: {
+			'& .MuiPaper-root': {
+				pointerEvents: 'auto'
+			},
+			'&' : {
+				pointerEvents: 'none'
+			}
+		},
 		table: {
 			width: '90vw',
 			'& .MuiTableBody-root .MuiTableRow-root:hover': {
@@ -110,7 +118,6 @@ const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
 	);
 }
 
-
 const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = observer(() => {
 
 	const classes = useStyles();
@@ -158,14 +165,19 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 
 	return (
 		<Dialog
+			className={classes.dialog}
 			maxWidth={myState.windowSize}
 			open={selectionService.identifyResults.length > 0}
 			onClose={() => {
 				selectionService.clearIdentifyResults()
 				selectionService.selectedIdentifyResult = undefined;
 			}}
+
 			BackdropProps={{
-				invisible: true
+				invisible: true,
+				style: {
+					pointerEvents: 'none'
+				}
 			}}
 			PaperComponent={PaperComponent}
 		>

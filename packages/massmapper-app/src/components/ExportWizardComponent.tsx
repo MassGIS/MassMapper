@@ -68,7 +68,11 @@ const useStyles = makeStyles((theme) => ({
 		paper: {
 			'& .MuiPaper-root': {
 				height: '70vh',
-				width: '90vw'
+				width: '90vw',
+				pointerEvents: 'auto'
+			},
+			'&' : {
+				pointerEvents: 'none'
 			}
 		},
 		container: {
@@ -145,6 +149,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 		'Export data layers',
 		() => {
 			runInAction(() => {
+				tool.activate();
 				tool.startExport();
 			})
 		}
@@ -163,7 +168,10 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 					});
 				}}
 				BackdropProps={{
-					invisible: true
+					invisible: true,
+					style: {
+						'pointerEvents': 'none'
+					}
 				}}
 				// PaperComponent={PaperComponent}
 			>

@@ -9,6 +9,7 @@ import {
 	Radio,
 	FormHelperText
 } from '@material-ui/core'
+import { makeStyles } from '@material-ui/core/styles';
 import {
 	Cancel,
 	Print,
@@ -28,14 +29,23 @@ interface PrintPdfToolComponentState {
 	title:string,
 	filename:string,
 	size:string,
-	isOpen: boolean,
 	isPrinting: boolean,
 }
+
+const useStyles = makeStyles((theme) => ({
+	dialog: {
+		'& .MuiPaper-root': {
+			pointerEvents: 'auto'
+		},
+		'&' : {
+			pointerEvents: 'none'
+		}
+	}
+}));
 
 const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
 	const myState = useLocalObservable<PrintPdfToolComponentState>(() => {
 		return {
-			isOpen: false,
 			title: '',
 			filename: 'massmapper.pdf',
 			isPrinting: false,
@@ -47,25 +57,29 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 	const mapService = useService(MapService);
 
 	const PrintPdfButton = MakeToolButtonComponent(Print, 'Create a PDF map', () => {
-		myState.isOpen = true;
 		tool.activate();
 	});
+
+	const classes = useStyles();
 
 	return (
 		<>
 			<PrintPdfButton tool={tool}/>
 			<Dialog
-				open={myState.isOpen}
+				open={myTool.isOpen}
 				maxWidth='lg'
+				className={classes.dialog}
 				BackdropProps={{
-					invisible: true
+					invisible: true,
+					style: {
+						pointerEvents: 'none'
+					}
 				}}
 				onClose={() => {
 					if (myState.isPrinting) {
 						// have to wait
 						return;
 					}
-					myState.isOpen = false;
 					tool.deactivate();
 					myState.title = '';
 					myState.filename = 'massmapper.pdf';
@@ -102,7 +116,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								<Button
 									variant="contained"
 									onClick={async () => {
-										myState.isOpen = false;
+										myTool.isOpen = false;
 									}}
 								>
 									<CheckCircle/> OK
@@ -192,7 +206,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									onClick={async () => {
 										myState.isPrinting = true;
 										await myTool.makePDF(myState.title, myState.filename, myState.size);
-										myState.isOpen = false;
+										myTool.isOpen = false;
 										myState.title = '';
 										myState.filename = 'massmapper.pdf';
 										myState.isPrinting = false;
@@ -205,7 +219,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									value="Print"
 									variant="contained"
 									onClick={async () => {
-										myState.isOpen = false;
+										myTool.isOpen = false;
 										myState.isPrinting = false;
 										myState.title = '';
 										myState.filename = 'massmapper.pdf';

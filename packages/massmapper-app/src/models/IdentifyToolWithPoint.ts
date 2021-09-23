@@ -61,6 +61,9 @@ class IdentifyToolWithPoint extends Tool {
 			'click',
 			this._handleIdentifyClick
 		);
+
+		const ss = this._services.get(SelectionService);
+		ss.clearIdentifyResults();
 	}
 
 	// no component for this tool

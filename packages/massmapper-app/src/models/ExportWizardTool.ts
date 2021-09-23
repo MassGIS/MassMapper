@@ -87,6 +87,7 @@ class ExportWizardTool extends Tool {
 
 	protected async _deactivate() {
 		// no-op
+		this.activeStep = undefined;
 	}
 
 	protected async _activate() {

@@ -18,6 +18,7 @@ class PrintPdfTool extends Tool {
 
 	private _ss:SimpleMapScreenshoter;
 	private _watermarkUrl:string;
+	public isOpen:boolean = false;
 
 	constructor(
 		protected readonly _services:ContainerInstance,
@@ -28,6 +29,13 @@ class PrintPdfTool extends Tool {
 		super(_services,id,position,options);
 
 		this._watermarkUrl = options.watermarkUrl || massmapper;
+
+		makeObservable<PrintPdfTool>(
+			this,
+			{
+				isOpen: observable
+			}
+		);
 
 		const ms = this._services.get(MapService);
 		autorun((r) => {
@@ -50,10 +58,12 @@ class PrintPdfTool extends Tool {
 
 	protected async _deactivate() {
 		// no-op
+		this.isOpen = false;
 	}
 
 	protected async _activate() {
 		// no-op
+		this.isOpen = true;
 	}
 
 	public component() {

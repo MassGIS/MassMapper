@@ -8,6 +8,7 @@ import { MakeToolButtonComponent } from "../components/MakeToolButtonComponent";
 import identify from '../images/identify-poly.png';
 import * as turf from '@turf/turf';
 import draw from 'leaflet-draw';
+import { Select } from "@material-ui/core";
 const d = draw;
 class IdentifyToolWithBox extends Tool {
 
@@ -23,8 +24,6 @@ class IdentifyToolWithBox extends Tool {
 			if (!ms.leafletMap) {
 				return;
 			}
-
-			debugger;
 
 			this._handleIdentifyHandler = this._handleIdentify.bind(this);
 			this._clearShapeHandler = this._clearExistingShape.bind(this);
@@ -62,6 +61,9 @@ class IdentifyToolWithBox extends Tool {
 		ms.leafletMap?.off(Draw.Event.DRAWVERTEX, this._clearShapeHandler);
 
 		this._clearExistingShape();
+
+		const ss = this._services.get(SelectionService);
+		ss.clearIdentifyResults();
 
 	}
 
