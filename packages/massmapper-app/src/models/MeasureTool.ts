@@ -129,7 +129,7 @@ class MeasureTool extends Tool {
 		ms.leafletMap?.off(Draw.Event.CREATED, this._handleMeasureCompleteHandler);
 		ms.leafletMap?.off('mousemove', this._updateMeasureUIHandler);
 
-		ms.leafletMap.doubleClickZoom.enable();
+		ms.leafletMap?.doubleClickZoom.enable();
 	}
 
 	protected async _activate() {
@@ -137,7 +137,7 @@ class MeasureTool extends Tool {
 		this._drawnItems = new FeatureGroup();
 		ms.leafletMap?.addLayer(this._drawnItems);
 
-		ms.leafletMap.doubleClickZoom.disable();
+		ms.leafletMap?.doubleClickZoom.disable();
 
 		this._measureDisposer = autorun(() => {
 			if (!ms.leafletMap) {
