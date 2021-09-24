@@ -1,9 +1,9 @@
 {
 	"googleAnalyticsUA": "UA-207196023-1",
-	"splashImage": "massmapper.png",
+	"splashImage": "MassMapper_Logo_FINAL10.png",
 	"splashImageHeight" : "10em",
 	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
-	"folderSet" : "https://maps.massgis.state.ma.us/temp/massmapper_folderset.xml",
+	"folderSet" : "temp/massmapper_folderset.xml",
 	"initialExtent" : [
 		-73.508142, 41.237964, -69.928393, 42.886589
 	],
@@ -98,7 +98,7 @@
 			"position": "topleft-vertical",
 			"class": "HelpTool",
 			"options": {
-				"url" : "http://www.google.com"
+				"url" : "https://www.mass.gov/doc/massmapper-user-guide/download"
 			}
 		}
 	],
