@@ -4,3 +4,51 @@
     background: 0;
     box-shadow: none;
 }
+
+.massmapper-draw-text-white {
+    color: white;
+}
+
+.massmapper-draw-text-tan {
+    color: tan;
+}
+
+.massmapper-draw-text-grey {
+    color: grey;
+}
+
+.massmapper-draw-text-pink {
+    color: pink;
+}
+
+.massmapper-draw-text-red {
+    color: red;
+}
+
+.massmapper-draw-text-orange {
+    color: orange;
+}
+
+.massmapper-draw-text-yellow {
+    color: yellow;
+}
+
+.massmapper-draw-text-green {
+    color: green;
+}
+
+.massmapper-draw-text-blue {
+    color: blue;
+}
+
+.massmapper-draw-text-darkblue {
+    color: darkblue;
+}
+
+.massmapper-draw-text-purple {
+    color: purple;
+}
+
+.massmapper-draw-text-black {
+    color: black;
+}

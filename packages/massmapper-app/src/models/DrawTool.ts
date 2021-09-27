@@ -50,13 +50,11 @@ class DrawTool extends Tool {
 			}
 		})
 
-		// if you clicked color, force shift to line
-		this.drawMode = 'line';
 		this._drawLineHandler.disable();
 		this._drawLineHandler.enable();
-		// if (this.drawMode !== 'line') {
-		// 	this._drawLineHandler.enable();
-		// }
+		if (this.drawMode !== 'line') {
+			this._drawLineHandler.enable();
+		}
 	}
 
 	public _handleTextClickLocation(evt: any) {
@@ -77,9 +75,9 @@ class DrawTool extends Tool {
 			text,
 			{
 				permanent: true,
-				className: "massmapper-draw-text",
+				className: "massmapper-draw-text massmapper-draw-text-" + this.lineColor,
 				offset: [0, 0],
-				direction: 'center'
+				direction: 'center',
 			});
 		ms.leafletMap && marker.addTo(ms.leafletMap);
 		this._markers.push(marker);

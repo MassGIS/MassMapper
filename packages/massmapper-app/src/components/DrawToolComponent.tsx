@@ -96,12 +96,6 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="line" control={<Radio checked={tool.drawMode === 'line'} />} label="Draw Lines" />
-								<br />
-								<ColorPaletteComponent
-									onClick={(name, hex) => {
-										tool.setLineColor(hex);
-									}}
-								/>
 							</Grid>
 							<Grid
 								item
@@ -118,13 +112,33 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 									margin: '0 1em'
 								}}
 							>
-								<FormControlLabel value="text" control={<Radio />} label="Add Text" />
+								<FormControlLabel value="text" control={<Radio checked={tool.drawMode === 'text'} />} label="Add Text" />
 								<br />
 								{tool.drawMode === 'text' && (
 									<>
 										Click the map to add text
 									</>
 								)}
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<hr />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<ColorPaletteComponent
+									onClick={(name, hex) => {
+										tool.setLineColor(hex);
+									}}
+								/>
 							</Grid>
 							<Grid
 								item
