@@ -28,7 +28,7 @@ interface DrawToolComponentState {
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as DrawTool;
 
-	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click to draw lines or add text');
+	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click on the map to draw lines or add text');
 
 	const myState = useLocalObservable<DrawToolComponentState>(() => {
 		return {
@@ -66,7 +66,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 					</DialogActions>
 				</Dialog>
 			)}
-			{tool.isActive && (
+			{tool.isActive && tool.showPalette && (
 				<Paper
 					style={{
 						position: 'absolute',
@@ -149,7 +149,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 									color="default"
 									variant="text"
 									size="small"
-									title="Clear drawn lines"
+									title="Clear drawn lines and text"
 									onClick={() => {
 										tool.clearExistingShape();
 									}}

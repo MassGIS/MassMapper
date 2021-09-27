@@ -32,7 +32,7 @@ class PermalinkTool extends Tool {
 
 	public component() {
 		// return MeasureToolComponent;
-		return MakeToolButtonComponent(link, 'Click to create a permalink');
+		return MakeToolButtonComponent(link, 'Create a permalink');
 	}
 }
 

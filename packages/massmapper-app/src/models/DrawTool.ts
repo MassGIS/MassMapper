@@ -12,14 +12,17 @@ import './DrawTool.module.css';
 class DrawTool extends Tool {
 	public drawMode: 'text' | 'line' = 'line';
 	public showTextEntryDialog:boolean = false;
+	public showPalette:boolean = false;
 
 	private _textClickedLocation?: LatLng;
 	private _drawDisposer:IReactionDisposer;
 	private _drawnItems:FeatureGroup = new FeatureGroup();
 	private _markers:Marker[] = [];
-	private _drawLineHandler: Draw.Polyline | Draw.Polygon;
-	private _handleTextCompleteHandler;
 	public lineColor: string = 'blue';
+	private _drawLineHandler: Draw.Polyline | Draw.Polygon;
+
+	private _handleTextCompleteHandler;
+	private _handlePointClickedHandler;
 
 	private _handleDrawComplete(evt: any) {
 		if (!this._drawnItems['_map']) {
@@ -27,6 +30,7 @@ class DrawTool extends Tool {
 			ms.leafletMap?.addLayer(this._drawnItems);
 		}
 		this._drawnItems.addLayer(evt.layer);
+		this.showPalette = true;
 	}
 
 	public clearExistingShape() {
@@ -45,11 +49,14 @@ class DrawTool extends Tool {
 				color: hex
 			}
 		})
+
+		// if you clicked color, force shift to line
+		this.drawMode = 'line';
 		this._drawLineHandler.disable();
 		this._drawLineHandler.enable();
-		if (this.drawMode !== 'line') {
-			this._drawLineHandler.disable();
-		}
+		// if (this.drawMode !== 'line') {
+		// 	this._drawLineHandler.enable();
+		// }
 	}
 
 	public _handleTextClickLocation(evt: any) {
@@ -90,14 +97,20 @@ class DrawTool extends Tool {
 		super(_services,id,position,options);
 		this._drawnItems ;
 		this._handleTextCompleteHandler = this._handleTextClickLocation.bind(this);
+		this._handlePointClickedHandler = this._handlePointClicked.bind(this)
 
 		makeObservable<DrawTool>(
 			this,
 			{
 				drawMode: observable,
 				showTextEntryDialog: observable,
+				showPalette: observable,
 			}
 		);
+	}
+
+	private _handlePointClicked() {
+		this.showPalette = false;
 	}
 
 	protected async _deactivate() {
@@ -112,6 +125,7 @@ class DrawTool extends Tool {
 
 	protected async _activate() {
 		const ms = this._services.get(MapService);
+		this.showPalette = true;
 
 		this._drawDisposer = autorun(() => {
 			if (!ms.leafletMap) {
@@ -140,10 +154,12 @@ class DrawTool extends Tool {
 			// disable both handlers
 			this._drawLineHandler?.disable();
 			ms.leafletMap.off('click', this._handleTextCompleteHandler);
+			ms.leafletMap.off(Draw.Event.DRAWVERTEX, this._handlePointClickedHandler);
 
 			// enable the right handler
 			if (this.drawMode === 'line') {
 				ms.leafletMap.on(Draw.Event.CREATED, this._handleDrawComplete.bind(this));
+				ms.leafletMap.on(Draw.Event.DRAWVERTEX, this._handlePointClickedHandler);
 				this._drawLineHandler.enable();
 			} else {
 				ms.leafletMap.on('click', this._handleTextCompleteHandler)

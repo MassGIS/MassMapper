@@ -17,7 +17,7 @@ import { MeasureTool } from '../models/MeasureTool';
 const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as MeasureTool;
 
-	const MeasureButton = MakeToolButtonComponent(ruler, 'Click to measure distances');
+	const MeasureButton = MakeToolButtonComponent(ruler, 'Click on the map to measure distances');
 
 	return (
 		<>

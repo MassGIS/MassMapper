@@ -28,7 +28,7 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 				minWidth: '32px',
 			}}
 			color="default"
-			title={'Click to generate abutters list'}
+			title={'Click on the map to generate an abutters list'}
 			variant="contained"
 			size="small"
 			onClick={() => {

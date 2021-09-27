@@ -68,7 +68,7 @@ class IdentifyToolWithPoint extends Tool {
 
 	// no component for this tool
 	public component() {
-		return MakeToolButtonComponent(identify, 'Click to identify a feature or to drag to pan');
+		return MakeToolButtonComponent(identify, 'Click on the map to identify a feature or drag to pan');
 	}
 
 	public async handleIdentifyClick(ev:LeafletMouseEvent) {

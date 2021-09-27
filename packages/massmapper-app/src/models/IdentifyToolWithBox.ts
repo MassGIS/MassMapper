@@ -69,7 +69,7 @@ class IdentifyToolWithBox extends Tool {
 
 	// no component for this tool
 	public component() {
-		return MakeToolButtonComponent(identify, 'Click to draw a polygon and identify features');
+		return MakeToolButtonComponent(identify, 'Click on the map to draw a polygon and identify features');
 	}
 
 	private _clearExistingShape() {
