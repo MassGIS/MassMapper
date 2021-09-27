@@ -28,7 +28,7 @@ interface DrawToolComponentState {
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as DrawTool;
 
-	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click to draw lines');
+	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click to draw lines or add text');
 
 	const myState = useLocalObservable<DrawToolComponentState>(() => {
 		return {
