@@ -111,8 +111,8 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 		<>
 			<Button
 				style={{
-					backgroundColor: 'white',
 					minWidth: '32px',
+					backgroundColor: tool.isActive ? '' : 'white',
 				}}
 				color="default"
 				variant="contained"
@@ -134,6 +134,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 						myState.zip = '';
 						myState.street = '';
 						myState.results = [];
+						tool.deactivate();
 					}}
 					BackdropProps={{
 						invisible: true
@@ -151,6 +152,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 								myState.zip = '';
 								myState.street = '';
 								myState.results = [];
+								tool.deactivate();
 							}}
 						>
 							<Close />
