@@ -1,4 +1,7 @@
-<h2>Welcome to the new MassMapper</h2>
+<h2>Powered by MassGIS, a divison of EOTSS</h2>
+<p>
+<table style="margin-left:auto;margin-right:auto;"><tr><td><a target="_blank" href="https://www.mass.gov/orgs/massgis-bureau-of-geographic-information"><img src="/images/massgis-logo-108x45.png" alt="MassGIS Logo"></a></td><td><a target="_blank" href="https://www.mass.gov/orgs/executive-office-of-technology-services-and-security"><img src="/images/EOTSS_2020_small.jpg" alt="EOTSS Logo"></a></td></tr></table>
+</p>
 <p>
 DISCLAIMER - The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.
 </p>
