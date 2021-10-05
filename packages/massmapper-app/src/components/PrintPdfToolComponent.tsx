@@ -211,6 +211,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 										myState.filename = 'massmapper.pdf';
 										myState.isPrinting = false;
 										myState.size = 'letter';
+										myTool.deactivate();
 									}}
 								>
 									<Print /> Create PDF

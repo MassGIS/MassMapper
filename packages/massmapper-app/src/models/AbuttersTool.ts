@@ -12,6 +12,8 @@ import buffer from '@turf/buffer';
 import { IdentifyResult } from "./IdentifyResults";
 import { toast } from 'react-toastify';
 import { ConfigService } from "../services/ConfigService";
+import { ToolService } from "../services/ToolService";
+import { PrintPdfTool } from "./PrintPdfTool";
 
 const SP_METERS = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
 const EPSG_4326 = "+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs";
@@ -92,10 +94,18 @@ class AbuttersTool extends Tool {
 		autorun(() => {
 			const ss = this._services.get(SelectionService);
 			const ms = this._services.get(MapService);
+			const ts = this._services.get(ToolService);
+			if (ts.activeTool instanceof PrintPdfTool) {
+				(ts.activeTool as PrintPdfTool).arrivedFromAbutters = true;
+				return;
+			}
 			if (ss.identifyResults.length === 0) {
 				this._abuttersShape &&
 				this._abuttersShape.removeFrom(ms.leafletMap!);
 			}
+		},
+		{
+			delay: 100
 		});
 	}
 

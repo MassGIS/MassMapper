@@ -10,6 +10,9 @@ import { autorun, makeObservable, observable } from "mobx";
 import massmapper from '../images/massmapper.png';
 import { LegendService } from "../services/LegendService";
 import { PrintPdfToolComponent } from "../components/PrintPdfToolComponent";
+import { ToolService } from "../services/ToolService";
+import { AbuttersTool } from "./AbuttersTool";
+import { SelectionService } from "../services/SelectionService";
 
 
 class PrintPdfTool extends Tool {
@@ -19,6 +22,7 @@ class PrintPdfTool extends Tool {
 	private _ss:SimpleMapScreenshoter;
 	private _watermarkUrl:string;
 	public isOpen:boolean = false;
+	public arrivedFromAbutters = false;
 
 	constructor(
 		protected readonly _services:ContainerInstance,
@@ -59,6 +63,16 @@ class PrintPdfTool extends Tool {
 	protected async _deactivate() {
 		// no-op
 		this.isOpen = false;
+		if (this.arrivedFromAbutters) {
+			this.arrivedFromAbutters = false;
+			const ss = this._services.get(SelectionService);
+			ss.clearIdentifyResults()
+			ss.selectedIdentifyResult = undefined;
+
+			const ts = this._services.get(ToolService);
+			const at:AbuttersTool = ts.tools.filter(t => t instanceof AbuttersTool)[0] as AbuttersTool;
+			at.deactivate();
+		}
 	}
 
 	protected async _activate() {
