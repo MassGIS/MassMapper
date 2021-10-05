@@ -15,6 +15,7 @@ import {
 	ImageSearch,
 	Search,
 } from '@material-ui/icons';
+import { makeStyles } from '@material-ui/core/styles';
 import { latLng } from 'leaflet';
 import { observer, useLocalObservable } from 'mobx-react-lite';
 import React, { FunctionComponent } from "react";
@@ -88,12 +89,25 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 	return results;
 }
 
+const useStyles = makeStyles((theme) => ({
+	paper: {
+		'& .MuiPaper-root': {
+			height: '70vh',
+			width: '90vw',
+			pointerEvents: 'auto'
+		},
+		'&' : {
+			pointerEvents: 'none'
+		}
+	},
+}));
+
 interface ArcGISGeocodeToolComponentState {
 	street: string;
 	city: string;
 	zip: string;
 	results: Array<ArcGISGecodeResult>;
-	isOpen: boolean;
+	tool: Tool;
 }
 
 const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool}) => {
@@ -103,9 +117,11 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 			city: '',
 			zip: '',
 			results: [],
-			isOpen: false,
+			tool,
 		}
 	});
+
+	const classes = useStyles();
 
 	return (
 		<>
@@ -119,17 +135,16 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 				size="small"
 				title="Search and zoom to an address"
 				onClick={() => {
-					myState.isOpen = true;
 					tool.activate();
 				}}
 			>
 				<ImageSearch />
 			</Button>
-			{myState.isOpen && (
+			{tool.isActive && (
 				<Dialog
 					open
+					className={classes.paper}
 					onClose={() => {
-						myState.isOpen = false;
 						myState.city = '';
 						myState.zip = '';
 						myState.street = '';
@@ -147,7 +162,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 								float: 'right'
 							}}
 							onClick={() => {
-								myState.isOpen = false;
 								myState.city = '';
 								myState.zip = '';
 								myState.street = '';
@@ -285,11 +299,11 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 										// have to give it time to get to the right zoom, I guess
 										window.setTimeout(() => {
 											mapService.leafletMap?.panTo(center);
-											uiState.isOpen = false;
 											uiState.city = '';
 											uiState.zip = '';
 											uiState.street = '';
 											uiState.results = [];
+											uiState.tool.deactivate()
 										}, 500)
 									}}
 									variant="contained"
