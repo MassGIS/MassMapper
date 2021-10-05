@@ -136,7 +136,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 							>
 								<ColorPaletteComponent
 									onClick={(name, hex) => {
-										tool.setLineColor(hex);
+										tool.setColor(hex);
 									}}
 								/>
 							</Grid>

@@ -42,7 +42,7 @@ class DrawTool extends Tool {
 		this._markers.splice(0,this._markers.length);
 	}
 
-	public setLineColor(hex: string) {
+	public setColor(hex: string) {
 		this.lineColor = hex;
 		this._drawLineHandler && this._drawLineHandler.setOptions({
 			shapeOptions: {
@@ -53,7 +53,7 @@ class DrawTool extends Tool {
 		this._drawLineHandler.disable();
 		this._drawLineHandler.enable();
 		if (this.drawMode !== 'line') {
-			this._drawLineHandler.enable();
+			this._drawLineHandler.disable();
 		}
 	}
 
