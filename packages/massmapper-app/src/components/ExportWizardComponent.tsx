@@ -65,77 +65,48 @@ const iconStyle = {
 };
 
 const useStyles = makeStyles((theme) => ({
-		paper: {
-			'& .MuiPaper-root': {
-				height: '70vh',
-				width: '90vw',
-				pointerEvents: 'auto'
-			},
-			'&' : {
-				pointerEvents: 'none'
-			}
+	paper: {
+		'& .MuiPaper-root': {
+			height: '70vh',
+			width: '90vw',
+			pointerEvents: 'auto'
 		},
-		container: {
-			flexGrow: 1,
-			height: '60%',
-		},
-		exportContainer: {
-			flexGrow: 1,
-			height: '60%',
-			overflowY: 'auto',
-			'& .MuiRadio-root': {
-				padding: '4px'
-			},
-			'& .MuiTableCell-root': {
-				paddingTop: '0px',
-				paddingBottom: '0px',
-			},
-			'& .MuiTypography-body1': {
-				fontSize: '.8rem',
-			}
-		},
-		table: {
-			// width: '90vh',
-			'& .MuiTableBody-root .MuiTableRow-root:hover': {
-				backgroundColor: hoverColor,
-			},
-			'& .MuiTableBody-root .MuiTableRow-root.Mui-selected:hover': {
-				backgroundColor: hoverColor,
-			},
-			'& .MuiTableBody-root .MuiTableRow-root.Mui-selected': {
-				backgroundColor: selectedColor,
-			},
+		'&' : {
+			pointerEvents: 'none'
 		}
-	}));
-
-
-	// const PaperComponent: FunctionComponent<PaperProps> = (props: PaperProps) => {
-	// 		return (
-	// 				<Paper {...props} />
-	// 			);
-	// 		}
-
-	// const HowtoComponent: FunctionComponent = () => (
-	// 	<Box
-	// 		style={{
-	// 			margin: '2em',
-	// 			height: '100%',
-	// 		}}
-	// 	>
-	// 		<b>Welcome to the data export wizard</b>
-	// 		<div>
-	// 		This wizard may be used to download geospatial data as shapefiles, Google Earth files (KMLs), or GeoTIFFs. Users
-	// 		may choose their area of interest and subsets of data layers may be downloaded. Metadata and other supporting documents
-	// 		are also packaged with the exported data.
-	// 		</div>
-	// 		<div>
-	// 		A 15 MB size limit has been imposed on each raster data layer, and a 25,000 feature limit has
-	// 		beenimposed on each vector data layer.
-
-	// 		</div>
-	// 	</Box>
-	// )
-// For information on accessing full datasets, please check the Help document
+	},
+	container: {
+		flexGrow: 1,
+		height: '60%',
+	},
+	exportContainer: {
+		flexGrow: 1,
+		height: '60%',
+		overflowY: 'auto',
+		'& .MuiRadio-root': {
+			padding: '4px'
+		},
+		'& .MuiTableCell-root': {
+			paddingTop: '0px',
+			paddingBottom: '0px',
+		},
+		'& .MuiTypography-body1': {
+			fontSize: '.8rem',
+		}
+	},
+	table: {
+		// width: '90vh',
+		'& .MuiTableBody-root .MuiTableRow-root:hover': {
+			backgroundColor: hoverColor,
+		},
+		'& .MuiTableBody-root .MuiTableRow-root.Mui-selected:hover': {
+			backgroundColor: hoverColor,
+		},
+		'& .MuiTableBody-root .MuiTableRow-root.Mui-selected': {
+			backgroundColor: selectedColor,
+		},
+	}
+}));
 
 const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 
