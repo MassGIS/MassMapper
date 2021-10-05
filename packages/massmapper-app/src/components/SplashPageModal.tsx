@@ -115,6 +115,8 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 							}
 							label="Don't show this splash page again, please"
 						/>
+						<br/><br/>
+						<a href="license.txt" target="_blank">license information</a>
 					</Grid>
 				</Grid>
 			</div>
