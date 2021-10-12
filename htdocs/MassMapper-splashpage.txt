@@ -1,8 +1,8 @@
 <link rel="stylesheet" href=https://fonts.googleapis.com/css?family=Noto Sans>
 <style>
-  body {
-    font-family: 'Noto Sans', serif;
-    }
+body {
+  font-family: 'Noto Sans', serif;
+  }
 </style>
 <center>
 <h2>Powered by MassGIS, part of</h2>
@@ -14,6 +14,7 @@
 <td><a target="_blank" href=https://www.mass.gov/orgs/executive-office-of-technology-services-and-security><img src=https://maps.massgis.state.ma.us/images/EOTSS_2020_small.jpg alt="EOTSS Logo"></a></td>
 </tr>
 </table>
-<p>DISCLAIMER: The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.</p>
-<p><a href=https://massgov.formstack.com/forms/massmapper_feedback>Feedback</a></p>
+<hr style="width:100px;color:#97c2a9;height:3px;border-width:0;background-color:#97c2a9">
+<p><font size="-1">DISCLAIMER: The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.</p>
+<p><a href=https://massgov.formstack.com/forms/massmapper_feedback>Feedback</a></p></font>
 </center>
