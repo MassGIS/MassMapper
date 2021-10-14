@@ -71,6 +71,7 @@
 		"typedi": "^0.10.0",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
-		"wellknown": "^0.5.0"
+		"wellknown": "^0.5.0",
+		"typeface-noto-sans-tc": "^1.1.13"
 	}
 }

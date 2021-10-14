@@ -15,6 +15,8 @@ import { useService } from '../services/useService';
 import { ArrowForward } from '@material-ui/icons';
 import { ConfigService } from '../services/ConfigService';
 
+import "typeface-noto-sans-tc";
+
 const useStyles = makeStyles((theme) => ({
 		appBarSpacer: theme.mixins.toolbar,
 		container: {
@@ -97,6 +99,10 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 					}}>
 						<Button
 							variant="contained"
+							style={{
+								"color": "#fff",
+								"backgroundColor": "#14558f"
+							}}
 							onClick={() => {
 								legendService.isSplashPageVisible = false;
 							}}
