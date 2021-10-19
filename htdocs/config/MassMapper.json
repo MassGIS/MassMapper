@@ -98,7 +98,7 @@
 			"position": "topleft-vertical",
 			"class": "HelpTool",
 			"options": {
-				"url" : "https://www.mass.gov/doc/massmapper-user-guide/download"
+				"url" : "MassMapperUserGuide.htm"
 			}
 		}
 	],
