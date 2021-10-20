@@ -551,8 +551,12 @@ class MapService {
 							});
 					} else if (f.geometry.type === 'MultiPolygon') {
 						let latLngs = [];
-						for (let i = 0; i < f.geometry.coordinates[0].length; i++) {
-							latLngs.push(f.geometry.coordinates[0][i].map((f:Array<number>) => new LatLng(f[1], f[0])));
+						for (let i = 0; i < f.geometry.coordinates.length; i++) {
+							let ll = [];
+							for (let j = 0; j < f.geometry.coordinates[i].length; j++) {
+								ll.push(f.geometry.coordinates[i][j].map((f:Array<number>) => new LatLng(f[1], f[0])));
+							}
+							latLngs.push(ll);
 						}
 						mapFeature = polygon(
 							latLngs,
