@@ -22,30 +22,6 @@ const useStyles = makeStyles((theme) => ({
 		container: {
 			flexGrow: 1
 		},
-		// content: {
-		// 	flexGrow: 1,
-		// 	height: '100%',
-		// 	overflow: 'auto'
-		// },
-		// formControl: {
-		// 	margin: theme.spacing(3)
-		// },
-		// map: {
-		// 	height: '100%'
-		// },
-		// mapContainer: {
-		// 	flexGrow: 1
-		// },
-		// root: {
-		// 	display: 'flex',
-		// 	height: '100%'
-		// },
-		// table: {
-		// 	minWidth: 650
-		// },
-		// title: {
-		// 	flexGrow: 1
-		// },
 		paper: {
 			position: 'absolute',
 			width: '80vw',
@@ -76,12 +52,12 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 		>
 			<div className={classes.paper}>
 				<Grid
+					container
 					className={classes.container}
 					style={{
 						height: '100%'
-					}}>
+				}}>
 					<Grid item xs={12} style={{
-						height: '80%',
 						textAlign: 'center'
 					}}>
 						<img
@@ -93,10 +69,6 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 						<p dangerouslySetInnerHTML={{
 							__html: legendService.splashPageContent
 						}}></p>
-					</Grid>
-					<Grid item xs={12} style={{
-						textAlign: 'center'
-					}}>
 						<Button
 							variant="contained"
 							style={{
@@ -107,22 +79,23 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 								legendService.isSplashPageVisible = false;
 							}}
 						>
-							<ArrowForward /> &nbsp;&nbsp;Go to MassMapper
+							<ArrowForward /> &nbsp;&nbsp;ENTER
 						</Button>
 						<br/><br/>
 						<FormControlLabel
 							control={
 								<Checkbox
-								defaultChecked={false}
-								onChange={() => {
-									localStorage.setItem('massmapper.skipSplashPage', 'yes');
-								}}
-								name="noSplash" />
+									defaultChecked={false}
+									onChange={() => {
+										localStorage.setItem('massmapper.skipSplashPage', 'yes');
+									}}
+									name="noSplash"
+								/>
 							}
 							label="Don't show this splash page again, please"
 						/>
 						<br/><br/>
-						<a href="license.txt" target="_blank">license information</a>
+						<a style={{fontSize: 'smaller'}} href="license.txt" target="_blank">License information</a>
 					</Grid>
 				</Grid>
 			</div>
