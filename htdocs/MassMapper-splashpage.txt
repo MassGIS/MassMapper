@@ -7,7 +7,6 @@
   .org-text {
     margin: .5rem 1rem;
   }
-
   .MuiButton-label {
     font-size: 1.5rem;
   }
@@ -15,15 +14,19 @@
   .MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12 {
     height: 65% !important;
   }
-
 </style>
+
+ 
+
+<div><h3>An interactive map for Massachusetts</h3></div>
+
+ 
+
 <div
 style="display: flex; flex-direction: column; align-items: center;">
   <div style="background: #F2F2F2; width: 100%">
   <div style="display: flex; align-items: center; max-width:800px; margin:auto">
-
  
-
     <div style="display: inline-flex; align-items: center; ">
       <img src="https://maps.massgis.state.ma.us/images/massgis-logo-108x45.png" alt="MassGIS Logo">
       <img class="org-logo" src="https://maps.massgis.state.ma.us/images/EOTSS_2020_small.png" alt="EOTSS Logo">
@@ -34,9 +37,5 @@ style="display: flex; flex-direction: column; align-items: center;">
     </div>
     </div>
   </div>
-
 <p style="max-width:800px; margin-top:2rem;font-size:80%;"><i>DISCLAIMER:</i> The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.</p>
- 
-
- 
 </div>
