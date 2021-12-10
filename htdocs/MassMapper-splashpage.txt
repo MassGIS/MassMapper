@@ -16,7 +16,7 @@
   }
 </style>
 
- 
+<hr style="width:100px;color:#97c2a9;height:3px;border-width:0;background-color:#97c2a9"> 
 
 <div><h3>An interactive map for Massachusetts</h3></div>
 
