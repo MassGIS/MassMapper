@@ -26,7 +26,7 @@ style="display: flex; flex-direction: column; align-items: center;">
 
     <div style="display: inline-flex; align-items: center; ">
       <img src="https://maps.massgis.state.ma.us/images/massgis-logo-108x45.png" alt="MassGIS Logo">
-      <img class="org-logo" src="https://maps.massgis.state.ma.us/images/EOTSS_2020_small.jpg" alt="EOTSS Logo">
+      <img class="org-logo" src="https://maps.massgis.state.ma.us/images/EOTSS_2020_small.png" alt="EOTSS Logo">
     </div>
     <div class="org-text">
         <b>Powered by MassGIS</b>
