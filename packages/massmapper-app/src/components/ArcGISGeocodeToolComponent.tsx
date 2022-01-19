@@ -47,7 +47,7 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 </soap:Body>
 </soap:Envelope>`;
 
-	const proxy = 'https://maps.massgis.state.ma.us/cgi-bin/proxy.cgi'
+	const proxy = 'https://maps.massgis.digital.mass.gov/cgi-bin/proxy.cgi'
 	const url = 'http://gisprpxy.itd.state.ma.us/MassGISGeocodeServiceApplication/MassGISCustomGeocodeService.asmx';
 	const res = await fetch(proxy + "?url=" + url, {
 		method : "POST",
