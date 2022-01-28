@@ -140,8 +140,7 @@ const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentPr
 								mapService.leafletMap?.fitBounds(bounds);
 							} else if (v.geometry.location) {
 								const center = latLng(v.geometry.location.lat(), v.geometry.location.lng());
-								mapService.leafletMap?.panTo(center)
-								mapService.leafletMap?.setZoom(19);
+								mapService.leafletMap?.setView(center, 19);
 							}
 						}}
 						renderInput={(params) => (
