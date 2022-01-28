@@ -77,6 +77,18 @@ class MapService {
 			pdfOk: true
 		},
 		{
+			name: '2021 Aerial Imagery',
+			layer: new TileLayer(
+				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/orthos2021/MapServer/tile/{z}/{y}/{x}',
+				{
+					maxZoom: 20,
+					minZoom: 7,
+					attribution: '<a href="https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery">MassGIS 2021 Aerial Imagery</a>'
+				}
+			),
+			pdfOk: true
+		},		
+		{
 			name: '2019 Aerial Imagery',
 			layer: new TileLayer(
 				'https://tiles.arcgis.com/tiles/hGdibHYSPO59RG1h/arcgis/rest/services/USGS_Orthos_2019/MapServer/tile/{z}/{y}/{x}',
