@@ -224,6 +224,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 										myState.isPrinting = false;
 										myState.title = '';
 										myState.filename = 'massmapper.pdf';
+										myTool.deactivate();
 									}}
 								>
 									<Cancel /> Cancel
