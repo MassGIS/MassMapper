@@ -194,6 +194,9 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						onClick={() => {
 							myState.windowSize = myState.windowSize === 'xl' ? 'xs':'xl'
 						}}
+						onTouchEnd={() => {
+							myState.windowSize = myState.windowSize === 'xl' ? 'xs':'xl'
+						}}
 					>
 						{myState.windowSize === 'xl' && <PhotoSizeSelectSmall />}
 						{myState.windowSize === 'xs' && <AspectRatio />}
@@ -202,6 +205,10 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 					<Button
 						size="small"
 						onClick={() => {
+							selectionService.clearIdentifyResults()
+							selectionService.selectedIdentifyResult = undefined;
+						}}
+						onTouchEnd={() => {
 							selectionService.clearIdentifyResults()
 							selectionService.selectedIdentifyResult = undefined;
 						}}
