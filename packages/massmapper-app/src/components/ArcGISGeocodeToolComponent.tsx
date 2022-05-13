@@ -208,9 +208,8 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 					width:'80%',
 					marginBottom:'.5em',
 				}}
-				helperText="Address is required"
 				value={uiState.street}
-				placeholder="Address..."
+				placeholder="Find address or place"
 				onChange={(e) => {
 					uiState.street = e.target.value;
 				}}
