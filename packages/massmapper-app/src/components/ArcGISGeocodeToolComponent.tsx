@@ -32,23 +32,20 @@ interface ArcGISGecodeResult {
 	}
 };
 
-const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Array<ArcGISGecodeResult>> => {
+const arcgisGeocode = async(addr:string):Promise<Array<ArcGISGecodeResult>> => {
 
 	//method  : "POST"
 	//headers : {'Content-Type':'text/xml; charset=UTF-8'}
-	const body = `<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/">
-<soap:Body>
-<GeocodeAddress xmlns="http://tempuri.org/">
-<Address>${addr}</Address>
-<City>${city || ''}</City>
-<ZipCode>${zip || ''}</ZipCode>
-<State>MA</State>
-</GeocodeAddress>
-</soap:Body>
-</soap:Envelope>`;
+	const body = `<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<soap:Body>
+	<GeocodeAddressSingleField xmlns="http://tempuri.org/">
+	<fullAddressOrPOI>${addr}</fullAddressOrPOI>
+	</GeocodeAddressSingleField>
+	</soap:Body>
+	</soap:Envelope>`;
 
 	const proxy = 'https://maps.massgis.digital.mass.gov/cgi-bin/proxy.cgi'
-	const url = 'http://gisprpxy.itd.state.ma.us/MassGISGeocodeServiceApplication/MassGISCustomGeocodeService.asmx';
+	const url = 'https://arcgisserver.digital.mass.gov/MassGISMassMapperGeocodeServiceApplication/MassGISCustomGeocodeService.asmx';
 	const res = await fetch(proxy + "?url=" + url, {
 		method : "POST",
 		headers: {
@@ -58,13 +55,20 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 	});
 
 	// response like:
-	// const resXML = `<soap:Envelope>
+	// <soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
 	// <soap:Body>
-	// <GeocodeAddressResponse xmlns="http://tempuri.org/">
-	// <GeocodeAddressResult>
-	// <X>183509.55501775382</X><Y>895885.57799501845</Y><MatchedAddress>17 HUNTER CIRCLE, SHREWSBURY, MA, 01545</MatchedAddress><Score>100</Score>
-	// </GeocodeAddressResult>
-	// </GeocodeAddressResponse></soap:Body></soap:Envelope>`;
+	// <GeocodeAddressSingleFieldResponse xmlns="http://tempuri.org/">
+	// <GeocodeAddressSingleFieldResult>
+	// <X>219456.75587901549</X>
+	// <Y>871381.40819348907</Y>
+	// <MatchedAddressOrPOI>GILLETTE STADIUM, FOXBOROUGH</MatchedAddressOrPOI>
+	// <Score>99.9</Score>
+	// <Lat>42.092601423627414</Lat>
+	// <Long>-71.264809494076175</Long>
+	// </GeocodeAddressSingleFieldResult>
+	// </GeocodeAddressSingleFieldResponse>
+	// </soap:Body>
+	// </soap:Envelope>
 
 	const resXML = await res.text();
 	if (!resXML) {
@@ -73,26 +77,28 @@ const arcgisGeocode = async(addr:string, city?: string, zip?: string):Promise<Ar
 
 
 	const xmlLayers = new XMLParser().parseFromString(resXML);
-	const results: ArcGISGecodeResult[] = xmlLayers.getElementsByTagName('GeocodeAddressResult')
-		.filter((o:any) => o.children.filter((c:any) => c.name === 'MatchedAddress').length > 0)
+	const results: ArcGISGecodeResult[] = xmlLayers.getElementsByTagName('GeocodeAddressSingleFieldResult')
+		.filter((o:any) => o.children.filter((c:any) => c.name === 'MatchedAddressOrPOI').length > 0)
 		.map((o:any) => {
-			const addrChildren = o.children.filter((c:any) => c.name === 'MatchedAddress')
+			const addrChildren = o.children.filter((c:any) => c.name === 'MatchedAddressOrPOI')
 			return {
 				address: addrChildren[0].value,
 				location: {
-					x: o.children.filter((c:any) => c.name === 'X')[0].value,
-					y: o.children.filter((c:any) => c.name === 'Y')[0].value,
+					x: o.children.filter((c:any) => c.name === 'Long')[0].value,
+					y: o.children.filter((c:any) => c.name === 'Lat')[0].value,
 				}
 			} as ArcGISGecodeResult;
 		});
 
-	return results;
+	return results.filter(o => {
+		return o.location.x !== NaN && o.location.y !== NaN;
+	});
 }
 
 const useStyles = makeStyles((theme) => ({
 	paper: {
 		'& .MuiPaper-root': {
-			height: '70vh',
+			height: '35vh',
 			width: '90vw',
 			pointerEvents: 'auto'
 		},
@@ -104,8 +110,6 @@ const useStyles = makeStyles((theme) => ({
 
 interface ArcGISGeocodeToolComponentState {
 	street: string;
-	city: string;
-	zip: string;
 	results: Array<ArcGISGecodeResult>;
 	tool: Tool;
 }
@@ -114,8 +118,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 	const myState = useLocalObservable<ArcGISGeocodeToolComponentState>(() => {
 		return {
 			street: '',
-			city: '',
-			zip: '',
 			results: [],
 			tool,
 		}
@@ -145,8 +147,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 					open
 					className={classes.paper}
 					onClose={() => {
-						myState.city = '';
-						myState.zip = '';
 						myState.street = '';
 						myState.results = [];
 						tool.deactivate();
@@ -162,8 +162,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ToolComponentProps> = observ
 								float: 'right'
 							}}
 							onClick={() => {
-								myState.city = '';
-								myState.zip = '';
 								myState.street = '';
 								myState.results = [];
 								tool.deactivate();
@@ -217,41 +215,15 @@ const SearchComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSta
 					uiState.street = e.target.value;
 				}}
 			/>
-			<TextField
-				variant="outlined"
-				style={{
-					width:'80%',
-					marginBottom:'.5em',
-				}}
-				helperText="City or Zip is required"
-				value={uiState.city}
-				placeholder="Town or City..."
-				onChange={(e) => {
-					uiState.city = e.target.value;
-				}}
-			/>
-			<TextField
-				variant="outlined"
-				style={{
-					width:'80%',
-					marginBottom:'.5em',
-				}}
-				helperText="City or Zip is required"
-				value={uiState.zip}
-				placeholder="ZIP Code..."
-				onChange={(e) => {
-					uiState.zip = e.target.value;
-				}}
-			/>
 			<br/>
 			<Button
 				onClick={async () => {
-					uiState.results = await arcgisGeocode(uiState.street, uiState.city, uiState.zip);
+					uiState.results = await arcgisGeocode(uiState.street);
 					if (uiState.results.length === 0) {
 						toast("No matches found.  Please try again.");
 					}
 				}}
-				disabled={!uiState.street || (!uiState.city && !uiState.zip)}
+				disabled={!uiState.street}
 				variant="contained"
 			>
 				<Search /> Search
@@ -296,8 +268,6 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 										const pt = proj4(spMeters).inverse([Math.round(r.location.x), Math.round(r.location.y)]);
 										const center = latLng(pt[1], pt[0]);
 										mapService.leafletMap?.setView(center, 19);
-										uiState.city = '';
-										uiState.zip = '';
 										uiState.street = '';
 										uiState.results = [];
 										uiState.tool.deactivate()
