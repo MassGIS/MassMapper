@@ -7,8 +7,7 @@ import {
 	DialogTitle,
 	Grid,
 	TextField,
-} from '@material-ui/core'
-import proj4 from 'proj4';
+} from '@material-ui/core';
 import {
 	Close,
 	Explore,
@@ -262,11 +261,7 @@ const ResultsComponent: FunctionComponent<{uiState: ArcGISGeocodeToolComponentSt
 							>
 								<Button
 									onClick={async () => {
-										const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
-										// const spFeet = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000.0001016002 +y_0=750000 +ellps=GRS80 +datum=NAD83 +to_meter=0.3048006096012192 +no_defs"
-										const pt = proj4(spMeters).inverse([Math.round(r.location.x), Math.round(r.location.y)]);
-										const center = latLng(pt[1], pt[0]);
-										mapService.leafletMap?.setView(center, 19);
+										mapService.leafletMap?.setView(latLng(r.location.y, r.location.x), 19);
 										uiState.street = '';
 										uiState.results = [];
 										uiState.tool.deactivate()
