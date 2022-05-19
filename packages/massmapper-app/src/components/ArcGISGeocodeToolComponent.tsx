@@ -149,7 +149,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 						onFocus={() => {
 							myState.isFocused = true;
 							window.setTimeout(() => {
-								myState.noOptionsText = 'Enter address above...';
+								myState.noOptionsText = 'Enter location above...';
 							}, 10);
 						}}
 						onInputChange={(e, val) => {
