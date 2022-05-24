@@ -19,7 +19,7 @@ interface ArcGISGecodeResult {
 		y: number,
 	}
 };
-const arcgisGeocode = async(addr:string):Promise<Array<ArcGISGecodeResult>> => {
+const arcgisGeocode = async(addr:string, req:number):Promise<Array<ArcGISGecodeResult>> => {
 	//method  : "POST"
 	//headers : {'Content-Type':'text/xml; charset=UTF-8'}
 	const body = `<soap:Envelope xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
@@ -30,9 +30,9 @@ const arcgisGeocode = async(addr:string):Promise<Array<ArcGISGecodeResult>> => {
 	</soap:Body>
 	</soap:Envelope>`;
 
-	const proxy = 'https://maps.massgis.digital.mass.gov/cgi-bin/proxy.cgi'
+	const proxy = 'https://maps.massgis.digital.mass.gov/cgi-bin/proxy.cgi';
 	const url = 'https://arcgisserver.digital.mass.gov/MassGISMassMapperGeocodeServiceApplication/MassGISCustomGeocodeService.asmx';
-	const res = await fetch(proxy + "?url=" + url, {
+	const res = await fetch(proxy + "?req=" + req + "&url=" + url, {
 		method : "POST",
 		headers: {
 			'Content-Type':'text/xml; charset=UTF-8'
@@ -87,6 +87,7 @@ interface ArcGISGeocodeToolComponentProps {
 interface ArcGISGeocodeToolComponentState {
 	isFocused: boolean;
 	searchString: string;
+	searchRequest: number; // This will make sure that an "unchanged" searhcString always fires a request on ENTER.
 	searchResults: ArcGISGecodeResult[];
 	isSearchLoading: boolean;
 	noOptionsText: string;
@@ -98,6 +99,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 		return {
 			isFocused: false,
 			searchString: '',
+			searchRequest: 0,
 			searchResults: [],
 			isSearchLoading: false,
 			noOptionsText: '',
@@ -112,7 +114,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 			return;
 		}
 
-		const res = await arcgisGeocode(myState.searchString);
+		const res = await arcgisGeocode(myState.searchString, myState.searchRequest);
 		myState.isSearchLoading = false;
 		if (res.length === 0) {
 			// no results
@@ -167,6 +169,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 							if (/enter/i.test(e.code)) {
 								myState.isSearchLoading = true;
 								myState.searchString = val;
+								myState.searchRequest++;
 							}
 							else if (!/arrow/i.test(e.code)) {
 								myState.isSearchLoading = false;
