@@ -100,7 +100,8 @@ class ExportWizardTool extends Tool {
 		const legendService = this._services.get(LegendService);
 		this.exportLayers.clear();
 		Array.from(legendService.enabledLayers).forEach(l => {
-			if (l.layerType !== 'tiled_overlay') {
+			// OK to d/l something like parcels (a tileset that has real data behind it) but not orthos (just a tileset).
+			if (!(l.layerType === 'tiled_overlay' && l.queryName === l.name)) {
 				this.exportLayers.set(l.name, l);
 			}
 		});
