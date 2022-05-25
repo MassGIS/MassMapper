@@ -100,7 +100,9 @@ class ExportWizardTool extends Tool {
 		const legendService = this._services.get(LegendService);
 		this.exportLayers.clear();
 		Array.from(legendService.enabledLayers).forEach(l => {
-			this.exportLayers.set(l.name, l);
+			if (l.layerType !== 'tiled_overlay') {
+				this.exportLayers.set(l.name, l);
+			}
 		});
 
 		this.calculateNumFeatures();
