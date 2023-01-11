@@ -83,7 +83,7 @@ class ConfigService {
 		splashImageHeight?: string,
 		googleAnalyticsUA?: string,
 	} = {
-		geoserverUrl: 'https://giswebservices.massgis.state.ma.us',
+		geoserverUrl: 'https://gis-prod.digital.mass.gov',
 		folderSet: '',
 		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
 		tools: [],
