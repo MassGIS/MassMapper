@@ -267,8 +267,8 @@ class IdentifyResult {
 
 		const exportData = await res.text();
 
-		// All download results live on maps.massgis.state.ma.us.
-		return '//' + 'maps.massgis.state.ma.us' + exportData;
+		// All download results live on maps.massgis.digital.mass.gov.
+		return '//' + 'maps.massgis.digital.mass.gov' + exportData;
 	}
 
 	public async exportToMkzip(fileType: string) {
@@ -280,7 +280,7 @@ class IdentifyResult {
 		name="Tax Parcels for Query"
 		baseURL="${this._gsurl}/geoserver/wms?layers___EQ___massgis:GISDATA.L3_TAXPAR_POLY_ASSESS___AMP___service___EQ___WMS___AMP___version___EQ___1.1.0___AMP___request___EQ___GetMap___AMP___bbox___EQ___160823.171987,876167.17726399,162545.925669,877561.99102299___AMP___srs___EQ___EPSG:26986___AMP___height___EQ___100___AMP___width___EQ___100___AMP___styles___EQ______AMP___format___EQ___application/vnd.google-earth.kml+xml">
 		<metadata>http://www.mass.gov/info-details/massgis-data-property-tax-parcels</metadata>
-		<metadata>http://maps.massgis.state.ma.us/metadata/GISDATA_L3_TAXPAR_POLY_ASSESS.shp.xml</metadata>
+		<metadata>http://maps.massgis.digital.mass.gov/metadata/GISDATA_L3_TAXPAR_POLY_ASSESS.shp.xml</metadata>
 	</layer>
 	<zip name="test-kml"/>
 </layers>
