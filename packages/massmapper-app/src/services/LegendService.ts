@@ -4,7 +4,8 @@ import { MapService } from "./MapService";
 import { ConfigService } from "./ConfigService";
 import { Layer } from '../models/Layer';
 // import ua from 'universal-analytics';
-import mpanalytics from 'mpanalytics';
+// import mpanalytics from 'mpanalytics';
+import ReactGA from 'react-ga4';
 import { v4 as uuid } from 'uuid';
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';
@@ -39,11 +40,9 @@ class LegendService {
 		const configService = this._services.get(ConfigService)
 		autorun((r) => {
 			if (configService.ready) {
-				this._visitor = mpanalytics.create({
-					tid: configService.googleAnalyticsUA,
-					cid: uuid(),
-					sampleRate: 100
-				})
+				ReactGA.initialize(
+					String(configService.googleAnalyticsUA)
+				);
 				r.dispose();
 			}
 		})
@@ -94,18 +93,14 @@ class LegendService {
 			return;
 		}
 
-		if (this._visitor) {
-			// this._visitor.pageview(document.location.pathname, document.location.href, document.title).send();
-			// this._visitor.event("MassMapperAction","LayerAdd","LayerName",l.name).send();
-			this._visitor.event({
-				category: "MassMapper::LayerAdd",
-				action: l.name,
-			}, (error:any, body:any) => {
-				if (error) {
-					console.error(error);
-				}
-			})
-		}
+		ReactGA.event({
+			category: "MassMapper::LayerAdd",
+			action: l.name,
+		}, (error:any, body:any) => {
+			if (error) {
+				console.error(error);
+			}
+		});
 
 		const mapService = this._services.get(MapService);
 		await l.makeMappable(mapService);
