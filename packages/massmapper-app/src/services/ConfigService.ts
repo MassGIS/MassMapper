@@ -7,8 +7,8 @@ import massmapper from '../images/massmapper.png';
 @Service()
 class ConfigService {
 
-	get googleAnalyticsUA(): string | undefined {
-		return this._config.googleAnalyticsUA;
+	get googleAnalyticsGA4(): string | undefined {
+		return this._config.googleAnalyticsGA4;
 	}
 
 	get geoserverUrl(): string {
@@ -81,7 +81,7 @@ class ConfigService {
 		xGridLicenseKey?: string,
 		splashImage?: string,
 		splashImageHeight?: string,
-		googleAnalyticsUA?: string,
+		googleAnalyticsGA4?: string,
 	} = {
 		geoserverUrl: 'https://gis-prod.digital.mass.gov',
 		folderSet: '',

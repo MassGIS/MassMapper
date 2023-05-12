@@ -41,7 +41,7 @@ class LegendService {
 		autorun((r) => {
 			if (configService.ready) {
 				ReactGA.initialize(
-					String(configService.googleAnalyticsUA)
+					String(configService.googleAnalyticsGA4)
 				);
 				r.dispose();
 			}
