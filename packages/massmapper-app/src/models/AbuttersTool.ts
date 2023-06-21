@@ -267,9 +267,8 @@ class AbuttersTool extends Tool {
 	}
 }
 
-function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][][]}}):turf.Polygon {
-	// a multipoly is returned, so only deal w/ the first poly of the set (there will only be one)
-	return turf.polygon([f.geometry.coordinates[0][0]]).geometry;
+function geojsonFeatureToTurfFeature(f:{geometry:{coordinates: number[][][]}}):turf.Polygon {
+	return turf.polygon([f.geometry.coordinates[0]]).geometry;
 }
 
 // function turfToLeaflet<T>(f:T, shapetypeConstructor:any):T {
