@@ -82,10 +82,10 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 					}}
 					// variant="standard"
 				>
-					<MenuItem onClick={handleClose} value={units.DMS}>lat/lon (dms)</MenuItem>
-					<MenuItem onClick={handleClose} value={units.DD}>lat/lon (dd)</MenuItem>
-					<MenuItem onClick={handleClose} value={units.SP_METERS}>SP Meters</MenuItem>
-					<MenuItem onClick={handleClose} value={units.SP_FEET}>SP Feet</MenuItem>
+					<MenuItem onClick={handleClose} value={units.DMS}>Lon/Lat (DMS)</MenuItem>
+					<MenuItem onClick={handleClose} value={units.DD}>Lon/Lat (DD)</MenuItem>
+					<MenuItem onClick={handleClose} value={units.SP_METERS}>State Plane Meters</MenuItem>
+					<MenuItem onClick={handleClose} value={units.SP_FEET}>State Plane Feet</MenuItem>
 				</Menu>
 			</div>
 		</Paper>
