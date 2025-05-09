@@ -33,7 +33,7 @@ class ShowCoordinatesTool extends Tool {
 			const m = Math.floor((Math.abs(this._coords.lng) - d) * 60);
 			const s = ((Math.abs(this._coords.lng) - d) - m/60) * 3600;
 
-			return '-' + d + ":" + m + ":" + s.toFixed(3);
+			return '-' + d + ":" + m + ":" + s.toFixed(6);
 		}
 		return this._coords.lng.toFixed(5);
 	}

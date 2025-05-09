@@ -37,7 +37,7 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 						paddingTop: '0',
 						fontWeight: 100,
 						fontSize: 'smaller',
-						width: myTool.units === units.DMS ? '27em' : '',
+						width: myTool.units === units.DMS ? '28em' : '',
 						justifyContent: 'left'
 					}}
 					ref={(r:HTMLButtonElement) => {
@@ -48,7 +48,7 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 					}}
 				>
 					<div style={{
-						width: myTool.units === units.DMS ? '14em' : '',
+						width: myTool.units === units.DMS ? '16em' : '',
 						textAlign: 'left',
 						marginRight: '1em'
 					}}>
