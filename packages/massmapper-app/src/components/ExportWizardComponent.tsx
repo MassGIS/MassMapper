@@ -411,8 +411,22 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 												<TableCell>
 													<FormControlLabel value="csv" control={<Radio />} label="CSV (.csv)" />
 												</TableCell>
-												<TableCell></TableCell>
+												<TableCell>
+													<FormControlLabel value="dxf-zip" control={<Radio />} label="AutoCAD (.dxf)" />
+												</TableCell>
 											</TableRow>
+
+											<TableRow>
+												<TableCell>
+													<FormControlLabel value="gpkg" control={<Radio />} label="GeoPackage (.gpkg)" />
+												</TableCell>
+												<TableCell>
+													<FormControlLabel value="application/json" control={<Radio />} label="GeoJSON (.json)" />
+												</TableCell>
+												<TableCell>
+												</TableCell>
+											</TableRow>
+
 										</TableBody>
 									</Table>
 								</TableContainer>
