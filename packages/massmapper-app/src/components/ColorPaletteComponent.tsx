@@ -5,31 +5,31 @@ import React, { FunctionComponent, useState } from "react";
 const COLOR_PALETTE = [
 	{
 		name: "White",
-		hex: "white"
+		hex: "#FFFFFF"
 	},
 	{
 		name: "Tan",
-		hex: "tan"
+		hex: "#D7C29E"
 	},
 	{
 		name: "Grey",
-		hex: 'grey'
+		hex: '#686868'
 	},
 	{
 		name: "Pink",
-		hex: 'pink'
+		hex: '#FFBEBE'
 	},
 	{
 		name: "Red",
-		hex: "red"
+		hex: "#FE0108"
 	},
 	{
 		name: "Orange",
-		hex: "orange"
+		hex: "#FFD380"
 	},
 	{
 		name: "Yellow",
-		hex: "yellow"
+		hex: "#FFFC01"
 	},
 	{
 		name: "Green",
@@ -45,11 +45,11 @@ const COLOR_PALETTE = [
 	},
 	{
 		name: "Purple",
-		hex: "purple"
+		hex: "#C627FF"
 	},
 	{
 		name: "Black",
-		hex: "black"
+		hex: "#000000"
 	}
 ];
 
