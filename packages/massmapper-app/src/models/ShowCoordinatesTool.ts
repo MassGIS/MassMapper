@@ -8,10 +8,10 @@ import { latLng, LatLng } from "leaflet";
 import proj4 from 'proj4';
 
 enum units {
-	DMS = 'lat lon (dms)',
-	DD = 'lat lon',
-	SP_METERS = 'sp meters',
-	SP_FEET = 'sp feet',
+	DMS = 'lon lat (dms)',
+	DD = 'lon lat',
+	SP_METERS = 'state plane meters',
+	SP_FEET = 'state plane feet',
 }
 
 const spMeters = "+proj=lcc +lat_1=42.68333333333333 +lat_2=41.71666666666667 +lat_0=41 +lon_0=-71.5 +x_0=200000 +y_0=750000 +ellps=GRS80 +datum=NAD83 +units=m +no_defs";
@@ -29,13 +29,13 @@ class ShowCoordinatesTool extends Tool {
 			return toSpFeet.forward([this._coords.lng, this._coords.lat])[0].toFixed(0);
 		}
 		if (this.units === units.DMS) {
-			const d = Math.floor(Math.abs(this._coords.lat));
-			const m = Math.floor((this._coords.lat - d) * 60);
-			const s = ((this._coords.lat - d) - m/60) * 3600;
+			const d = Math.floor(Math.abs(this._coords.lng));
+			const m = Math.floor((Math.abs(this._coords.lng) - d) * 60);
+			const s = ((Math.abs(this._coords.lng) - d) - m/60) * 3600;
 
-			return d + ":" + m + ":" + s.toFixed(3);
+			return '-' + d + ":" + m + ":" + s.toFixed(6);
 		}
-		return this._coords.lat.toFixed(5);
+		return this._coords.lng.toFixed(5);
 	}
 
 	get yCoord():string {
@@ -46,13 +46,13 @@ class ShowCoordinatesTool extends Tool {
 			return toSpFeet.forward([this._coords.lng, this._coords.lat])[1].toFixed(0);
 		}
 		if (this.units === units.DMS) {
-			const d = Math.floor(Math.abs(this._coords.lng));
-			const m = Math.floor((Math.abs(this._coords.lng) - d) * 60);
-			const s = ((Math.abs(this._coords.lng) - d) - m/60) * 3600;
+			const d = Math.floor(Math.abs(this._coords.lat));
+			const m = Math.floor((this._coords.lat - d) * 60);
+			const s = ((this._coords.lat - d) - m/60) * 3600;
 
-			return '-' + d + ":" + m + ":" + s.toFixed(3);
+			return d + ":" + m + ":" + s.toFixed(6);
 		}
-		return this._coords.lng.toFixed(5);
+		return this._coords.lat.toFixed(5);
 	}
 
 	private _coords:LatLng;
