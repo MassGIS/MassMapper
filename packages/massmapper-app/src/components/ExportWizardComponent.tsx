@@ -483,7 +483,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							padding: '1em'
 						}}>
 							<Typography variant="h6" id="tableTitle" component="div">
-								Export File Name (No Spaces)
+								Export File Name
 							</Typography>
 							<TableContainer >
 								<Table
@@ -503,10 +503,10 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 												<TextField
 													id="output-filename"
 													label="Output Filename"
-													value={tool.exportFileName}
+													value={tool.exportFileName || ''}
 													onChange={(e) => {
 														runInAction(() => {
-															tool.exportFileName = e.target.value;
+															tool.exportFileName = e.target.value.replace(/ /g, '_');
 														});
 													}}
 												/>
