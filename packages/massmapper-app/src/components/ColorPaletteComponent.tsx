@@ -33,15 +33,15 @@ const COLOR_PALETTE = [
 	},
 	{
 		name: "Green",
-		hex: "green"
+		hex: "#55FD00"
 	},
 	{
 		name: "Blue",
-		hex: "blue"
+		hex: "#00C5FF"
 	},
 	{
 		name: "Dark_Blue",
-		hex: "darkblue"
+		hex: "#005CE6"
 	},
 	{
 		name: "Purple",
