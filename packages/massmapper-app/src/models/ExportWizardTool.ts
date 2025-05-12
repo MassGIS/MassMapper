@@ -189,6 +189,10 @@ class ExportWizardTool extends Tool {
 				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>` +
 				`&SRSNAME=EPSG:${this.exportCRS}`;
 			}
+			else if (this.exportFormat === 'dxf-zip') {
+				url += '&format_options=withattributes:true';
+			}
+			console.log(url);
 			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.name).replace('massgis:', '')}" name="${this.encodeSpecialChars(element.title)}" baseURL="${this.encodeSpecialChars(url.replace('https', 'http'))}">`;
 			layer += '<metadata>' + this.encodeSpecialChars(element.metadataUrl) + '</metadata>';
 			element.extractDocs.forEach((url:string) => {
