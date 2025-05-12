@@ -18,3 +18,7 @@
 .disabled-basemap {
     color: rgb(170, 170, 170);
 }
+
+.leaflet-container {
+    background-color: #fff;
+}
