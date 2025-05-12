@@ -140,7 +140,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 		return {
 			field: p,
 			headerName: p,
-			width: 120,
+			width: 175,
 			height: 20,
 			resizable: true,
 			renderCell: (params: any) => {
