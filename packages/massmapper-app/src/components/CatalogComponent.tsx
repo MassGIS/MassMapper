@@ -125,9 +125,6 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 						{...params}
 						label="Search for a layer"
 						variant="outlined"
-						inputRef={input => {
-							input && input.focus();
-						}}
 					/>
 				}
 				size="small"
