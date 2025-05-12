@@ -192,7 +192,6 @@ class ExportWizardTool extends Tool {
 			else if (this.exportFormat === 'dxf-zip') {
 				url += '&format_options=withattributes:true';
 			}
-			console.log(url);
 			let layer = `<layer wmsStyle="${this.encodeSpecialChars(element.style)}" wmsLayer="${this.encodeSpecialChars(element.name).replace('massgis:', '')}" name="${this.encodeSpecialChars(element.title)}" baseURL="${this.encodeSpecialChars(url.replace('https', 'http'))}">`;
 			layer += '<metadata>' + this.encodeSpecialChars(element.metadataUrl) + '</metadata>';
 			element.extractDocs.forEach((url:string) => {

@@ -250,7 +250,6 @@ class IdentifyResult {
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ogc="http://www.opengis.net/ogc">
 	<wfs:Query typeName="${queryName}" srsName="EPSG:26986" xmlns:massgis="http://massgis.state.ma.us/featuretype">
-		${this.properties.filter(p => p !== 'bbox').map(p => `<ogc:PropertyName>${p}</ogc:PropertyName>`).join('')}
 		${shpPropertyName}
 		<ogc:Filter xmlns:ogc="http://www.opengis.net/ogc">
 			${this.rows.filter(r => r.isSelected || !selectedOnly).map(r => `<ogc:FeatureId fid="${r.id}"/>`).join('')}
