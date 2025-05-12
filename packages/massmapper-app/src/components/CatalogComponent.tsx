@@ -102,21 +102,11 @@ const useStyles = makeStyles({
 	// }
 });
 
-interface CatalogComponentState {
-	showAutoComplete: boolean;
-}
-
 const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({}) => {
 
 	const classes = useStyles();
 
 	const [ catalogService, legendService, configService ] = useService([ CatalogService, LegendService, ConfigService ]);
-
-	const myState = useLocalObservable<CatalogComponentState>(() => {
-		return {
-			showAutoComplete: false,
-		}
-	});
 
 	if (!catalogService.ready) {
 		return (<div>loading...</div>);
@@ -124,7 +114,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 
 	return (
 		<div>
-			{myState.showAutoComplete && (<Autocomplete
+			<Autocomplete
 				id="combo-box-demo"
 				options={catalogService.uniqueLayers}
 				handleHomeEndKeys={false}
@@ -145,11 +135,9 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 					if (r === 'blur') {
 						return;
 					}
-					myState.showAutoComplete = false;
 				}}
 				onChange={(e, v) => {
 					if (!v) {
-						myState.showAutoComplete = false;
 						return;
 					}
 					const l = new Layer(
@@ -163,21 +151,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 					);
 					legendService.addLayer.bind(legendService)(l);
 				}}
-			/>)}
-			{!myState.showAutoComplete && (
-				<Button
-					onClick={() => {
-						myState.showAutoComplete = true;
-					}}
-					style={{
-						position: 'absolute',
-						right: '8px',
-						zIndex: 100
-					}}
-				>
-					<Search />
-				</Button>
-			)}
+			/>
 			<TreeView
 				classes={classes}
 				defaultCollapseIcon={<ExpandMoreIcon/>}
