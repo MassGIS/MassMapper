@@ -144,7 +144,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 									maxHeight: '40%',
 									maxWidth: '100%',
 									overflowY: 'scroll',
-									overflowX: 'hidden',
+									overflowX: 'auto',
 									// borderLeft: "2px solid darkgray",
 								}}
 							>
