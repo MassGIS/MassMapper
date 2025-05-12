@@ -471,20 +471,24 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 												<TableCell>
 													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26986" control={<Radio />} label="NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, meters - EPSG:26986" />
 												</TableCell>
+												<TableCell>
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="2249" control={<Radio />} label="NAD83/Massachusetts State Plane Coordinate System, Mainland Zone, feet - EPSG:2249" />
+												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
 													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26918" control={<Radio />} label="NAD83/UTM zone 18N, meters (Western Massachusetts) - EPSG:26918" />
+												</TableCell>
+												<TableCell>
+													<FormControlLabel disabled={!tool.exportSupportsProjection} value="4326" control={<Radio />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
 												</TableCell>
 											</TableRow>
 											<TableRow>
 												<TableCell>
 													<FormControlLabel disabled={!tool.exportSupportsProjection} value="26919" control={<Radio />} label="NAD83/UTM zone 19N, meters (Eastern Massachusetts) - EPSG:26919" />
 												</TableCell>
-											</TableRow>
-											<TableRow>
 												<TableCell>
-													<FormControlLabel disabled={!tool.exportSupportsProjection} value="4326" control={<Radio />} label="WGS84 (Latitude-Longitude) - EPSG:4326" />
+													&nbsp;
 												</TableCell>
 											</TableRow>
 										</TableBody>
