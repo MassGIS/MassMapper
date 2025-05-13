@@ -2,6 +2,7 @@ import { MapService } from "../services/MapService";
 import { SimpleMapScreenshoter } from 'leaflet-simple-map-screenshoter';
 import { jsPDF } from 'jspdf';
 import { Tool, ToolPosition } from "./Tool";
+import { format } from 'date-fns';
 
 import { MakeToolButtonComponent } from '../components/MakeToolButtonComponent';
 import { ContainerInstance } from "typedi";
@@ -128,8 +129,9 @@ class PrintPdfTool extends Tool {
 
 		pdf.setFontSize(20);
 		pdf.text(title, pdf.internal.pageSize.getWidth() / 2, 37, {align: 'center'});
-
 		pdf.addImage(String(image), 'PNG', leftMargin, titleHeight, mapSize[0], mapSize[1]);
+		pdf.setFontSize(10);
+		pdf.text(format(new Date(), "'Printed' MMM d, yyyy"), leftMargin, pdfSize[1] - 5);
 
 		// Scale the watermark to a width of 35px.  Assume the incoming original image's height >= 35.
 		let watermarkWidth = 0;
