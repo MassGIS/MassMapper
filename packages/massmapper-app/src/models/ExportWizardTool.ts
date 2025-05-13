@@ -184,10 +184,7 @@ class ExportWizardTool extends Tool {
 					`&layers=${element.queryName}&bbox=${bbox26986String}`;
 			}
 			else if (this.exportFormat === 'gpkg') {
-				url = `${configService.geoserverUrl}/geoserver/wfs?request=getfeature` +
-				`&version=1.1.0&format_options=filename:${element.queryName}.gpkg&service=wfs&typename=${element.queryName}` +
-				`&filter=<ogc:Filter xmlns:ogc=\"http://ogc.org\" xmlns:gml=\"http://www.opengis.net/gml\"><ogc:Intersects><ogc:PropertyName>shape</ogc:PropertyName><gml:Polygon xmlns:gml=\"http://www.opengis.net/gml\" srsName=\"EPSG:26986\"><gml:exterior><gml:LinearRing><gml:posList>${bbox26986}</gml:posList></gml:LinearRing></gml:exterior></gml:Polygon></ogc:Intersects></ogc:Filter>` +
-				`&SRSNAME=EPSG:${this.exportCRS}`;
+				url += `&format_options=filename:${element.queryName}.gpkg`;
 			}
 			else if (this.exportFormat === 'dxf-zip') {
 				url += '&format_options=withattributes:true';
