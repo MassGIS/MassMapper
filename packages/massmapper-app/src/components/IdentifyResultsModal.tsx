@@ -354,7 +354,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 
 								}}
 							>
-								<Save /> Save all features as...
+								<Save /> Save all {myState.windowSize == 'xl' ? "features as" : ""}...
 							</Button>
 							<Menu
 								id="simple-menu"
@@ -406,7 +406,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 									setSaveSelectedAnchorEl(event.currentTarget);
 								}}
 							>
-								<SaveAlt /> Save selected features as...
+								<SaveAlt /> Save selected {myState.windowSize == 'xl' ? "features as" : ""}...
 							</Button>
 							<Menu
 								id="simple-menu"
