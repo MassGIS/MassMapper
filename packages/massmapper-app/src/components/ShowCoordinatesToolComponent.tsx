@@ -47,7 +47,7 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 						myTool.isChangingUnits = true;
 					}}
 				>
-					<div id="map-coordinates" style={{
+					<div style={{
 						width: myTool.units === units.DMS ? '16em' : '',
 						textAlign: 'left',
 						marginRight: '1em'

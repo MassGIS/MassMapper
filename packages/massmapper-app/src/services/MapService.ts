@@ -25,7 +25,6 @@ import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
 import { ConfigService } from './ConfigService';
 import north from '../images/north_arrow.png';
-import { toast } from "react-toastify";
 
 @Service()
 class MapService {
@@ -364,27 +363,6 @@ class MapService {
 				]
 			});
 			document.getElementById('map-scale')!.innerHTML = '1:' + String(Math.round(this.currentScale)).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-		});
-
-		
-		m.addEventListener('mousedown', (e: any) => {
-			if (e.originalEvent?.ctrlKey) {
-				const copyEl = document.createElement('input');
-				copyEl.style.position = 'absolute';
-				copyEl.style.left = '-10000px';
-				const body = document.getElementsByTagName('body')[0];
-				body.appendChild(copyEl);
-				copyEl.value = document.getElementById('map-coordinates')!.innerHTML.replace('&nbsp;', ' ');
-				copyEl.select();
-				copyEl.setSelectionRange(0, 99999); /*For mobile devices*/
-		
-				/* Copy the text inside the text field */
-				document.execCommand('copy');
-
-				toast('Map coordinates copied to clipboard', {
-					autoClose: 2000
-				});
-			}
 		});
 
 		m.on('baselayerchange', (e: LayersControlEvent) => {
