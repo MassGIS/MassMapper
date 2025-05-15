@@ -70,6 +70,9 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 								value={myTool.buffer !== undefined ? myTool.buffer : ''}
 								required
 								helperText="buffer distance"
+								onKeyDown={(e) => {
+									e.stopPropagation();
+								}}
 								onClick={(x) => {
 									(x.target as HTMLInputElement).select();
 								}}

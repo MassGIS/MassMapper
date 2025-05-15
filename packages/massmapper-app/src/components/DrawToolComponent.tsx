@@ -49,6 +49,9 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 					<DialogContent>
 
 						<TextField
+							onKeyDown={(e) => {
+								e.stopPropagation();
+							}}
 							autoFocus
 							onChange={(e) => {
 								myState.labelText = e.target.value as string;
