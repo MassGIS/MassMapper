@@ -6,6 +6,7 @@ import { ShowCoordinatesToolComponent } from '../components/ShowCoordinatesToolC
 import { ContainerInstance } from 'typedi';
 import { latLng, LatLng } from "leaflet";
 import proj4 from 'proj4';
+import { toast } from "react-toastify";
 
 enum units {
 	DMS = 'lon lat (dms)',
@@ -87,6 +88,29 @@ class ShowCoordinatesTool extends Tool {
 					this._coords = e['latlng'];
 				});
 			});
+
+			mapService.leafletMap.on('mousedown', (e: any) => {
+				runInAction(() => {
+					if (e.originalEvent?.ctrlKey) {
+						const copyEl = document.createElement('input');
+						copyEl.style.position = 'absolute';
+						copyEl.style.left = '-10000px';
+						const body = document.getElementsByTagName('body')[0];
+						body.appendChild(copyEl);
+						copyEl.value = this.xCoord + ', ' + this.yCoord;
+						copyEl.select();
+						copyEl.setSelectionRange(0, 99999); /*For mobile devices*/
+				
+						/* Copy the text inside the text field */
+						document.execCommand('copy');
+
+						toast('Map coordinates copied to clipboard', {
+							autoClose: 2000
+						});
+					}
+				});
+			});
+
 			r.dispose();
 		})
 
