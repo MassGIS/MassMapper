@@ -8,6 +8,7 @@ import {
 	MenuItem,
 	Paper,
 	Typography,
+	Tooltip
 } from "@material-ui/core";
 import { ArrowDropDown } from "@material-ui/icons";
 
@@ -47,15 +48,17 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 						myTool.isChangingUnits = true;
 					}}
 				>
-					<div style={{
-						width: myTool.units === units.DMS ? '16em' : '',
-						textAlign: 'left',
-						marginRight: '1em'
-					}}>
-						{myTool.xCoord}
-						,&nbsp;
-						{myTool.yCoord}
-					</div>
+					<Tooltip title="Use Ctrl-click to save map coordinates to clipboard">
+						<div style={{
+							width: myTool.units === units.DMS ? '16em' : '',
+							textAlign: 'left',
+							marginRight: '1em'
+						}}>
+							{myTool.xCoord}
+							,&nbsp;
+							{myTool.yCoord}
+						</div>
+					</Tooltip>
 					<div style={{
 						float: 'right'
 					}}>
