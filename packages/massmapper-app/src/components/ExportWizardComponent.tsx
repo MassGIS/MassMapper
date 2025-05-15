@@ -522,6 +522,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 													id="output-filename"
 													label="Output Filename"
 													value={tool.exportFileName || ''}
+													onKeyDown={(e) => {
+														e.stopPropagation();
+													}}
 													onChange={(e) => {
 														runInAction(() => {
 															tool.exportFileName = e.target.value.replace(/ /g, '_');

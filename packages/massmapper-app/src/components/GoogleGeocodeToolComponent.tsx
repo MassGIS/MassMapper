@@ -145,6 +145,9 @@ const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentPr
 						}}
 						renderInput={(params) => (
 							<TextField
+								onKeyDown={(e) => {
+									e.stopPropagation();
+								}}
 								{...params}
 								style={{
 									width: '100%'

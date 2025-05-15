@@ -143,6 +143,9 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									placeholder="Map Title"
 									value={myState.title}
 									helperText="Map Title"
+									onKeyDown={(e) => {
+										e.stopPropagation();
+									}}
 									onChange={(e) => {
 										myState.title = e.target.value;
 									}}
@@ -153,6 +156,9 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 									placeholder="Filename"
 									value={myState.filename}
 									helperText="PDF Filename"
+									onKeyDown={(e) => {
+										e.stopPropagation();
+									}}
 									onChange={(e) => {
 										myState.filename = e.target.value;
 									}}

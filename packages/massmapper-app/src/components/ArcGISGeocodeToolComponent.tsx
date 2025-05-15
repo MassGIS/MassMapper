@@ -165,8 +165,6 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 							myState.inputValue = '';
 						}}
 						onKeyDown={(e) => {
-							// Necessary because pressing 6 caused the map to zoom out!
-							// https://github.com/Leaflet/Leaflet/issues/5766
 							e.stopPropagation();
 						}}
 						onKeyUp={(e) => {
