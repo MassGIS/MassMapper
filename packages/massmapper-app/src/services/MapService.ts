@@ -368,9 +368,7 @@ class MapService {
 
 		
 		m.addEventListener('mousedown', (e: any) => {
-			console.dir(e.originalEvent.ctrlKey);
-
-			if (e.originalEvent.ctrlKey) {
+			if (e.originalEvent?.ctrlKey) {
 				const copyEl = document.createElement('input');
 				copyEl.style.position = 'absolute';
 				copyEl.style.left = '-10000px';
