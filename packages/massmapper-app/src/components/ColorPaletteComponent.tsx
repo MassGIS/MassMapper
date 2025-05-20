@@ -1,4 +1,4 @@
-import { Button } from "@material-ui/core";
+import { Button, Grid, Typography } from "@material-ui/core";
 import { observer } from "mobx-react";
 import React, { FunctionComponent, useState } from "react";
 
@@ -55,34 +55,58 @@ const COLOR_PALETTE = [
 
 interface ColorPaletteComponentProps {
     onClick: ( colorName: string, colorHex: string ) => void;
+		value? :string;
+		hasReset?: boolean;
 }
 
-const ColorPaletteComponent: FunctionComponent<ColorPaletteComponentProps> = observer(({onClick}) => {
-    const [ selectedColor, setSelectedColor ] = useState('blue');
+const ColorPaletteComponent: FunctionComponent<ColorPaletteComponentProps> = observer(({onClick, value, hasReset}) => {
+    const [ selectedColor, setSelectedColor ] = useState(value);
     return (
-        <> {COLOR_PALETTE.map(({name, hex}) => {
-            return (<Button
-				key={hex}
-                value={name}
-                onClick={(e) => {
-                    setSelectedColor(name);
-                    return onClick(name, hex)
-                }}
-                style={{
-                    backgroundColor: selectedColor === name ? 'grey': ''
-                }}
-            >
-                <div
-                    style={{
-                        backgroundColor: hex,
-                        border: '1px solid black',
-                        height: '15px',
-                        width: '15px',
-                    }}
-                />
-            </Button>)
-        })
-    } </>)
+        <>
+					<Grid>
+						{COLOR_PALETTE.map(({name, hex}) => {
+							return (<Button
+									key={hex}
+									value={name}
+									onClick={(e) => {
+											setSelectedColor(name);
+											return onClick(name, hex)
+									}}
+									style={{
+											backgroundColor: selectedColor === name ? 'grey': ''
+									}}
+							>
+									<div
+											style={{
+													backgroundColor: hex,
+													border: '1px solid black',
+													height: '15px',
+													width: '15px',
+											}}
+									/>
+							</Button>)
+						})}
+					</Grid>
+					{hasReset && selectedColor !== undefined && (
+						<Grid>
+									<Button
+										onClick={() => {
+											setSelectedColor(undefined);
+											return onClick('', '');
+										}}
+									>
+										<Typography
+											id="opacity-slider"
+											gutterBottom
+											variant="caption"
+										>
+											clear custom color
+										</Typography>
+									</Button>
+						</Grid>
+					)}
+				</>
+		)
 });
 
 export default ColorPaletteComponent;

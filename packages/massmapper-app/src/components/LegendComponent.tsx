@@ -119,24 +119,9 @@ const LegendCustomPropertiesEditor: FunctionComponent<{layer: Layer, state: Lege
 									onClick={(name, hex) => {
 										layer.customColor = name;
 									}}
+									hasReset={true}
+									value={layer.customColor}
 								/>
-							</Grid>
-							<Grid>
-								{layer.customColor && (
-									<Button
-										onClick={() => {
-											layer.customColor = undefined;
-										}}
-									>
-										<Typography
-											id="opacity-slider"
-											gutterBottom
-											variant="caption"
-										>
-											clear custom color
-										</Typography>
-									</Button>
-								)}
 							</Grid>
 						</Grid>
 					)}
