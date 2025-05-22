@@ -1,6 +1,5 @@
-import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon, GeoJSON } from 'leaflet';
+import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon, Circle } from 'leaflet';
 import draw from 'leaflet-draw';
-import * as turf from "@turf/turf";
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
@@ -66,19 +65,12 @@ class DrawTool extends Tool {
 			this.showTextEntryDialog = true;
 		}
 		else if (Number(this.lengthScalar) > 0) {
-			evt.layer = new GeoJSON(
-				turf.buffer(
-					turf.point([evt.latlng.lng, evt.latlng.lat]), 
-					Number(this.lengthScalar), 
-					{
-						units: this.lengthUnits
-					}
-				),
+			evt.layer = new Circle(
+				evt.latlng,
+				Number(this.lengthScalar) * (this.lengthUnits == 'kilometers' ? 1000 : this.lengthUnits == 'feet' ? 0.3048 : 1609.34),
 				{
-					style: {
-						color: this.lineColor,
-						fill: false
-					}
+					color: this.lineColor,
+					fill: false
 				}
 			);
 			this._handleDrawComplete(evt);
