@@ -1,5 +1,6 @@
-import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon } from 'leaflet';
+import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon, GeoJSON } from 'leaflet';
 import draw from 'leaflet-draw';
+import * as turf from "@turf/turf";
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
@@ -10,7 +11,9 @@ import { ContainerInstance } from 'typedi';
 
 import './DrawTool.module.css';
 class DrawTool extends Tool {
-	public drawMode: 'text' | 'line' = 'line';
+	public drawMode: 'text' | 'line' | 'buffer' = 'line';
+	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
+	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
 
@@ -18,7 +21,7 @@ class DrawTool extends Tool {
 	private _drawDisposer:IReactionDisposer;
 	private _drawnItems:FeatureGroup = new FeatureGroup();
 	private _markers:Marker[] = [];
-	public lineColor: string = 'blue';
+	public lineColor: string = '#005CE6';
 	private _drawLineHandler: Draw.Polyline | Draw.Polygon;
 
 	private _handleTextCompleteHandler;
@@ -59,7 +62,27 @@ class DrawTool extends Tool {
 
 	public _handleTextClickLocation(evt: any) {
 		this._textClickedLocation = evt.latlng;
-		this.showTextEntryDialog = true;
+		if (this.drawMode == 'text') {
+			this.showTextEntryDialog = true;
+		}
+		else if (Number(this.lengthScalar) > 0) {
+			evt.layer = new GeoJSON(
+				turf.buffer(
+					turf.point([evt.latlng.lng, evt.latlng.lat]), 
+					Number(this.lengthScalar), 
+					{
+						units: this.lengthUnits
+					}
+				),
+				{
+					style: {
+						color: this.lineColor,
+						fill: false
+					}
+				}
+			);
+			this._handleDrawComplete(evt);
+		}
 	}
 
 	public addText(text: string) {
@@ -75,7 +98,7 @@ class DrawTool extends Tool {
 			text,
 			{
 				permanent: true,
-				className: "massmapper-draw-text massmapper-draw-text-" + this.lineColor,
+				className: "massmapper-draw-text massmapper-draw-text-" + this.lineColor.replace('#', ''),
 				offset: [0, 0],
 				direction: 'center',
 			});

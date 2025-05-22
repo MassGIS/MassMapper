@@ -8,7 +8,8 @@ import {
 	FormControlLabel,
 	Dialog,
 	DialogContent,
-	DialogActions
+	DialogActions,
+	MenuItem
 } from '@material-ui/core'
 
 import { observer, useLocalObservable } from 'mobx-react-lite';
@@ -22,17 +23,23 @@ import ColorPaletteComponent from './ColorPaletteComponent';
 import { action } from 'mobx';
 
 interface DrawToolComponentState {
-	labelText: string;
+	labelText: string,
+	lengthScalar: string,
+	lengthUnits: string,
+	color: string
 }
 
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as DrawTool;
 
-	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click on the map to draw lines or add text');
+	const MeasureButton = MakeToolButtonComponent(Gesture, 'Click on the map to draw objects or add text');
 
 	const myState = useLocalObservable<DrawToolComponentState>(() => {
 		return {
 			labelText: '',
+			lengthUnits: 'feet',
+			lengthScalar: '',
+			color: 'Dark_Blue'
 		}
 	});
 
@@ -47,7 +54,6 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 					}}
 				>
 					<DialogContent>
-
 						<TextField
 							onKeyDown={(e) => {
 								e.stopPropagation();
@@ -81,7 +87,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 				>
 					<RadioGroup
 						onChange={action((e) => {
-							tool.drawMode = e.target.value as 'line'|'text';
+							tool.drawMode = e.target.value as 'line' | 'text' | 'buffer';
 						})}
 					>
 						<Grid
@@ -99,6 +105,68 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="line" control={<Radio checked={tool.drawMode === 'line'} />} label="Draw Lines" />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<hr />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%',
+									margin: '0 1em'
+								}}
+							>
+								<FormControlLabel value="buffer" control={<Radio checked={tool.drawMode === 'buffer'} />} label="Add Buffer" />
+								<br />
+								{tool.drawMode === 'buffer' && (
+									<Grid
+										item
+										style={{
+											width: '100%'
+										}}
+									>
+										<TextField
+											onKeyDown={(e) => {
+												e.stopPropagation();
+											}}
+											value={myState.lengthScalar}
+											type="number"
+											label="Length (Radius)"
+											onChange={(e) => {
+												myState.lengthScalar = e.target.value;
+												tool.lengthScalar = e.target.value as string;
+											}}
+										/>
+										&nbsp;&nbsp;
+										<TextField
+											onKeyDown={(e) => {
+												e.stopPropagation();
+											}}
+											select
+											value={myState.lengthUnits}
+											label="Units"
+											onChange={(e) => {
+												myState.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
+												tool.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
+											}}
+										>
+											<MenuItem value={'feet'}>ft</MenuItem>
+											<MenuItem value={'kilometers'}>km</MenuItem>
+											<MenuItem value={'miles'}>miles</MenuItem>
+										</TextField>
+										<br />
+										{Number(myState.lengthScalar) > 0 && (
+											<>
+												Click the map to mark center of buffer
+											</>
+										)}
+									</Grid>
+								)}
 							</Grid>
 							<Grid
 								item
@@ -140,7 +208,9 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								<ColorPaletteComponent
 									onClick={(name, hex) => {
 										tool.setColor(hex);
+										myState.color = name;
 									}}
+									value={myState.color}
 								/>
 							</Grid>
 							<Grid
@@ -166,7 +236,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 									color="default"
 									variant="text"
 									size="small"
-									title="Clear drawn lines and text"
+									title="Clear drawn objects and text"
 									onClick={() => {
 										tool.clearExistingShape();
 									}}
