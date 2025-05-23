@@ -187,7 +187,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 				}}
 				id="identify-dialog-title"
 			>
-				Identify Results
+				Identify Results {myState.windowSize === 'xl' ? '(use scroll bars on right to see all layers/features)' : ''}
 				<div style={{float: 'right'}}>
 					<Button
 						size="small"
