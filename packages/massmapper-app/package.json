@@ -36,7 +36,7 @@
 		"@material-ui/lab": "^4.0.0-alpha.60",
 		"@mui/x-data-grid": "4.0.0",
 		"@mui/x-data-grid-pro": "^4.0.0",
-		"@turf/turf": "^6.5.0",
+		"@turf/turf": "^6.3.0",
 		"clsx": "^1.1.1",
 		"date-fns": "^2.16.1",
 		"detect-browser": "^4.0.3",
@@ -69,9 +69,9 @@
 		"react-toastify": "^7.0.4",
 		"react-xml-parser": "^1.1.8",
 		"typedi": "^0.10.0",
-		"typeface-noto-sans-tc": "^1.1.13",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
-		"wellknown": "^0.5.0"
+		"wellknown": "^0.5.0",
+		"typeface-noto-sans-tc": "^1.1.13"
 	}
 }
