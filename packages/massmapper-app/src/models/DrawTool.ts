@@ -1,5 +1,7 @@
 import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon, Circle } from 'leaflet';
 import draw from 'leaflet-draw';
+import L from "leaflet";
+import 'leaflet-svg-shape-markers';
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
@@ -10,8 +12,9 @@ import { ContainerInstance } from 'typedi';
 
 import './DrawTool.module.css';
 class DrawTool extends Tool {
-	public drawMode: 'text' | 'line' | 'buffer' = 'line';
+	public drawMode: 'text' | 'line' | 'buffer' | 'point' = 'line';
 	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
+	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -64,13 +67,26 @@ class DrawTool extends Tool {
 		if (this.drawMode == 'text') {
 			this.showTextEntryDialog = true;
 		}
-		else if (Number(this.lengthScalar) > 0) {
+		else if (this.drawMode == 'buffer' && Number(this.lengthScalar) > 0) {
 			evt.layer = new Circle(
 				evt.latlng,
 				Number(this.lengthScalar) * (this.lengthUnits == 'kilometers' ? 1000 : this.lengthUnits == 'feet' ? 0.3048 : 1609.34),
 				{
 					color: this.lineColor,
 					fill: false
+				}
+			);
+			this._handleDrawComplete(evt);
+		}
+		else if (this.drawMode == 'point') {
+			evt.layer = new L.shapeMarker(
+				evt.latlng,
+				{
+					color: this.lineColor,
+					fillColor: this.lineColor,
+					fillOpacity: 1,
+					shape: this.shapeType,
+					radius: 5 * (this.shapeType == 'x' ? 1.5 : 1)
 				}
 			);
 			this._handleDrawComplete(evt);

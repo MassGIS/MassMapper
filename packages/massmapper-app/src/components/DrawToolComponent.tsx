@@ -26,6 +26,7 @@ interface DrawToolComponentState {
 	labelText: string,
 	lengthScalar: string,
 	lengthUnits: string,
+	shapeType: string,
 	color: string
 }
 
@@ -38,6 +39,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 		return {
 			labelText: '',
 			lengthUnits: 'feet',
+			shapeType: 'circle',
 			lengthScalar: '',
 			color: 'Dark_Blue'
 		}
@@ -87,7 +89,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 				>
 					<RadioGroup
 						onChange={action((e) => {
-							tool.drawMode = e.target.value as 'line' | 'text' | 'buffer';
+							tool.drawMode = e.target.value as 'line' | 'text' | 'buffer' | 'point';
 						})}
 					>
 						<Grid
@@ -105,6 +107,54 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="line" control={<Radio checked={tool.drawMode === 'line'} />} label="Draw Lines" />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%'
+								}}
+							>
+								<hr />
+							</Grid>
+							<Grid
+								item
+								style={{
+									width: '100%',
+									margin: '0 1em'
+								}}
+							>
+								<FormControlLabel value="point" control={<Radio checked={tool.drawMode === 'point'} />} label="Draw Points" />
+								<br />
+								{tool.drawMode === 'point' && (
+									<Grid
+										item
+										style={{
+											width: '100%'
+										}}
+									>
+										<TextField
+											onKeyDown={(e) => {
+												e.stopPropagation();
+											}}
+											select
+											value={myState.shapeType}
+											fullWidth
+											label="Shape"
+											onChange={(e) => {
+												myState.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
+												tool.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
+											}}
+										>
+											<MenuItem value={'circle'}>dot</MenuItem>
+											<MenuItem value={'square'}>square</MenuItem>
+											<MenuItem value={'star'}>star</MenuItem>
+											<MenuItem value={'triangle'}>triangle</MenuItem>
+											<MenuItem value={'x'}>X</MenuItem>
+										</TextField>
+										<br />
+										Click the map to add points
+									</Grid>
+								)}
 							</Grid>
 							<Grid
 								item
