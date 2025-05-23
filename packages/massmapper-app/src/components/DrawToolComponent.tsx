@@ -27,6 +27,7 @@ interface DrawToolComponentState {
 	lengthScalar: string,
 	lengthUnits: string,
 	shapeType: string,
+	shapeSize: string,
 	color: string
 }
 
@@ -40,6 +41,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			labelText: '',
 			lengthUnits: 'feet',
 			shapeType: 'circle',
+			shapeSize: 'small',
 			lengthScalar: '',
 			color: 'Dark_Blue'
 		}
@@ -127,32 +129,49 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								<br />
 								{tool.drawMode === 'point' && (
 									<Grid
-										item
-										style={{
-											width: '100%'
-										}}
+										container
+										spacing={2}
 									>
-										<TextField
-											onKeyDown={(e) => {
-												e.stopPropagation();
-											}}
-											select
-											value={myState.shapeType}
-											fullWidth
-											label="Shape"
-											onChange={(e) => {
-												myState.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
-												tool.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
-											}}
-										>
-											<MenuItem value={'circle'}>dot</MenuItem>
-											<MenuItem value={'square'}>square</MenuItem>
-											<MenuItem value={'star'}>star</MenuItem>
-											<MenuItem value={'triangle'}>triangle</MenuItem>
-											<MenuItem value={'x'}>X</MenuItem>
-										</TextField>
-										<br />
-										Click the map to add points
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.shapeType}
+												label="Shape"
+												onChange={(e) => {
+													myState.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
+													tool.shapeType = e.target.value as 'circle' | 'square' | 'star' | 'triangle' | 'x';
+												}}
+											>
+												<MenuItem value={'circle'}>dot</MenuItem>
+												<MenuItem value={'square'}>square</MenuItem>
+												<MenuItem value={'star'}>star</MenuItem>
+												<MenuItem value={'triangle'}>triangle</MenuItem>
+												<MenuItem value={'x'}>X</MenuItem>
+											</TextField>
+										</Grid>
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.shapeSize}
+												label="Size"
+												onChange={(e) => {
+													myState.shapeSize = e.target.value as 'small' | 'medium' | 'large';
+													tool.shapeSize = e.target.value as 'small' | 'medium' | 'large';
+												}}
+											>
+												<MenuItem value={"small"}>small</MenuItem>
+												<MenuItem value={"medium"}>medium</MenuItem>
+												<MenuItem value={"large"}>large</MenuItem>
+											</TextField>
+										</Grid>
 									</Grid>
 								)}
 							</Grid>
@@ -175,46 +194,43 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								<br />
 								{tool.drawMode === 'buffer' && (
 									<Grid
-										item
-										style={{
-											width: '100%'
-										}}
+										container
+										spacing={2}
 									>
-										<TextField
-											onKeyDown={(e) => {
-												e.stopPropagation();
-											}}
-											value={myState.lengthScalar}
-											type="number"
-											label="Length (Radius)"
-											onChange={(e) => {
-												myState.lengthScalar = e.target.value;
-												tool.lengthScalar = e.target.value as string;
-											}}
-										/>
-										&nbsp;&nbsp;
-										<TextField
-											onKeyDown={(e) => {
-												e.stopPropagation();
-											}}
-											select
-											value={myState.lengthUnits}
-											label="Units"
-											onChange={(e) => {
-												myState.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
-												tool.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
-											}}
-										>
-											<MenuItem value={'feet'}>ft</MenuItem>
-											<MenuItem value={'kilometers'}>km</MenuItem>
-											<MenuItem value={'miles'}>miles</MenuItem>
-										</TextField>
-										<br />
-										{Number(myState.lengthScalar) > 0 && (
-											<>
-												Click the map to mark center of buffer
-											</>
-										)}
+										<Grid	item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												fullWidth
+												value={myState.lengthScalar}
+												type="number"
+												label="Length (Radius)"
+												onChange={(e) => {
+													myState.lengthScalar = e.target.value;
+													tool.lengthScalar = e.target.value as string;
+												}}
+											/>
+										</Grid>
+										<Grid	item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.lengthUnits}
+												label="Units"
+												onChange={(e) => {
+													myState.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
+													tool.lengthUnits = e.target.value as 'feet' | 'kilometers' | 'miles';
+												}}
+											>
+												<MenuItem value={'feet'}>ft</MenuItem>
+												<MenuItem value={'kilometers'}>km</MenuItem>
+												<MenuItem value={'miles'}>miles</MenuItem>
+											</TextField>
+										</Grid>
 									</Grid>
 								)}
 							</Grid>
@@ -234,12 +250,6 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="text" control={<Radio checked={tool.drawMode === 'text'} />} label="Add Text" />
-								<br />
-								{tool.drawMode === 'text' && (
-									<>
-										Click the map to add text
-									</>
-								)}
 							</Grid>
 							<Grid
 								item

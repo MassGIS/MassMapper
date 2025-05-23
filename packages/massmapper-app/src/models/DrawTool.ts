@@ -15,6 +15,7 @@ class DrawTool extends Tool {
 	public drawMode: 'text' | 'line' | 'buffer' | 'point' = 'line';
 	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
 	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
+	public shapeSize: 'small' | 'medium' | 'large' = 'small';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -86,7 +87,7 @@ class DrawTool extends Tool {
 					fillColor: this.lineColor,
 					fillOpacity: 1,
 					shape: this.shapeType,
-					radius: 5 * (this.shapeType == 'x' ? 1.5 : 1)
+					radius: this.shapeSize == 'small' ? 4 : this.shapeSize == 'medium' ? 6 : 12
 				}
 			);
 			this._handleDrawComplete(evt);
