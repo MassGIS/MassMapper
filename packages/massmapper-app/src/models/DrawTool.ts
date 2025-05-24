@@ -16,7 +16,7 @@ class DrawTool extends Tool {
 	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
 	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
 	public shapeSize: 'small' | 'medium' | 'large' = 'small';
-	public lineType: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
+	public linePattern: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
 	public lineWeight: 'thin' | 'medium' | 'thick' = 'medium';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
@@ -50,19 +50,37 @@ class DrawTool extends Tool {
 		this._markers.splice(0,this._markers.length);
 	}
 
-	public setColor(hex: string) {
-		this.lineColor = hex;
+	public setDrawLineOptions(o: any = {}) {
+		const weight = 
+			this.lineWeight == 'thin' ? 1 : 
+			this.lineWeight == 'thick' ? 6 : 
+			3;
+		const dashCoeff =
+			this.lineWeight == 'thin' ? 0.75 : 
+			this.lineWeight == 'thick' ? 2 : 
+			1;
+		const dashArray = 
+			this.linePattern == 'dots' ? [1 * dashCoeff, 5 * dashCoeff] : 
+			this.linePattern == 'long-dash' ? [10 * dashCoeff, 5 * dashCoeff] : 
+			this.linePattern == 'short-dash' ? [5 * dashCoeff, 10 * dashCoeff] : 
+			undefined;
 		this._drawLineHandler && this._drawLineHandler.setOptions({
 			shapeOptions: {
-				color: hex
+				color: this.lineColor,
+				weight: weight,
+				dashArray: dashArray
 			}
-		})
-
+		});
 		this._drawLineHandler.disable();
 		this._drawLineHandler.enable();
 		if (this.drawMode !== 'line') {
 			this._drawLineHandler.disable();
 		}
+	}
+
+	public setColor(hex: string) {
+		this.lineColor = hex;
+		this.setDrawLineOptions();
 	}
 
 	public _handleTextClickLocation(evt: any) {
@@ -167,7 +185,6 @@ class DrawTool extends Tool {
 			this._cursor = "";
 
 			if (!ms.leafletMap['drawLine']) {
-				console.log(this.lineWeight);
 				ms.leafletMap.addHandler('drawLine', (window.L as any).Draw.Polyline);
 				this._drawLineHandler = ms.leafletMap['drawLine'];
 				this._drawLineHandler.setOptions({

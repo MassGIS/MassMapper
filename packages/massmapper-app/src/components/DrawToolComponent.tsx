@@ -29,7 +29,7 @@ interface DrawToolComponentState {
 	shapeType: string,
 	shapeSize: string,
 	color: string,
-	lineType: string,
+	linePattern: string,
 	lineWeight: string
 }
 
@@ -46,7 +46,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			shapeSize: 'small',
 			lengthScalar: '',
 			color: 'Dark_Blue',
-			lineType: 'solid',
+			linePattern: 'solid',
 			lineWeight: 'medium'
 		}
 	});
@@ -126,11 +126,12 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 												}}
 												select
 												fullWidth
-												value={myState.lineType}
-												label="Type"
+												value={myState.linePattern}
+												label="Pattern"
 												onChange={(e) => {
-													myState.lineType = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
-													tool.lineType = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
+													myState.linePattern = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
+													tool.linePattern = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
+													tool.setDrawLineOptions();
 												}}
 											>
 												<MenuItem value={'solid'}>solid</MenuItem>
@@ -151,6 +152,7 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 												onChange={(e) => {
 													myState.lineWeight = e.target.value as 'thin' | 'medium' | 'thick';
 													tool.lineWeight = e.target.value as 'thin' | 'medium' | 'thick';
+													tool.setDrawLineOptions();
 												}}
 											>
 												<MenuItem value={"thin"}>thin</MenuItem>
