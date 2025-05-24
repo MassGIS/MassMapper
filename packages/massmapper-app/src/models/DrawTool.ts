@@ -17,7 +17,7 @@ class DrawTool extends Tool {
 	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
 	public shapeSize: 'small' | 'medium' | 'large' = 'small';
 	public lineType: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
-	public lineWeight: 'thin' | 'medium' | 'thick' = 'thin';
+	public lineWeight: 'thin' | 'medium' | 'thick' = 'medium';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
