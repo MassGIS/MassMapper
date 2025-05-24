@@ -18,6 +18,8 @@ class DrawTool extends Tool {
 	public shapeSize: 'small' | 'medium' | 'large' = 'small';
 	public linePattern: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
 	public lineWeight: 'thin' | 'medium' | 'thick' = 'medium';
+	public textSize: 'small' | 'medium' | 'large' = 'medium';
+	public textStyle: 'normal' | 'bold' | 'italic' = 'normal';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -127,7 +129,12 @@ class DrawTool extends Tool {
 			text,
 			{
 				permanent: true,
-				className: "massmapper-draw-text massmapper-draw-text-" + this.lineColor.replace('#', ''),
+				className: [
+					"massmapper-draw-text",
+					"massmapper-draw-text-" + this.lineColor.replace('#', ''),
+					"massmapper-draw-text-" + this.textStyle,
+					"massmapper-draw-text-" + this.textSize
+				].join(' '),
 				offset: [0, 0],
 				direction: 'center',
 			});

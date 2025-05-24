@@ -30,7 +30,9 @@ interface DrawToolComponentState {
 	shapeSize: string,
 	color: string,
 	linePattern: string,
-	lineWeight: string
+	lineWeight: string,
+	textSize: string,
+	textStyle: string
 }
 
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
@@ -47,7 +49,9 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			lengthScalar: '',
 			color: 'Dark_Blue',
 			linePattern: 'solid',
-			lineWeight: 'medium'
+			lineWeight: 'medium',
+			textSize: 'medium',
+			textStyle: 'normal'
 		}
 	});
 
@@ -303,6 +307,52 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="text" control={<Radio checked={tool.drawMode === 'text'} />} label="Add Text" />
+								<br/>
+								{tool.drawMode === 'text' && (
+									<Grid
+										container
+										spacing={2}
+									>
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.textStyle}
+												label="Style"
+												onChange={(e) => {
+													myState.textStyle = e.target.value as 'normal' | 'bold' | 'italic';
+													tool.textStyle = e.target.value as 'normal' | 'bold' | 'italic';
+												}}
+											>
+												<MenuItem value={'normal'}>normal</MenuItem>
+												<MenuItem value={'bold'}>bold</MenuItem>
+												<MenuItem value={'italic'}>italic</MenuItem>
+											</TextField>
+										</Grid>
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.textSize}
+												label="Size"
+												onChange={(e) => {
+													myState.textSize = e.target.value as 'small' | 'medium' | 'large';
+													tool.textSize = e.target.value as 'small' | 'medium' | 'large';
+												}}
+											>
+												<MenuItem value={"small"}>small</MenuItem>
+												<MenuItem value={"medium"}>medium</MenuItem>
+												<MenuItem value={"large"}>large</MenuItem>
+											</TextField>
+										</Grid>
+									</Grid>
+								)}
 							</Grid>
 							<Grid
 								item
