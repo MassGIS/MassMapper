@@ -28,7 +28,9 @@ interface DrawToolComponentState {
 	lengthUnits: string,
 	shapeType: string,
 	shapeSize: string,
-	color: string
+	color: string,
+	lineType: string,
+	lineWeight: string
 }
 
 const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
@@ -43,7 +45,9 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			shapeType: 'circle',
 			shapeSize: 'small',
 			lengthScalar: '',
-			color: 'Dark_Blue'
+			color: 'Dark_Blue',
+			lineType: 'solid',
+			lineWeight: 'medium'
 		}
 	});
 
@@ -109,6 +113,53 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 								}}
 							>
 								<FormControlLabel value="line" control={<Radio checked={tool.drawMode === 'line'} />} label="Draw Lines" />
+								<br />
+								{tool.drawMode === 'line' && (
+									<Grid
+										container
+										spacing={2}
+									>
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.lineType}
+												label="Type"
+												onChange={(e) => {
+													myState.lineType = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
+													tool.lineType = e.target.value as 'solid' | 'short-dash' | 'long-dash' | 'dots';
+												}}
+											>
+												<MenuItem value={'solid'}>solid</MenuItem>
+												<MenuItem value={'short-dash'}>short-dash</MenuItem>
+												<MenuItem value={'long-dash'}>long-dash</MenuItem>
+												<MenuItem value={'dots'}>dots</MenuItem>
+											</TextField>
+										</Grid>
+										<Grid item md={6}>
+											<TextField
+												onKeyDown={(e) => {
+													e.stopPropagation();
+												}}
+												select
+												fullWidth
+												value={myState.lineWeight}
+												label="Weight"
+												onChange={(e) => {
+													myState.lineWeight = e.target.value as 'thin' | 'medium' | 'thick';
+													tool.lineWeight = e.target.value as 'thin' | 'medium' | 'thick';
+												}}
+											>
+												<MenuItem value={"thin"}>thin</MenuItem>
+												<MenuItem value={"medium"}>medium</MenuItem>
+												<MenuItem value={"thick"}>thick</MenuItem>
+											</TextField>
+										</Grid>
+									</Grid>
+								)}
 							</Grid>
 							<Grid
 								item

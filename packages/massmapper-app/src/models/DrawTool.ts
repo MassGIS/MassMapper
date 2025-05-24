@@ -16,6 +16,8 @@ class DrawTool extends Tool {
 	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
 	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
 	public shapeSize: 'small' | 'medium' | 'large' = 'small';
+	public lineType: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
+	public lineWeight: 'thin' | 'medium' | 'thick' = 'thin';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -165,6 +167,7 @@ class DrawTool extends Tool {
 			this._cursor = "";
 
 			if (!ms.leafletMap['drawLine']) {
+				console.log(this.lineWeight);
 				ms.leafletMap.addHandler('drawLine', (window.L as any).Draw.Polyline);
 				this._drawLineHandler = ms.leafletMap['drawLine'];
 				this._drawLineHandler.setOptions({
@@ -176,7 +179,8 @@ class DrawTool extends Tool {
 						className: 'leaflet-div-icon leaflet-editing-icon'
 					}),
 					shapeOptions: {
-						color: this.lineColor
+						color: this.lineColor,
+						weight: this.lineWeight == 'thin' ? 1 : this.lineWeight == 'thick' ? 6 : 3
 					}
 				})
 			}
