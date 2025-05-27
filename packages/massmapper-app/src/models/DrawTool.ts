@@ -102,7 +102,7 @@ class DrawTool extends Tool {
 			this._handleDrawComplete(evt);
 		}
 		else if (this.drawMode == 'point') {
-			evt.layer = new L.shapeMarker(
+			evt.layer = new L['shapeMarker'](
 				evt.latlng,
 				{
 					color: this.lineColor,
