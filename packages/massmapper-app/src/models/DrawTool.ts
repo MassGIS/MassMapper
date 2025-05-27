@@ -1,5 +1,7 @@
 import { FeatureGroup, Draw, DivIcon, Point, Marker, LatLng, Icon, Circle } from 'leaflet';
 import draw from 'leaflet-draw';
+import L from "leaflet";
+import 'leaflet-svg-shape-markers';
 const d = draw;
 import { autorun, IReactionDisposer, makeObservable, observable } from "mobx";
 import { MapService } from "../services/MapService";
@@ -10,8 +12,14 @@ import { ContainerInstance } from 'typedi';
 
 import './DrawTool.module.css';
 class DrawTool extends Tool {
-	public drawMode: 'text' | 'line' | 'buffer' = 'line';
+	public drawMode: 'text' | 'line' | 'buffer' | 'point' = 'line';
 	public lengthUnits: 'feet' | 'kilometers' | 'miles' = 'feet';
+	public shapeType: 'circle' | 'square' | 'star' | 'triangle' | 'x' = 'circle';
+	public shapeSize: 'small' | 'medium' | 'large' = 'small';
+	public linePattern: 'solid' | 'short-dash' | 'long-dash' | 'dots' = 'solid';
+	public lineWeight: 'thin' | 'medium' | 'thick' = 'medium';
+	public textSize: 'small' | 'medium' | 'large' = 'medium';
+	public textStyle: 'normal' | 'bold' | 'italic' = 'normal';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -44,14 +52,27 @@ class DrawTool extends Tool {
 		this._markers.splice(0,this._markers.length);
 	}
 
-	public setColor(hex: string) {
-		this.lineColor = hex;
+	public setDrawLineOptions(o: any = {}) {
+		const weight = 
+			this.lineWeight == 'thin' ? 1 : 
+			this.lineWeight == 'thick' ? 6 : 
+			3;
+		const dashCoeff =
+			this.lineWeight == 'thin' ? 0.75 : 
+			this.lineWeight == 'thick' ? 2 : 
+			1;
+		const dashArray = 
+			this.linePattern == 'dots' ? [1 * dashCoeff, 5 * dashCoeff] : 
+			this.linePattern == 'long-dash' ? [10 * dashCoeff, 5 * dashCoeff] : 
+			this.linePattern == 'short-dash' ? [5 * dashCoeff, 10 * dashCoeff] : 
+			undefined;
 		this._drawLineHandler && this._drawLineHandler.setOptions({
 			shapeOptions: {
-				color: hex
+				color: this.lineColor,
+				weight: weight,
+				dashArray: dashArray
 			}
-		})
-
+		});
 		this._drawLineHandler.disable();
 		this._drawLineHandler.enable();
 		if (this.drawMode !== 'line') {
@@ -59,18 +80,36 @@ class DrawTool extends Tool {
 		}
 	}
 
+	public setColor(hex: string) {
+		this.lineColor = hex;
+		this.setDrawLineOptions();
+	}
+
 	public _handleTextClickLocation(evt: any) {
 		this._textClickedLocation = evt.latlng;
 		if (this.drawMode == 'text') {
 			this.showTextEntryDialog = true;
 		}
-		else if (Number(this.lengthScalar) > 0) {
+		else if (this.drawMode == 'buffer' && Number(this.lengthScalar) > 0) {
 			evt.layer = new Circle(
 				evt.latlng,
 				Number(this.lengthScalar) * (this.lengthUnits == 'kilometers' ? 1000 : this.lengthUnits == 'feet' ? 0.3048 : 1609.34),
 				{
 					color: this.lineColor,
 					fill: false
+				}
+			);
+			this._handleDrawComplete(evt);
+		}
+		else if (this.drawMode == 'point') {
+			evt.layer = new L.shapeMarker(
+				evt.latlng,
+				{
+					color: this.lineColor,
+					fillColor: this.lineColor,
+					fillOpacity: 1,
+					shape: this.shapeType,
+					radius: this.shapeSize == 'small' ? 4 : this.shapeSize == 'medium' ? 6 : 12
 				}
 			);
 			this._handleDrawComplete(evt);
@@ -90,7 +129,12 @@ class DrawTool extends Tool {
 			text,
 			{
 				permanent: true,
-				className: "massmapper-draw-text massmapper-draw-text-" + this.lineColor.replace('#', ''),
+				className: [
+					"massmapper-draw-text",
+					"massmapper-draw-text-" + this.lineColor.replace('#', ''),
+					"massmapper-draw-text-" + this.textStyle,
+					"massmapper-draw-text-" + this.textSize
+				].join(' '),
 				offset: [0, 0],
 				direction: 'center',
 			});
@@ -159,7 +203,8 @@ class DrawTool extends Tool {
 						className: 'leaflet-div-icon leaflet-editing-icon'
 					}),
 					shapeOptions: {
-						color: this.lineColor
+						color: this.lineColor,
+						weight: this.lineWeight == 'thin' ? 1 : this.lineWeight == 'thick' ? 6 : 3
 					}
 				})
 			}

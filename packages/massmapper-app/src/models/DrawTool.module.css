@@ -5,6 +5,26 @@
     box-shadow: none;
 }
 
+.massmapper-draw-text-bold {
+    font-weight: bold;
+}
+
+.massmapper-draw-text-italic {
+    font-style: italic;
+}
+
+.massmapper-draw-text-small {
+    font-size: 14px;
+}
+
+.massmapper-draw-text-medium {
+    font-size: 18px;
+}
+
+.massmapper-draw-text-large {
+    font-size: 24px;
+}
+
 .massmapper-draw-text-FFFFFF {
     color: #FFFFFF;
 }

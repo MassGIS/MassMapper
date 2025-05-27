@@ -51,6 +51,7 @@
 		"leaflet": "^1.7.1",
 		"leaflet-draw": "^1.0.4",
 		"leaflet-simple-map-screenshoter": "^0.4.2",
+		"leaflet-svg-shape-markers": "^1.4.0",
 		"leaflet.gridlayer.googlemutant": "^0.13.4",
 		"mobx": "^6.1.8",
 		"mobx-react": "^7.1.0",
@@ -69,9 +70,9 @@
 		"react-toastify": "^7.0.4",
 		"react-xml-parser": "^1.1.8",
 		"typedi": "^0.10.0",
+		"typeface-noto-sans-tc": "^1.1.13",
 		"util": "^0.12.4",
 		"uuid": "^8.3.2",
-		"wellknown": "^0.5.0",
-		"typeface-noto-sans-tc": "^1.1.13"
+		"wellknown": "^0.5.0"
 	}
 }
