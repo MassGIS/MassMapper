@@ -63,6 +63,9 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 								onChange={() => {
 									return false;
 								}}
+								style={{
+									width: '11em'
+								}}
 							/>
 							&nbsp;&nbsp;
 							<TextField
@@ -72,7 +75,7 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 									tool.lengthUnits = (e.target.value as 'ft' | 'm' | 'mi');
 								}}
 								style={{
-									width: '4em'
+									width: '8em'
 								}}
 								// variant="standard"
 							>
@@ -105,6 +108,9 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 								onChange={() => {
 									return false;
 								}}
+								style={{
+									width: '11em'
+								}}
 							/>&nbsp;&nbsp;
 							<TextField
 								select
@@ -113,7 +119,7 @@ const MeasureToolComponent: FunctionComponent<ToolComponentProps> = observer(({t
 									tool.areaUnits = (e.target.value as 'sq ft' | 'acres' | 'sq meters' | 'sq mi');
 								}}
 								style={{
-									width: '4em'
+									width: '8em'
 								}}
 								// variant="standard"
 							>
