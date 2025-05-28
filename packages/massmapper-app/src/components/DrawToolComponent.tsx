@@ -229,6 +229,17 @@ const DrawToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 												<MenuItem value={"large"}>large</MenuItem>
 											</TextField>
 										</Grid>
+										<Grid item md={12}>
+										<TextField
+											value={tool.lastCoordinate}
+											fullWidth
+											disabled
+											size="small"
+											variant="standard"
+											label="Most recent coordinates"
+										>
+										</TextField>
+										</Grid>
 									</Grid>
 								)}
 							</Grid>
