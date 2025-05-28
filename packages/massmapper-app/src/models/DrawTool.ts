@@ -20,6 +20,7 @@ class DrawTool extends Tool {
 	public lineWeight: 'thin' | 'medium' | 'thick' = 'medium';
 	public textSize: 'small' | 'medium' | 'large' = 'medium';
 	public textStyle: 'normal' | 'bold' | 'italic' = 'normal';
+	public lastCoordinate: string = 'None';
 	public lengthScalar: string = '';
 	public showTextEntryDialog:boolean = false;
 	public showPalette:boolean = false;
@@ -113,6 +114,7 @@ class DrawTool extends Tool {
 				}
 			);
 			this._handleDrawComplete(evt);
+			this.lastCoordinate = (document.getElementById('coordinates')?.innerHTML || '').replace('&nbsp;', ' ');
 		}
 	}
 
@@ -162,6 +164,7 @@ class DrawTool extends Tool {
 				drawMode: observable,
 				showTextEntryDialog: observable,
 				showPalette: observable,
+				lastCoordinate: observable
 			}
 		);
 	}
