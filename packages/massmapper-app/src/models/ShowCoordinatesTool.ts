@@ -89,25 +89,23 @@ class ShowCoordinatesTool extends Tool {
 				});
 			});
 
-			mapService.leafletMap.on('mousedown', (e: any) => {
+			mapService.leafletMap.on('contextmenu', (e: any) => {
 				runInAction(() => {
-					if (e.originalEvent?.ctrlKey) {
-						const copyEl = document.createElement('input');
-						copyEl.style.position = 'absolute';
-						copyEl.style.left = '-10000px';
-						const body = document.getElementsByTagName('body')[0];
-						body.appendChild(copyEl);
-						copyEl.value = this.xCoord + ', ' + this.yCoord;
-						copyEl.select();
-						copyEl.setSelectionRange(0, 99999); /*For mobile devices*/
-				
-						/* Copy the text inside the text field */
-						document.execCommand('copy');
+					const copyEl = document.createElement('input');
+					copyEl.style.position = 'absolute';
+					copyEl.style.left = '-10000px';
+					const body = document.getElementsByTagName('body')[0];
+					body.appendChild(copyEl);
+					copyEl.value = this.xCoord + ', ' + this.yCoord;
+					copyEl.select();
+					copyEl.setSelectionRange(0, 99999); /*For mobile devices*/
+			
+					/* Copy the text inside the text field */
+					document.execCommand('copy');
 
-						toast('Map coordinates copied to clipboard', {
-							autoClose: 2000
-						});
-					}
+					toast('Map coordinates copied to clipboard', {
+						autoClose: 2000
+					});
 				});
 			});
 

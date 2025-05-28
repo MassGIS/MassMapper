@@ -48,7 +48,7 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 						myTool.isChangingUnits = true;
 					}}
 				>
-					<Tooltip title="Use Ctrl-click to save map coordinates to clipboard">
+					<Tooltip title="Use right-click to save map coordinates to clipboard">
 						<div style={{
 							width: myTool.units === units.DMS ? '16em' : '',
 							textAlign: 'left',
