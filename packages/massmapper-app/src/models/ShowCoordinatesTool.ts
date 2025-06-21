@@ -35,7 +35,7 @@ class ShowCoordinatesTool extends Tool {
 
 			return '-' + d + ":" + m + ":" + s.toFixed(6);
 		}
-		return this._coords.lng.toFixed(5);
+		return this._coords.lng.toFixed(6);
 	}
 
 	get yCoord():string {
