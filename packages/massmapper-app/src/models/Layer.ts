@@ -34,7 +34,7 @@ class Layer {
 	get legendURL(): string {
 		return this.layerType === 'tiled_overlay' ? '' :
 			this._gsurl + '/geoserver/wms?' +
-			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&' +
+			'VERSION=1.1.1&SERVICE=WMS&REQUEST=GetLegendGraphic&EXCEPTIONS=application%2Fvnd.ogc.se_xml&FORMAT=image%2Fgif&width=30&' +
 			`LAYER=${this.name}&STYLE=${this.customStyle() || this.style}`
 	}
 	get minScale(): number {
