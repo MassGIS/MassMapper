@@ -31,6 +31,10 @@ class ConfigService {
 		return this._config.initialExtent || [ -73.508142, 41.237964, -69.928393, 42.886589 ]
 	}
 
+	get maxBounds(): [number, number, number, number] {
+		return this._config.maxBounds || [ -180, -90, 180, 90 ]
+	}
+
 	get splashImage(): string {
 		return this._config.splashImage || massmapper;
 	}
@@ -74,6 +78,7 @@ class ConfigService {
 		geoserverUrl: string,
 		folderSet: string,
 		initialExtent: [number, number, number, number],
+		maxBounds: [number, number, number, number],
 		tools: ToolDefinition[],
 		availableBasemaps: string[],
 		defaultLayers: string[],
@@ -86,6 +91,7 @@ class ConfigService {
 		geoserverUrl: 'https://gis-prod.digital.mass.gov',
 		folderSet: '',
 		initialExtent: [-73.508142, 41.237964, -69.928393, 42.886589],
+		maxBounds: [-180, -90, 180, 90],
 		tools: [],
 		availableBasemaps: [
 			'MassGIS Basemap',

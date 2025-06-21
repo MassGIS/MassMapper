@@ -116,6 +116,10 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							whenCreated={(map: Map) => {
 								mapService.initLeafletMap(map, b);
 							}}
+							maxBounds={[
+								[configService.maxBounds[1], configService.maxBounds[0]],
+								[configService.maxBounds[3], configService.maxBounds[2]]
+							]}
 						/>
 					</Grid>
 					<Grid style={{maxHeight: '100vh'}} component={Paper} item square xs={3}>
