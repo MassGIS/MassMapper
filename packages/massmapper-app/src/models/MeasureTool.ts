@@ -86,8 +86,6 @@ class MeasureTool extends Tool {
 					this._totalArea = GeometryUtil.geodesicArea(handler['_poly'].getLatLngs());
 				}
 			}
-
-			console.log(handler);
 		}
 	}
 

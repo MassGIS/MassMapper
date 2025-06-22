@@ -8,7 +8,7 @@ import { MapService } from "../services/MapService";
 import { ConfigService } from "../services/ConfigService";
 import proj4 from 'proj4';
 import { LegendService } from "../services/LegendService";
-
+import { GAService } from "../services/GAService";
 
 class ExportWizardTool extends Tool {
 
@@ -197,6 +197,11 @@ class ExportWizardTool extends Tool {
 			layer += '</layer>';
 			xml += layer;
 		});
+
+		this._services.get(GAService).logEvent(
+			'ExportWizardLayerCount',
+			String(this.exportLayers.size)
+		);
 
 		xml +=`<zip name="${this.exportFileName}" /></layers>`;
 

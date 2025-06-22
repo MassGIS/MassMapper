@@ -1,11 +1,10 @@
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { ContainerInstance, Service } from "typedi";
 import { MapService } from "./MapService";
-import { ConfigService } from "./ConfigService";
+import { GAService } from "./GAService";
 import { Layer } from '../models/Layer';
 // import ua from 'universal-analytics';
 // import mpanalytics from 'mpanalytics';
-import ReactGA from 'react-ga4';
 import { v4 as uuid } from 'uuid';
 
 type LegendServiceAnnotations = '_layers' | '_ready' | 'setReady';
@@ -37,12 +36,12 @@ class LegendService {
 
 	constructor(private readonly _services: ContainerInstance) {
 
-		const configService = this._services.get(ConfigService)
+		const gaService = this._services.get(GAService);
 		autorun((r) => {
-			if (configService.ready) {
-				ReactGA.initialize(
-					String(configService.googleAnalyticsGA4)
-				);
+			if (!gaService.ready) {
+				return;
+			}
+			else {
 				r.dispose();
 			}
 		})
@@ -93,14 +92,10 @@ class LegendService {
 			return;
 		}
 
-		ReactGA.event({
-			category: "MassMapper::LayerAdd",
-			action: l.name,
-		}, (error:any, body:any) => {
-			if (error) {
-				console.error(error);
-			}
-		});
+		this._services.get(GAService).logEvent(
+			'LayerAdd',
+			l.name
+		);
 
 		const mapService = this._services.get(MapService);
 		await l.makeMappable(mapService);

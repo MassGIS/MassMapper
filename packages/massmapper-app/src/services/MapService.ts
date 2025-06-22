@@ -24,6 +24,7 @@ import Leaflet from 'leaflet';
 import { SelectionService } from './SelectionService';
 import { IdentifyResultFeature } from '../models/IdentifyResults';
 import { ConfigService } from './ConfigService';
+import { GAService } from "../services/GAService";
 import north from '../images/north_arrow.png';
 
 @Service()
@@ -369,6 +370,11 @@ class MapService {
 			runInAction(() => {
 				this._activeBaseLayer = this._basemaps.find((bm) => bm.name === e.name);
 			});
+
+			this._services.get(GAService).logEvent(
+				'BasemapLayer',
+				this._activeBaseLayer.name
+			);
 
 			// Make all attr links open in a new tab / window.  Might ought to be tied to moveend or zoomend, but OK for now.
 			let anchors = m.attributionControl.getContainer()?.getElementsByTagName('a');
