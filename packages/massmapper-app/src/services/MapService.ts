@@ -209,6 +209,23 @@ class MapService {
 			new LatLng(b[3], b[2])
 		));
 
+		// If maxBounds isn't the globe (default), keep users from zooming too far out.
+		if (!new LatLngBounds(
+				new LatLng(-90, -180),
+				new LatLng(90, 180)
+			).equals([
+				[cs.maxBounds[1], cs.maxBounds[0]],
+				[cs.maxBounds[3], cs.maxBounds[2]]
+			])
+		) {
+			this._map!.setMinZoom(
+				this._map!.getBoundsZoom([
+					[cs.maxBounds[1], cs.maxBounds[0]],
+					[cs.maxBounds[3], cs.maxBounds[2]]
+				])
+			);
+		}
+
 		// need to load layers
 		autorun(async (r) => {
 			if (!cat.ready || !cs.ready || !ls.ready) {
