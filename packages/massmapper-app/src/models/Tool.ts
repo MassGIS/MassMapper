@@ -2,6 +2,7 @@ import { makeObservable, observable, computed } from "mobx";
 import { FunctionComponent } from "react";
 import { ContainerInstance } from "typedi";
 import { ToolService } from "../services/ToolService";
+import { GAService } from "../services/GAService";
 
 enum ToolPosition {
 	topright = 'topright',
@@ -75,6 +76,11 @@ abstract class Tool {
 
 		await this._activate();
 		this._active = true;
+
+		this._services.get(GAService).logEvent(
+			'MassMapper:ToolActivate',
+			this.id
+		);
 	};
 
 	public async deactivate(restoreDefaultTool:boolean = false): Promise<void> {
