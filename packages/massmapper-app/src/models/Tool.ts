@@ -78,7 +78,7 @@ abstract class Tool {
 		this._active = true;
 
 		this._services.get(GAService).logEvent(
-			'MassMapper:ToolActivate',
+			'ToolActivate',
 			this.id
 		);
 	};

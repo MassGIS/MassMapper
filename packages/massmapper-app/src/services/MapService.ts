@@ -372,7 +372,7 @@ class MapService {
 			});
 
 			this._services.get(GAService).logEvent(
-				'MassMapper:BasemapLayer',
+				'BasemapLayer',
 				this._activeBaseLayer.name
 			);
 

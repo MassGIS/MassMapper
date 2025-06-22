@@ -199,7 +199,7 @@ class ExportWizardTool extends Tool {
 		});
 
 		this._services.get(GAService).logEvent(
-			'MassMapper:ExportWizardLayerCount',
+			'ExportWizardLayerCount',
 			String(this.exportLayers.size)
 		);
 

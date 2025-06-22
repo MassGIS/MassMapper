@@ -93,7 +93,7 @@ class LegendService {
 		}
 
 		this._services.get(GAService).logEvent(
-			'MassMapper::LayerAdd',
+			'LayerAdd',
 			l.name
 		);
 
