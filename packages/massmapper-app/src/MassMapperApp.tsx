@@ -101,6 +101,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 	const b = historyService.has('b') ?
 		(historyService.get('b') as string).split(',').map(s => parseFloat(s)) :
 		configService.initialExtent;
+	const lid = historyService.get('locid') as string;
 
 	return (
 		<div className={classes.root}>
@@ -114,7 +115,7 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 							className={classes.map}
 							scrollWheelZoom={true}
 							whenCreated={(map: Map) => {
-								mapService.initLeafletMap(map, b);
+								mapService.initLeafletMap(map, b, lid);
 							}}
 							maxBounds={[
 								[configService.maxBounds[1], configService.maxBounds[0]],
