@@ -187,7 +187,7 @@ class MapService {
 		);
 	}
 
-	public async initLeafletMap(m: LeafletMap, b: number[]): Promise<void> {
+	public async initLeafletMap(m: LeafletMap, b: number[], lid: string): Promise<void> {
 		// read the url
 
 		runInAction(() => {
@@ -204,10 +204,45 @@ class MapService {
 		const cat = this._services.get(CatalogService);
 
 		// setup the initial extent [lon0, lat0, lon1, lat1]
-		this._map!.fitBounds(new LatLngBounds(
+		let bbox = new LatLngBounds(
 			new LatLng(b[1], b[0]),
 			new LatLng(b[3], b[2])
-		));
+		);
+
+		// an incoming loc_id (lid) will override the default extent
+		if (lid) {
+			try {
+				const params = [
+					'service=WFS',
+					'version=1.1.0',
+					'request=GetFeature',
+					'typeName=massgis:GISDATA.L3_TAXPAR_POLY_ASSESS',
+					'srsname=EPSG:4326',
+					'outputFormat=application/json',
+					`cql_filter=loc_id = '${lid}'`
+				];
+				Object.entries(params);
+				const res = await fetch(cs.geoserverUrl + '/geoserver/wfs',
+					{
+						method: 'POST',
+						body: params.join('&'),
+						headers: {'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'}
+					}
+				);
+				const resJson = await res.json();
+				if (resJson!.bbox) {
+					bbox = new LatLngBounds(
+						new LatLng(resJson.bbox[1], resJson.bbox[0]),
+						new LatLng(resJson.bbox[3], resJson.bbox[2])
+					);
+				}
+			} catch (e) {
+				// no matching parcel
+			}
+		}
+	
+		// do the zoom
+		this._map!.fitBounds(bbox);
 
 		// If maxBounds isn't the globe (default), keep users from zooming too far out.
 		if (!new LatLngBounds(
