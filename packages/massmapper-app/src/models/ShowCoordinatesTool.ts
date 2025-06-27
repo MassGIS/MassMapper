@@ -52,7 +52,7 @@ class ShowCoordinatesTool extends Tool {
 
 			return d + ":" + m + ":" + s.toFixed(6);
 		}
-		return this._coords.lat.toFixed(5);
+		return this._coords.lat.toFixed(6);
 	}
 
 	private _coords:LatLng;
