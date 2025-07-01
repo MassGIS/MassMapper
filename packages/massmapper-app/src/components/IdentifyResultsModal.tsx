@@ -353,6 +353,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 									setSaveAllAnchorEl(event.currentTarget);
 
 								}}
+								disabled={selectionService.selectedIdentifyResult?.numFeatures == 0}
 							>
 								<Save /> Save all {myState.windowSize == 'xl' ? "features as" : ""}...
 							</Button>
