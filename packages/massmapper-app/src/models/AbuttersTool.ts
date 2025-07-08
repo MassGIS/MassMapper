@@ -258,7 +258,7 @@ class AbuttersTool extends Tool {
 		this._abuttersShape = polyline(mapLatLngs, {color: "#ff7800", weight: 4});
 		this._abuttersShape.addTo(ms.leafletMap!);
 
-		const abuttersIdResult = selService.addIdentifyResult(abuttersLayer[0], this._abuttersShape.getBounds());
+		const abuttersIdResult = selService.addIdentifyResult(abuttersLayer[0], this._abuttersShape.getBounds(), undefined, true);
 		abuttersIdResult.intersectsShape = abuttersOutlineLineString;
 		abuttersIdResult.excludeIds = excludeIds;
 		abuttersIdResult.getNumFeatures();

@@ -34,7 +34,7 @@ class SelectionService {
 		})();
 	}
 
-	public addIdentifyResult(layer: Layer, bbox: LatLngBounds, shape?: turf.Geometry): IdentifyResult {
+	public addIdentifyResult(layer: Layer, bbox: LatLngBounds, shape?: turf.Geometry, quiet?: boolean): IdentifyResult {
 		const configService = this._services.get(ConfigService);
 		const idResult = new IdentifyResult(
 			layer,
@@ -44,7 +44,7 @@ class SelectionService {
 		if (shape) {
 			idResult.intersectsShape = shape;
 		}
-		idResult.getNumFeatures()
+		!quiet && idResult.getNumFeatures();
 		this._idResults.set(layer.id, idResult);
 		return idResult;
 	}
