@@ -54,7 +54,7 @@
 		},
 		{
 			"id": "arcgis-geocode-tool",
-			"position": "topleft",
+			"position": "topright",
 			"class": "ArcGISGeocodeTool"
 		},
 		{
