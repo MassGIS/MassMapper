@@ -1,8 +1,8 @@
 {
 	"googleAnalyticsUA": "G-Z39F5MP11N",
 	"splashImage": "MassMapper_Logo_FINAL10.png",
-	"splashImageHeight" : "10em",
-	"geoserverUrl" : "https://giswebservices.massgis.state.ma.us",
+	"splashImageHeight" : "8em",
+	"geoserverUrl" : "https://gis-prod.digital.mass.gov",
 	"folderSet" : "/temp/massmapper_folderset.xml",
 	"initialExtent" : [
 		-73.508142, 41.237964, -69.928393, 42.886589
