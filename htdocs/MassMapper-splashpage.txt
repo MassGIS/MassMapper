@@ -37,5 +37,6 @@ style="display: flex; flex-direction: column; align-items: center;">
     </div>
     </div>
   </div>
-<p style="max-width:800px; margin-top:2rem;font-size:80%;"><i>DISCLAIMER:</i> The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose.</p>
+<p style="max-width:800px; margin-top:2rem;font-size:80%;"><i>DISCLAIMER:</i> The information available through MassMapper is for reference purposes only and should not be used to make legal or other binding decisions. Each map feature in the legend links to detailed information, including its source, that you can use in determining its suitability for your intended purpose. <a href="https://dev.maps.digital.mass.gov/MassMapper/license.txt">License information</a></p>
 </div>
+
