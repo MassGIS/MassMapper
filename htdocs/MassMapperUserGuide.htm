@@ -143,9 +143,12 @@ p.thick {
 	 <a
          href="#_Saving_a_Map" 
 	 >Saving a map as a PDF</a> - <b><font color="DarkRed">New Features!</font></b></p></span></a></p>
+         <a					       
+         href="#_Accessibility"
+         >Accessibility</a> - <b><font color="DarkRed">New!</font></b></p></span></a></p>	 
 	 <a
          href="#_Problems?_Questions?_Comments?"
-	 >Problems? Questions? Comments?</a></p>
+         >Problems? Questions? Comments?</a></p>
           <p><a name="_Getting_Started"></a>&nbsp;</p>
           <h2>Getting started</h2>
           <img src="MassMapperUserGuide_files/image050.png" alt="" width="88" height="3">
@@ -739,10 +742,89 @@ style="mso-margin-bottom-alt:auto;margin-left:.25in;text-align:center;line-heigh
             <br>
           </p>
           <button class="button" onclick="window.location.href='#_TOC';">Table of Contents</button>
+          <p><a name="_Accessibility"></a>&nbsp;</p>
+          <h3>Accessibility</h3>
+          <img src="MassMapperUserGuide_files/image050.png" alt="" width="88"^M
+            height="3">
+          <p>&nbsp;</p>
+          <p><span style="font-size:12.0pt;"><br>
+		  MassGIS is actively working to add accessibility improvements to MassMapper. These improvements will be deployed by spring 2026. While the improvements are in progress, MassGIS would like to note several ways of using MassMapper that are helpful for accessibility:</span></p>
+	  <p><span style="font-size:12.0pt;"><br>
+          <ol style="margin-top:0in" start="1" type="1">
+            <li style="margin-bottom:0in;line-height:normal;mso-list:l20^M
+ level1 lfo14;tab-stops:list .5in">
+		 <span style="font-size:12.0pt;">
+		  Basemap Choice<br>
+		  While MassMapper opens with a detailed colorful custom basemap using MassGIS data, other basemap choices are available. One option is the ESRI Light Gray Basemap. This background is muted and allows other data drawn on top to stand out visually.<br></p></span>
+		 <img src="MassMapperUserGuide_files/massmapper_basemap_selection_dropdown.png" alt="basemap selection dropdown" width="217" height="267" border="1"><br/><br/>
+<img src="MassMapperUserGuide_files/massgis_basemap_100_percent_opacity_with_colleges.png" alt="basemap 100 percent opacity with colleges" width="778" height="501" border="0">
+<span style="font-size:12.0pt;"><br/>
+	Default colorful basemap at default opacity (100%), with colleges drawn on top in several different shades of green and blue.<br></p></span><br/>
+                 <img src="MassMapperUserGuide_files/esri_light_grey_basemap_100_percent_opacity_with_colleges.png" alt="light grey basemap" width="757" height="514" border="0"><br/>
+<span style="font-size:12.0pt;">
+	ESRI Light Gray basemap at default opacity (100%), with colleges drawn on top in several different shades of green and blue.<br></p></span>
+
+            <li style="margin-bottom:0in;line-height:normal;mso-list:l20^M
+ level1 lfo14;tab-stops:list .5in">
+                 <span style="font-size:12.0pt;">
+		 Basemap Opacity<br>
+		 In addition, each basemap can be altered for its opacity (or opposite, transparency) setting.<br></p></span>
+		 <img src="MassMapperUserGuide_files/massmapper_basemap_selection_dropdown.png" alt="basemap opacity slider" width="217" height="267" border="0"><br/><br/>
+		 <img src="MassMapperUserGuide_files/default_colorful_basemap_50_percent_opacity_with_colleges.png" alt="light grey basemap" width="757" height="514" border="0"><br/>
+<span style="font-size:12.0pt;">
+        Default colorful basemap at default opacity (50%), with colleges drawn on top in several different shades of green and blue.<br></p></span>
+            <li style="margin-bottom:0in;line-height:normal;mso-list:l20^M
+ level1 lfo14;tab-stops:list .5in">
+                 <span style="font-size:12.0pt;">
+                 Datalayer Opacity<br>		 
+		 Just as basemaps can have their opacity changed, datalayers can have their opacity changed.<br> 
+		 For example, adding the Ecosystems layer over the default basemap blocks out all the basemap details:<br/><br/>
+		 <img src="MassMapperUserGuide_files/massmapper_basemap_ecoregions_full_opacity.png" alt="massmapper basemap with ecoregions 100% opacity" width="936" height="401" border="0"><br/><br/>
+		 <span style="font-size:12.0pt;">
+			 By clicking on the Customize Layer Settings icon   to the left of the datalayer name in the legend area, it is possible to change the default opacity of 100% for the Ecoregion layer to a different value (that is more transparent).<br><br/>
+			 <img src="MassMapperUserGuide_files/massmapper_customize_layer_settings.png" alt="massmapper layer settings customize" width="480" height="223" border="1"><br/><br/>
+		 <img src="MassMapperUserGuide_files/massmapper_basemap_ecoregions_50_percent_opacity.png" alt="massmapper basemap with ecoregions 50% opacity" width="820" height="561" border="0"><br/><br/>
+            <li style="margin-bottom:0in;line-height:normal;mso-list:l20^M
+ level1 lfo14;tab-stops:list .5in">
+                 <span style="font-size:12.0pt;">
+                 Datalayer Color Choice<br>	 
+		 If a datalayer’s color symbology conflicts with another datalayer’s colors or the basemap, the datalayer’s color can be changed.<br> For example, if prisons are displayed on top of the ESRI Light Gray basemap the default gray symbol is difficult to see. <br/><br/>
+                 <img src="MassMapperUserGuide_files/esri_light_grey_basemap_with_default_prisons.png" alt="esri light grey basemap with default prisons" width="789" height="534" border="0"><br/>
+		 Click the "Customize Layer Settings" button in the legend<br/><br/>
+		 <img src="MassMapperUserGuide_files/massmapper_layer_customize_options.jpg" alt="button to customize layer options" width="174" height="43" border="0"><br/>
+		 Choose a color. Features in the layer will all be the same color squares.<br/><br/>
+		 <img src="MassMapperUserGuide_files/massmapper_layer_change_color.jpg" alt="palette of color choices for datalayer" width="1279" height="401" border="0"><br/><br/>
+		 Click "Clear Custom Color" in the dialog to return to the default symbology.<br/><br/>
+            <li style="margin-bottom:0in;line-height:normal;mso-list:l20^M
+ level1 lfo14;tab-stops:list .5in">
+                 <span style="font-size:12.0pt;">
+                 Datalayer Download<br>
+		 Sometimes it is easier to work with data in tabular format then as a map. 
+		 It is possible to download limited amounts of data from MassMapper in Excel, CSV or JSON formats.
+		 Add the datalayer to the map, then click the download button.
+		 <img src="MassMapperUserGuide_files/massmapper_download_button.jpg" alt="download button" width="43" height="363636" border="0"><br/><br/>
+
+		 If too many features are selected zoom in.
+		 Otherwise, click Next and then choose a download format.<br/><br/>
+		 <img src="MassMapperUserGuide_files/massmapper_tabular_download.jpg" alt="massmapper download options" width="1133" height="289" border="1"><br/><br/>
+		 		 	
+		 
+          <p^M
+            style="margin-bottom:0in;text-align:left;line-height:normal"^M
+            align="left"> <a href="http://www.mass.gov/mgis/"><span><img^M
+     src="MassMapperUserGuide_files/image006.png"^M
+     alt="massgis logo" width="225"^M
+			height="78" border="0"></span></a></span></li> <br>
+
+            <br>
+            <br>
+          </p>
+          <button class="button" onclick="window.location.href='#_TOC';">Table of Contents</button>
+	  
           <p><span style="font-size:12.0pt;line-height:107%;"><br>
  <br>
  <br>
- <i>6/12/2025</i></span></p>
+ <i>11/10/2025</i></span></p>
           <p>&nbsp;</p>
         </div>
       </main>
