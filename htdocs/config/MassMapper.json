@@ -49,6 +49,7 @@
 			"options": {
 				"logoUrl": "massmapper.png",
 				"logoTooltip": "MassMapper - by MassGIS",
+				"logoAlt": "MassMapper",
 				"logoLink": "https://www.mass.gov/orgs/massgis-bureau-of-geographic-information",
 				"logoHeight": "3.5em"
 			}
