@@ -1,13 +1,14 @@
 import React, { FunctionComponent } from "react";
 import {
-	Button
+	Button,
+	Tooltip
 } from '@material-ui/core';
 import { ToolComponentProps } from "../models/Tool";
 
 const LogoToolComponent: FunctionComponent<ToolComponentProps> = ({tool}) => {
 	const {logoUrl, logoLink, logoTooltip, logoHeight} = tool.options;
 	return (
-		<>
+		<Tooltip title={logoTooltip}>
 			<Button
 				color="default"
 				title={logoTooltip}
@@ -23,7 +24,7 @@ const LogoToolComponent: FunctionComponent<ToolComponentProps> = ({tool}) => {
 					src={logoUrl}
 				/>
 			</Button>
-		</>
+		</Tooltip>
 	)
 };
 

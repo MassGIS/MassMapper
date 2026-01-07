@@ -13,7 +13,7 @@ import TreeView from '@material-ui/lab/TreeView';
 import TreeItem from '@material-ui/lab/TreeItem';
 import { ClassNameMap } from '@material-ui/styles';
 import TextField from '@material-ui/core/TextField';
-import { Button } from '@material-ui/core';
+import { Button, Tooltip } from '@material-ui/core';
 
 import { useService } from '../services/useService';
 import { CatalogService, CatalogTreeNode } from '../services/CatalogService';
@@ -121,11 +121,12 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 				getOptionLabel={(option) => option.title}
 				style={{ width: '100%', paddingTop: '10px' }}
 				renderInput={(params) =>
-					<TextField
-						{...params}
-						label="Search for a layer"
-						variant="outlined"
-					/>
+					<Tooltip title="Search for a layer">
+						<TextField
+							{...params}
+							variant="outlined"
+						/>
+					</Tooltip>
 				}
 				size="small"
 				onClose={(e, r) => {

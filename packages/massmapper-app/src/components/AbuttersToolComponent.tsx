@@ -4,7 +4,8 @@ import {
 	Grid,
 	TextField,
 	Paper,
-	MenuItem
+	MenuItem,
+	Tooltip,
 } from '@material-ui/core'
 import {
 	Streetview,
@@ -22,21 +23,22 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 	const myTool = tool as AbuttersTool;
 
 	const button = (
-		<Button
-			style={{
-				backgroundColor: tool.isActive ? '' : 'white',
-				minWidth: '32px',
-			}}
-			color="default"
-			title={'Click on the map to generate an abutters list'}
-			variant="contained"
-			size="small"
-			onClick={() => {
-				tool.isActive ? tool.deactivate(true) : tool.activate();
-			}}
-		>
-			<Streetview />
-		</Button>
+		<Tooltip title={'Click on the map to generate an abutters list'}>
+			<Button
+				style={{
+					backgroundColor: tool.isActive ? '' : 'white',
+					minWidth: '32px',
+				}}
+				color="default"
+				variant="contained"
+				size="small"
+				onClick={() => {
+					tool.isActive ? tool.deactivate(true) : tool.activate();
+				}}
+			>
+				<Streetview />
+			</Button>
+		</Tooltip>
 	);
 
 	return (

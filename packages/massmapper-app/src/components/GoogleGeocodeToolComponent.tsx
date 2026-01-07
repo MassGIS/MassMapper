@@ -2,6 +2,7 @@
 import {
 	TextField,
 	Paper,
+	Tooltip,
 } from '@material-ui/core'
 import { latLngBounds, latLng } from 'leaflet';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -144,16 +145,18 @@ const GoogleGeocodeToolComponent: FunctionComponent<GoogleGeocodeToolComponentPr
 							}
 						}}
 						renderInput={(params) => (
-							<TextField
-								onKeyDown={(e) => {
-									e.stopPropagation();
-								}}
-								{...params}
-								style={{
-									width: '100%'
-								}}
-								placeholder={myState.isFocused ? '' : 'Enter a location...'}
-							/>
+							<Tooltip title="Enter a location">
+								<TextField
+									onKeyDown={(e) => {
+										e.stopPropagation();
+									}}
+									{...params}
+									style={{
+										width: '100%'
+									}}
+									placeholder={myState.isFocused ? '' : 'Enter a bar...'}
+								/>
+							</Tooltip>
 						)}
 					/>
 

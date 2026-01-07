@@ -2,6 +2,7 @@ import XMLParser from 'react-xml-parser';
 import {
 	TextField,
 	Paper,
+	Tooltip,
 } from '@material-ui/core'
 import { latLng } from 'leaflet';
 import Autocomplete from '@material-ui/lab/Autocomplete';
@@ -192,13 +193,15 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 							mapService.leafletMap?.setView(latLng(v.location.y, v.location.x), 19);
 						}}
 						renderInput={(params) => (
-							<TextField
-								{...params}
-								style={{
-									width: '100%'
-								}}
-								placeholder={myState.isFocused ? '' : 'Enter a location...'}
-							/>
+							<Tooltip title="Enter a location">
+								<TextField
+									{...params}
+									style={{
+										width: '100%'
+									}}
+									placeholder={myState.isFocused ? '' : 'Enter a location...'}
+								/>
+							</Tooltip>
 						)}
 					/>
 
