@@ -374,7 +374,7 @@ class MapService {
 			toAdd.length > 0 && r.dispose();
 		});
 
-		new Control.Scale({position: 'bottomleft'}).addTo(m);
+		m.addControl(new Control.Scale({position: 'bottomleft'}));
 
 		const MS = Control.extend({
 			onAdd: function () {
@@ -391,9 +391,9 @@ class MapService {
 			},
 		});
 		const MapScaleControl = function(opts: Leaflet.ControlOptions | undefined) {
-			return new MS(opts);
+			return new (MS as any)(opts);
 		};
-		MapScaleControl({position: 'bottomleft'}).addTo(this._map!);
+		this._map!.addControl(MapScaleControl({position: 'bottomleft'}));
 
 		const NA = Control.extend({
 			onAdd: function () {
@@ -405,9 +405,9 @@ class MapService {
 			},
 		});
 		const NorthArrowControl = function(opts: Leaflet.ControlOptions | undefined) {
-			return new NA(opts);
+			return new (NA as any)(opts);
 		};
-		NorthArrowControl({position: 'bottomleft'}).addTo(this._map!);
+		this._map!.addControl(NorthArrowControl({position: 'bottomleft'}));
 
 		// clear all layers, if there were any to start
 		runInAction(() => {
@@ -508,7 +508,7 @@ class MapService {
 				}
 			},
 		});
-		this._layerControl.addTo(this._map!);
+		this._map!.addControl(this._layerControl);
 
 		this._basemaps.forEach((o) => {
 			this._layerControl.addBaseLayer(o.layer, o.name);

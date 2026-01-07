@@ -55,7 +55,8 @@ class PrintPdfTool extends Tool {
 				],
 				hidden: true,
 				preventDownload: true
-			}).addTo(ms.leafletMap);
+			});
+			ms.leafletMap.addControl(this._ss);
 
 			r.dispose();
 		})
