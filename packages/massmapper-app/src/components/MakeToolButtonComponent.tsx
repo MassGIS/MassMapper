@@ -1,7 +1,7 @@
 import { observer } from "mobx-react";
 import React, { FunctionComponent, MouseEventHandler } from 'react';
 import { ToolComponentProps } from "../models/Tool";
-import { Button } from '@material-ui/core';
+import { Button, Tooltip } from '@material-ui/core';
 
 const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventHandler, isDisabled?: () => boolean, buttonStyle?: React.CSSProperties): FunctionComponent<ToolComponentProps> => {
 	return observer(({tool}) => {
@@ -12,12 +12,11 @@ const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventH
 			...buttonStyle
 		}
 		return (
-			<>
+			<Tooltip title={tooltip}>
 				<Button
 					style={style}
 					disabled={disabled}
 					color="default"
-					title={tooltip}
 					variant="contained"
 					size="small"
 					onClick={onclick ? onclick : () => {
@@ -35,7 +34,7 @@ const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventH
 				(<Icon />)
 				}
 				</Button>
-			</>
+			</Tooltip>
 		);
 	})
 };

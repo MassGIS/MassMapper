@@ -32,45 +32,47 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 				position: 'relative',
 				top: '3px',
 			}}>
-				<Button
-					style={{
-						marginTop: '0',
-						paddingTop: '0',
-						fontWeight: 100,
-						fontSize: 'smaller',
-						width: myTool.units === units.DMS ? '28em' : '',
-						justifyContent: 'left'
-					}}
-					ref={(r:HTMLButtonElement) => {
-						myTool.buttonRef = r;
-					}}
-					onClick={() => {
-						myTool.isChangingUnits = true;
-					}}
-				>
-					<div id="coordinates" style={{
-						width: myTool.units === units.DMS ? '16em' : '',
-						textAlign: 'left',
-						marginRight: '1em'
-					}}>
-						{myTool.xCoord}
-						,&nbsp;
-						{myTool.yCoord}
-					</div>
-					<div style={{
-						float: 'right'
-					}}>
-						<Typography
-							variant="caption"
-							style={{
-								verticalAlign: 'super'
-							}}
-						>
-							{myTool.units}
-						</Typography>
-						<ArrowDropDown />
-					</div>
-				</Button>
+				<Tooltip title="Choose map units">
+					<Button
+						style={{
+							marginTop: '0',
+							paddingTop: '0',
+							fontWeight: 100,
+							fontSize: 'smaller',
+							width: myTool.units === units.DMS ? '28em' : '',
+							justifyContent: 'left'
+						}}
+						ref={(r:HTMLButtonElement) => {
+							myTool.buttonRef = r;
+						}}
+						onClick={() => {
+							myTool.isChangingUnits = true;
+						}}
+					>
+						<div id="coordinates" style={{
+							width: myTool.units === units.DMS ? '16em' : '',
+							textAlign: 'left',
+							marginRight: '1em'
+						}}>
+							{myTool.xCoord}
+							,&nbsp;
+							{myTool.yCoord}
+						</div>
+						<div style={{
+							float: 'right'
+						}}>
+							<Typography
+								variant="caption"
+								style={{
+									verticalAlign: 'super'
+								}}
+							>
+								{myTool.units}
+							</Typography>
+							<ArrowDropDown />
+						</div>
+					</Button>
+				</Tooltip>
 				<Menu
 					keepMounted
 					open={myTool.isChangingUnits}

@@ -65,6 +65,7 @@ const SplashPageModal: FunctionComponent<SplashPageModalProps> = observer(() => 
 								height: configService.splashImageHeight
 							}}
 							src={configService.splashImage}
+							alt={configService.splashImageAlt}
 						/>
 						<p dangerouslySetInnerHTML={{
 							__html: legendService.splashPageContent

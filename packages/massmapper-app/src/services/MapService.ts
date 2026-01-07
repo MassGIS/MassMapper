@@ -72,7 +72,7 @@ class MapService {
 				{
 					maxZoom: 19,
 					minZoom: 7,
-					attribution: '<a href="https://www.mass.gov/service-details/massgis-base-map">MassGIS</a>'
+					attribution: '<a title="Review information about MassGIS custom basemap" href="https://www.mass.gov/service-details/massgis-base-map">MassGIS</a>'
 				}
 			),
 			pdfOk: true
@@ -399,6 +399,7 @@ class MapService {
 			onAdd: function () {
 				const img = document.createElement('img');
 				img.src = north;
+				img.alt = "North";
 				return img;
 			},
 			onRemove: function () {
