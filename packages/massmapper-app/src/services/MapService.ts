@@ -399,6 +399,7 @@ class MapService {
 			onAdd: function () {
 				const img = document.createElement('img');
 				img.src = north;
+				img.alt = "North";
 				return img;
 			},
 			onRemove: function () {
