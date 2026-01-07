@@ -1,6 +1,7 @@
 {
 	"googleAnalyticsGA4": "G-Z39F5MP11N",
 	"splashImage": "MassMapper_Logo_FINAL10.png",
+	"splashImageAlt": "MassMapper Logo",
 	"splashImageHeight" : "8em",
 	"geoserverUrl" : "https://gis-prod.digital.mass.gov",
 	"folderSet" : "/temp/massmapper_folderset.xml",

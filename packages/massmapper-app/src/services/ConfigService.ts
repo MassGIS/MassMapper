@@ -43,6 +43,10 @@ class ConfigService {
 		return this._config.splashImageHeight || '';
 	}
 
+	get splashImageAlt(): string {
+		return this._config.splashImageAlt || '';
+	}
+
 	get availableBasemaps(): string[] {
 		return this._config.availableBasemaps || [
 			'MassGIS Basemap',
@@ -86,6 +90,7 @@ class ConfigService {
 		xGridLicenseKey?: string,
 		splashImage?: string,
 		splashImageHeight?: string,
+		splashImageAlt?: string,
 		googleAnalyticsGA4?: string,
 	} = {
 		geoserverUrl: 'https://gis-prod.digital.mass.gov',
