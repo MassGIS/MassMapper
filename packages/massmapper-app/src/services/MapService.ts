@@ -84,7 +84,7 @@ class MapService {
                                 {
                                         maxZoom: 20,
                                         minZoom: 7,
-                                        attribution: '<a href="https://www.mass.gov/info-details/massgis-data-2023-aerial-imagery">MassGIS 2023 Aerial Imagery</a>'
+                                        attribution: '<a title="Review information about 2023 Aerial Imagery" href="https://www.mass.gov/info-details/massgis-data-2023-aerial-imagery">MassGIS 2023 Aerial Imagery</a>'
                                 }
                         ),
                         pdfOk: true
@@ -96,7 +96,7 @@ class MapService {
 				{
 					maxZoom: 20,
 					minZoom: 7,
-					attribution: '<a href="https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery">MassGIS 2021 Aerial Imagery</a>'
+					attribution: '<a title="Review information about 2021 Aerial Imagery" href="https://www.mass.gov/info-details/massgis-data-2021-aerial-imagery">MassGIS 2021 Aerial Imagery</a>'
 				}
 			),
 			pdfOk: true
