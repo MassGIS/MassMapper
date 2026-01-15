@@ -23,7 +23,7 @@ const AbuttersToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 	const myTool = tool as AbuttersTool;
 
 	const button = (
-		<Tooltip title={'Click on the map to generate an abutters list'}>
+		<Tooltip title={'Abutters'}>
 			<Button
 				style={{
 					backgroundColor: tool.isActive ? '' : 'white',

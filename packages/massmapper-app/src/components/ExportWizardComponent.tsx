@@ -117,7 +117,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 	const ExportButton = MakeToolButtonComponent(
 		GetApp,
-		'Export data layers',
+		'Download',
 		() => {
 			runInAction(() => {
 				tool.activate();

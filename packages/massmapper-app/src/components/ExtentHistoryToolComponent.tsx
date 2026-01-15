@@ -15,7 +15,7 @@ const ExtentHistoryToolComponent: FunctionComponent<ToolComponentProps> = observ
 
 	const PreviousExtentButton = MakeToolButtonComponent(
 		ArrowBack,
-		'Go to previous extent',
+		'Previous Zoom',
 		(e) => {
 			tool.back();
 		},
@@ -27,7 +27,7 @@ const ExtentHistoryToolComponent: FunctionComponent<ToolComponentProps> = observ
 	);
 	const NextExtentButton = MakeToolButtonComponent(
 		ArrowForward,
-		'Go to next extent',
+		'Next Zoom',
 		(e) => {
 			tool.forward();
 		},

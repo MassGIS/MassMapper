@@ -32,7 +32,7 @@ class ZoomToMaxExtentTool extends Tool {
 	}
 
 	public component() {
-		return MakeToolButtonComponent(ZoomOutMap, 'Zoom to max extent');
+		return MakeToolButtonComponent(ZoomOutMap, 'Reset Zoom');
 	}
 }
 
