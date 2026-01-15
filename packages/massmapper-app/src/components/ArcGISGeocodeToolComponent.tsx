@@ -193,7 +193,7 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 							mapService.leafletMap?.setView(latLng(v.location.y, v.location.x), 19);
 						}}
 						renderInput={(params) => (
-							<Tooltip title="Enter a location">
+							<Tooltip title="Enter Location">
 								<TextField
 									{...params}
 									style={{

@@ -221,7 +221,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																position: 'relative',
 																verticalAlign: 'top'
 															}}>
-																<Tooltip title={l.enabled ? 'Click to disable layer' : 'Click to enable layer'}>
+																<Tooltip title={l.enabled ? 'Disable' : 'Enable'}>
 																	<Checkbox
 																		className={classes.button}
 																		onChange={(e) => {
@@ -232,7 +232,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																	/>
 																</Tooltip>
 
-																<Tooltip title="Remove layer from map">
+																<Tooltip title="Remove">
 																	<IconButton
 																		className={classes.button}
 																		onClick={() => {
@@ -243,7 +243,7 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																	</IconButton>
 																</Tooltip>
 
-																<Tooltip title="Customize Layer Settings">
+																<Tooltip title="Customize">
 																	<IconButton
 																		className={classes.button}
 																		onClick={() => {

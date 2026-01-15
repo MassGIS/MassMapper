@@ -32,7 +32,7 @@ const ShowCoordinatesToolComponent: FunctionComponent<ToolComponentProps> = obse
 				position: 'relative',
 				top: '3px',
 			}}>
-				<Tooltip title="Choose map units">
+				<Tooltip title="Units">
 					<Button
 						style={{
 							marginTop: '0',

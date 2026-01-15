@@ -33,7 +33,7 @@ class HelpTool extends Tool {
 	public component() {
 		return MakeToolButtonComponent(
             HelpOutline,
-            'See help documentation',
+            'Help',
             () => {
                 window.open(this._url);
             },

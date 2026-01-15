@@ -56,7 +56,7 @@ const PrintPdfToolComponent: FunctionComponent<ToolComponentProps> = observer(({
 
 	const mapService = useService(MapService);
 
-	const PrintPdfButton = MakeToolButtonComponent(Print, 'Create a PDF map', () => {
+	const PrintPdfButton = MakeToolButtonComponent(Print, 'PDF', () => {
 		tool.activate();
 	});
 
