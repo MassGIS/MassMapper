@@ -473,8 +473,10 @@ class MapService {
 		this._layerControl = new Control.Layers();
 		Leaflet.extend(this._layerControl, {
 			_initLayout: function() {
-				// Add opacity control.
+				let self = this;
 				Control.Layers.prototype['_initLayout'].call(this);
+
+				// Add opacity control.
 				DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
 				let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
 				opacity.style.textAlign = 'center';
@@ -486,6 +488,17 @@ class MapService {
 					})
 					opacity.getElementsByTagName('span')[0].innerHTML = ' (' + value + '%)';
 				}
+
+				// Add close link to the top of the list (for keyboard users).
+				DomUtil.toBack(
+					DomUtil.create('div', 'leaflet-control-layers-separator', this['_section'])
+				);
+				let close = DomUtil.create('div', 'leaflet-control-layers-close', this['_section']);
+				close.innerHTML = '<a href="javacript:void(0)" title="Close">Close</a>';
+				close.getElementsByTagName('a')[0].onclick = function() {
+					self['collapse']();
+				}
+				DomUtil.toBack(close);
 			},
 			_checkDisabledLayers: function () {
 				// Control label class based on basemap enabled / disabled.
