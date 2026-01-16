@@ -15,3 +15,7 @@
 .leaflet-container {
     background-color: #fff;
 }
+
+.leaflet-control-layers-close {
+    text-align: right;
+}
