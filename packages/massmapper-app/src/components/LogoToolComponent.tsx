@@ -11,7 +11,6 @@ const LogoToolComponent: FunctionComponent<ToolComponentProps> = ({tool}) => {
 		<Tooltip title={logoTooltip}>
 			<Button
 				color="default"
-				title={logoTooltip}
 				size="small"
 				onClick={() => {
 					window.open(logoLink)
