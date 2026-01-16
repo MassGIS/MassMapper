@@ -121,7 +121,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 				getOptionLabel={(option) => option.title}
 				style={{ width: '100%', paddingTop: '10px' }}
 				renderInput={(params) =>
-					<Tooltip title="Search">
+					<Tooltip title="Search for a Layer">
 						<TextField
 							{...params}
 							variant="outlined"
