@@ -75,7 +75,7 @@ class MeasureTool extends Tool {
 	private _updateMeasureUI(evt: any) {
 		const handler = this._measureHandler;
 		if (handler && this._active) {
-			if (this.measureMode === 'Length') {
+			if (this.measureMode === 'Length' && handler['_markers'].length > 0) {
 				const total = parseFloat(handler['_getMeasurementString']());
 				if (total) {
 					this._totalLength = total;
