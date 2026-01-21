@@ -532,6 +532,8 @@ class MapService {
 			}
 		});
 
+		this._map?.removeControl(this._map.zoomControl);
+
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
 			const toAdd: Layer[] = [];

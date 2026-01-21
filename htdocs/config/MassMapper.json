@@ -12,6 +12,11 @@
 	"xGridLicenseKey" : "XGRID LICENSE KEY HERE",
 	"tools": [
 		{
+			"id": "zoom-tool",
+			"position": "topleft",
+			"class": "ZoomTool"
+		},
+		{
 			"id": "zoom-max-extent-tool",
 			"position": "topleft",
 			"class" : "ZoomToMaxExtentTool"

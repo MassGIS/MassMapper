@@ -17,6 +17,7 @@ import { PrintPdfTool } from "../models/PrintPdfTool";
 import { ZoomToMaxExtentTool } from '../models/ZoomToMaxExtentTool';
 import { ExportWizardTool } from "../models/ExportWizardTool";
 import { ExtentHistoryTool } from "../models/ExtentHistoryTool";
+import { ZoomTool } from "../models/ZoomTool";
 import { HelpTool } from "../models/HelpTool";
 import { DrawTool } from "../models/DrawTool";
 
@@ -43,6 +44,7 @@ ToolRegistry.set('PrintPdfTool', PrintPdfTool);
 ToolRegistry.set('ZoomToMaxExtentTool', ZoomToMaxExtentTool);
 ToolRegistry.set('ExportWizardTool', ExportWizardTool)
 ToolRegistry.set('ExtentHistoryTool', ExtentHistoryTool);
+ToolRegistry.set('ZoomTool', ExtentHistoryTool);
 ToolRegistry.set('HelpTool', HelpTool);
 ToolRegistry.set('DrawTool', DrawTool);
 
