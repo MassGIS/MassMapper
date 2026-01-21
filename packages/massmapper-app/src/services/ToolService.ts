@@ -44,7 +44,7 @@ ToolRegistry.set('PrintPdfTool', PrintPdfTool);
 ToolRegistry.set('ZoomToMaxExtentTool', ZoomToMaxExtentTool);
 ToolRegistry.set('ExportWizardTool', ExportWizardTool)
 ToolRegistry.set('ExtentHistoryTool', ExtentHistoryTool);
-ToolRegistry.set('ZoomTool', ExtentHistoryTool);
+ToolRegistry.set('ZoomTool', ZoomTool);
 ToolRegistry.set('HelpTool', HelpTool);
 ToolRegistry.set('DrawTool', DrawTool);
 

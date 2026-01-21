@@ -1,6 +1,6 @@
 import {
-	ArrowBack,
-	ArrowForward
+	Add,
+	Remove
 } from '@material-ui/icons'
 
 import { observer } from 'mobx-react-lite';
@@ -13,11 +13,11 @@ import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as ZoomTool;
 
-	const PreviousExtentButton = MakeToolButtonComponent(
-		ArrowBack,
-		'Previous Zoom',
+	const ZoomInButton = MakeToolButtonComponent(
+		Add,
+		'Zoom In',
 		(e) => {
-			tool.back();
+			tool.zoomIn();
 		},
 		undefined,
 		{
@@ -25,11 +25,11 @@ const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			maxWidth: '30px',
 		}
 	);
-	const NextExtentButton = MakeToolButtonComponent(
-		ArrowForward,
-		'Next Zoom',
+	const ZoomOutButton = MakeToolButtonComponent(
+		Remove,
+		'Zoom Out',
 		(e) => {
-			tool.forward();
+			tool.zoomOut();
 		},
 		undefined,
 		{
@@ -43,12 +43,12 @@ const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			<div style={{
 				marginBottom: '.5em'
 			}}>
-				<PreviousExtentButton
+				<ZoomInButton
 					tool={tool}
 				/>
 			</div>
 			<div>
-				<NextExtentButton
+				<ZoomOutButton
 					tool={tool}
 				/>
 			</div>

@@ -2,15 +2,11 @@ import { MapService } from "../services/MapService";
 import { Tool, ToolPosition } from "./Tool";
 import { ZoomToolComponent } from "../components/ZoomToolComponent";
 import { ContainerInstance } from "typedi";
-import { LatLngBounds } from "leaflet";
 import { autorun } from "mobx";
 
 class ZoomTool extends Tool {
 
 	protected _isButton = true;
-	private _Zoom:LatLngBounds[] = [];
-	private _historyPointer:number = 0;
-	private _skipNext: boolean = false;
 
 	constructor(
 		protected readonly _services:ContainerInstance,
@@ -18,55 +14,23 @@ class ZoomTool extends Tool {
 		public position: ToolPosition,
 		public readonly options:any
 	) {
-		super(_services,id,position,options);
-
-		this._Zoom = [];
-		window['Zoom'] = this._Zoom;
+		super(_services, id, position, options);
 
 		const mapService = _services.get(MapService);
 		autorun((r) => {
 			if (!mapService.leafletMap) {
 				return;
 			}
-			mapService.leafletMap!.on('moveend zoomend', () => {
-				if (this._historyPointer > 0 &&
-						this._Zoom[this._historyPointer - 1].equals(mapService.leafletMap!.getBounds())) {
-					// spurrious move/zoom.  Ignore it.
-					return;
-				}
-				if (this._skipNext) {
-					this._skipNext = false;
-					return;
-				}
-				if (this._historyPointer !== this._Zoom.length) {
-					this._Zoom = this._Zoom.slice(0, this._historyPointer);
-					window['Zoom'] = this._Zoom;
-				}
-				this._Zoom.push(mapService.leafletMap!.getBounds());
-				this._historyPointer = this._Zoom.length;
-			});
 			r.dispose();
 		});
 	}
 
-	public back() {
-		if (this._historyPointer <= 1) {
-			// no-op
-			return;
-		}
-		this._historyPointer--;
-		this._skipNext = true;
-		this._services.get(MapService).leafletMap!.fitBounds(this._Zoom[this._historyPointer - 1]);
+	public zoomIn() {
+		this._services.get(MapService).leafletMap!.zoomIn();
 	}
 
-	public forward() {
-		if (this._historyPointer === this._Zoom.length) {
-			// no-op
-			return;
-		}
-		this._historyPointer++;
-		this._skipNext = true;
-		this._services.get(MapService).leafletMap!.fitBounds(this._Zoom[this._historyPointer - 1]);
+	public zoomOut() {
+		this._services.get(MapService).leafletMap!.zoomOut();
 	}
 
 	protected async _deactivate() {
