@@ -45,6 +45,18 @@ class MapService {
 		}
 	}
 
+	get mapZoom() {
+		return this._mapZoom;
+	}
+
+	get layersMaxZoom() {
+		return this._layersMaxZoom;
+	}
+
+	get layersMinZoom() {
+		return this._layersMinZoom;
+	}
+
 	get activeBaseLayer() {
 		return this._activeBaseLayer;
 	}
@@ -61,6 +73,8 @@ class MapService {
 	private _map: LeafletMap | null = null;
 	private _ready: boolean = false;
 	private _mapZoom: number = 0;
+	private _layersMaxZoom: undefined | number = 0;
+	private _layersMinZoom: undefined | number = 0;
 	private _mapExtent: number[] = [0, 0, 0, 0];
 	private _layerControl:Control.Layers;
 	private _selectedFeatures: Array<LeafletLayer> = [];
@@ -185,7 +199,7 @@ class MapService {
 	constructor(private readonly _services: ContainerInstance) {
 		this._leafletLayers = new Map<string, TileLayer>();
 
-		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_mapExtent' | '_leafletLayers' | '_activeBaseLayer'>(
+		makeObservable<MapService, '_map' | '_ready' | '_mapZoom' | '_layersMinZoom' | '_layersMaxZoom' | '_mapExtent' | '_leafletLayers' | '_activeBaseLayer'>(
 			this,
 			{
 				_activeBaseLayer: observable,
@@ -195,6 +209,8 @@ class MapService {
 				_mapExtent: observable,
 				_ready: observable,
 				currentScale: computed,
+				_layersMinZoom: observable,
+				_layersMaxZoom: observable
 			}
 		);
 	}
@@ -278,6 +294,7 @@ class MapService {
 			if (!cat.ready || !cs.ready || !ls.ready) {
 				return;
 			}
+			const self = this;
 
 			// To avoid having to do the whole Leaflet submodule dance, override core zoom functionality here to never show
 			// overlays beyond the base layer's minZoom / maxZoom.  As indicated below, assume that the 1st layer is the base layer!
@@ -298,8 +315,8 @@ class MapService {
 					maxZoom = baseLayer.options.maxZoom === undefined ? maxZoom : Math.min(baseLayer.options.maxZoom, options.maxZoom);
 				}
 
-				this._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
-				this._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
+				self._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
+				self._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
 
 				// @section Map state change events
 				// @event zoomlevelschange: Event
@@ -308,12 +325,11 @@ class MapService {
 				if (oldZoomSpan !== this._getZoomSpan()) {
 					this.fire('zoomlevelschange');
 				}
-
-				if (this.options.maxZoom === undefined && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
-					this.setZoom(this._layersMaxZoom);
+				if (this.options.maxZoom === undefined && self._layersMaxZoom && this.getZoom() > self._layersMaxZoom) {
+					this.setZoom(self._layersMaxZoom);
 				}
-				if (this.options.minZoom === undefined && this._layersMinZoom && this.getZoom() < this._layersMinZoom) {
-					this.setZoom(this._layersMinZoom);
+				if (this.options.minZoom === undefined && this._layersMinZoom && this.getZoom() < self._layersMinZoom) {
+					this.setZoom(self._layersMinZoom);
 				}
 			}});
 

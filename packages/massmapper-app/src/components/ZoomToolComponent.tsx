@@ -10,8 +10,12 @@ import { ToolComponentProps } from '../models/Tool';
 import { ZoomTool } from '../models/ZoomTool';
 import { MakeToolButtonComponent } from './MakeToolButtonComponent';
 
+import { MapService } from '../services/MapService';
+import { useService } from '../services/useService';
+
 const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool: _tool}) => {
 	const tool = _tool as ZoomTool;
+	const [mapService] = useService([MapService]);
 
 	const ZoomInButton = MakeToolButtonComponent(
 		Add,
@@ -19,7 +23,9 @@ const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 		(e) => {
 			tool.zoomIn();
 		},
-		undefined,
+		() => {
+			return mapService.mapZoom >= mapService.layersMaxZoom!;
+		},
 		{
 			minWidth: '30px',
 			maxWidth: '30px',
@@ -31,7 +37,10 @@ const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 		(e) => {
 			tool.zoomOut();
 		},
-		undefined,
+		() => {
+			console.log(mapService.layersMinZoom)
+			return mapService.mapZoom <= mapService.layersMinZoom!;
+		},
 		{
 			minWidth: '30px',
 			maxWidth: '30px',
