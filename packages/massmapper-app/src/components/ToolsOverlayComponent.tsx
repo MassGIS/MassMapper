@@ -11,7 +11,7 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 			<div
 				style={{
 					position: 'absolute',
-					left: '60px',
+					left: '10px',
 					top: '10px',
 					zIndex: 1000,
 					display: 'flex',
