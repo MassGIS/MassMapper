@@ -4,22 +4,81 @@ import { ToolPosition } from '../models/Tool';
 import { ToolService } from '../services/ToolService';
 import { useService } from '../services/useService';
 
-const ToolsOverlayComponent: FunctionComponent = observer(() => {
+interface ToolsOverlayComponentProps {
+	position: 'top' | 'bottom';
+}
+
+const ToolsOverlayComponent: FunctionComponent<ToolsOverlayComponentProps> = observer(({position}) => {
 	const toolService = useService(ToolService);
-	return (
-		<>
-			<div
-				style={{
-					position: 'absolute',
-					left: '10px',
-					top: '10px',
-					zIndex: 1000,
-					display: 'flex',
-					flexDirection: 'row',
-				}}
-			>
+	if (position === 'top') {
+		return (
+			<>
+				<div
+					style={{
+						position: 'absolute',
+						left: '10px',
+						top: '10px',
+						zIndex: 1000,
+						display: 'flex',
+						flexDirection: 'row',
+					}}
+				>
+					{
+						toolService.getTools(ToolPosition.topleft)
+							.map((tool) => {
+								const ToolComponent = tool.component();
+								return (
+									<div
+										style={{
+											marginRight:'.8em',
+										}}
+										key={tool.id}><ToolComponent
+										tool={tool}
+									/></div>
+								);
+							})
+					}
+				</div>
+
+				<div
+					style={{
+						position: 'absolute',
+						left: '10px',
+						top: '100px',
+						zIndex: 1000,
+						display: 'flex',
+						flexDirection: 'column',
+					}}
+				>
+					{
+						toolService.getTools(ToolPosition.topleftvertical)
+							.map((tool) => {
+								const ToolComponent = tool.component();
+								return (
+									<div
+										style={{
+											marginRight:'.8em',
+										}}
+										key={tool.id}><ToolComponent
+										tool={tool}
+									/></div>
+								);
+							})
+					}
+				</div>
+
+				<div
+					style={{
+						position: 'absolute',
+						right: '80px',
+						top: '10px',
+						zIndex: 1000,
+						display: 'flex',
+						flexDirection: 'row-reverse',
+					}}
+				>
 				{
-					toolService.getTools(ToolPosition.topleft)
+					toolService.getTools(ToolPosition.topright)
 						.map((tool) => {
 							const ToolComponent = tool.component();
 							return (
@@ -33,20 +92,25 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 							);
 						})
 				}
-			</div>
-
-			<div
-				style={{
-					position: 'absolute',
-					left: '10px',
-					top: '100px',
-					zIndex: 1000,
-					display: 'flex',
-					flexDirection: 'column',
-				}}
-			>
+				</div>
+			</>
+		)
+	}
+	else if (position === 'bottom') {
+		return (
+			<>
+				<div
+					style={{
+						position: 'absolute',
+						right: '0px',
+						bottom: '15px',
+						zIndex: 1000,
+						display: 'flex',
+						flexDirection: 'row-reverse',
+					}}
+				>
 				{
-					toolService.getTools(ToolPosition.topleftvertical)
+					toolService.getTools(ToolPosition.bottomright)
 						.map((tool) => {
 							const ToolComponent = tool.component();
 							return (
@@ -60,63 +124,15 @@ const ToolsOverlayComponent: FunctionComponent = observer(() => {
 							);
 						})
 				}
-			</div>
-
-			<div
-				style={{
-					position: 'absolute',
-					right: '80px',
-					top: '10px',
-					zIndex: 1000,
-					display: 'flex',
-					flexDirection: 'row-reverse',
-				}}
-			>
-			{
-				toolService.getTools(ToolPosition.topright)
-					.map((tool) => {
-						const ToolComponent = tool.component();
-						return (
-							<div
-								style={{
-									marginRight:'.8em',
-								}}
-								key={tool.id}><ToolComponent
-								tool={tool}
-							/></div>
-						);
-					})
-			}
-			</div>
-
-			<div
-				style={{
-					position: 'absolute',
-					right: '0px',
-					bottom: '15px',
-					zIndex: 1000,
-					display: 'flex',
-					flexDirection: 'row-reverse',
-				}}
-			>
-			{
-				toolService.getTools(ToolPosition.bottomright)
-					.map((tool) => {
-						const ToolComponent = tool.component();
-						return (
-							<div
-								style={{
-									marginRight:'.8em',
-								}}
-								key={tool.id}><ToolComponent
-								tool={tool}
-							/></div>
-						);
-					})
-			}
-			</div>
-		</>
-	);
+				</div>
+			</>
+		);
+	}
+	else {
+		return (
+			<></>
+		);
+	}
 });
 
 
