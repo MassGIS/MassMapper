@@ -328,7 +328,7 @@ class MapService {
 				if (this.options.maxZoom === undefined && self._layersMaxZoom && this.getZoom() > self._layersMaxZoom) {
 					this.setZoom(self._layersMaxZoom);
 				}
-				if (this.options.minZoom === undefined && this._layersMinZoom && this.getZoom() < self._layersMinZoom) {
+				if (this.options.minZoom === undefined && self._layersMinZoom && this.getZoom() < self._layersMinZoom) {
 					this.setZoom(self._layersMinZoom);
 				}
 			}});
@@ -548,7 +548,7 @@ class MapService {
 			}
 		});
 
-		this._map?.removeControl(this._map.zoomControl);
+		// this._map?.removeControl(this._map.zoomControl);
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
