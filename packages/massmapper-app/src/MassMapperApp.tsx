@@ -110,7 +110,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 				<IdentifyResultsModal />
 				<Grid className={classes.container} container item wrap="nowrap">
 					<Grid className={classes.mapContainer} item>
-						<ToolsOverlayComponent />
+						<ToolsOverlayComponent 
+							position="top"
+						/>
 						<MapContainer
 							className={classes.map}
 							scrollWheelZoom={true}
@@ -121,6 +123,9 @@ const MassMapperApp: FunctionComponent<MassMapperAppProps> = observer(() => {
 								[configService.maxBounds[1], configService.maxBounds[0]],
 								[configService.maxBounds[3], configService.maxBounds[2]]
 							]}
+						/>
+						<ToolsOverlayComponent 
+							position="bottom"
 						/>
 					</Grid>
 					<Grid style={{maxHeight: '100vh'}} component={Paper} item square xs={3}>
