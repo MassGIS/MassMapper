@@ -294,7 +294,7 @@ class MapService {
 			if (!cat.ready || !cs.ready || !ls.ready) {
 				return;
 			}
-			const self = this;
+			let self = this;
 
 			// To avoid having to do the whole Leaflet submodule dance, override core zoom functionality here to never show
 			// overlays beyond the base layer's minZoom / maxZoom.  As indicated below, assume that the 1st layer is the base layer!
@@ -315,8 +315,8 @@ class MapService {
 					maxZoom = baseLayer.options.maxZoom === undefined ? maxZoom : Math.min(baseLayer.options.maxZoom, options.maxZoom);
 				}
 
-				self._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
-				self._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
+				this._layersMaxZoom = maxZoom === -Infinity ? undefined : maxZoom;
+				this._layersMinZoom = minZoom === Infinity ? undefined : minZoom;
 
 				// @section Map state change events
 				// @event zoomlevelschange: Event
@@ -325,12 +325,15 @@ class MapService {
 				if (oldZoomSpan !== this._getZoomSpan()) {
 					this.fire('zoomlevelschange');
 				}
-				if (this.options.maxZoom === undefined && self._layersMaxZoom && this.getZoom() > self._layersMaxZoom) {
-					this.setZoom(self._layersMaxZoom);
+				if (this.options.maxZoom === undefined && this._layersMaxZoom && this.getZoom() > this._layersMaxZoom) {
+					this.setZoom(this._layersMaxZoom);
 				}
-				if (this.options.minZoom === undefined && self._layersMinZoom && this.getZoom() < self._layersMinZoom) {
-					this.setZoom(self._layersMinZoom);
+				if (this.options.minZoom === undefined && this._layersMinZoom && this.getZoom() < this._layersMinZoom) {
+					this.setZoom(this._layersMinZoom);
 				}
+
+				self._layersMinZoom = this._layersMinZoom;
+				self._layersMaxZoom = this._layersMaxZoom;
 			}});
 
 			// Add standard overlays if empty permalink (which implies MassGIS basemap).
@@ -548,7 +551,8 @@ class MapService {
 			}
 		});
 
-		// this._map?.removeControl(this._map.zoomControl);
+		// We're rolling our own zoom control.
+		this._map?.removeControl(this._map.zoomControl);
 
 		// after every change to the enabledLayers, sync the layer list to the map
 		autorun(() => {
