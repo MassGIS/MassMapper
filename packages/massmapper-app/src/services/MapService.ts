@@ -518,6 +518,9 @@ class MapService {
 					self['collapse']();
 				}
 				DomUtil.toBack(close);
+
+				// Change the title to Basemaps.
+				this['_layersLink'].title = 'Basemaps';
 			},
 			_checkDisabledLayers: function () {
 				// Control label class based on basemap enabled / disabled.
