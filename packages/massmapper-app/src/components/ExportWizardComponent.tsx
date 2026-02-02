@@ -301,7 +301,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								>
 									<TableHead>
 										<TableRow>
-											<TableCell padding="normal"></TableCell>
+											<TableCell padding="normal">Feature Type</TableCell>
 											<TableCell padding="normal">Data Layer Name</TableCell>
 											<TableCell padding="normal">Feature(s) Found</TableCell>
 											<TableCell padding="normal">OK to export?</TableCell>
