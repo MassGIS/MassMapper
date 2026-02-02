@@ -229,6 +229,9 @@ const LegendComponent: FunctionComponent<LegendComponentProps> = observer(({}) =
 																		}}
 																		checked={l.enabled}
 																		color="default"
+																		inputProps={{
+																			"aria-label": l.enabled ? 'Disable' : 'Enable'
+																		}}
 																	/>
 																</Tooltip>
 

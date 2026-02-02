@@ -125,6 +125,9 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 						<TextField
 							{...params}
 							variant="outlined"
+							inputProps={{
+								"aria-label": "Search for a Layer"
+							}}
 						/>
 					</Tooltip>
 				}
