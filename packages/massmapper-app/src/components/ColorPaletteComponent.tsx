@@ -1,4 +1,4 @@
-import { Button, Grid, Typography } from "@material-ui/core";
+import { Button, Grid, Typography, Tooltip } from "@material-ui/core";
 import { observer } from "mobx-react";
 import React, { FunctionComponent, useState } from "react";
 
@@ -65,26 +65,33 @@ const ColorPaletteComponent: FunctionComponent<ColorPaletteComponentProps> = obs
         <>
 					<Grid>
 						{COLOR_PALETTE.map(({name, hex}) => {
-							return (<Button
-									key={hex}
-									value={name}
-									onClick={(e) => {
-											setSelectedColor(name);
-											return onClick(name, hex)
-									}}
-									style={{
-											backgroundColor: selectedColor === name ? 'grey': ''
-									}}
-							>
-									<div
-											style={{
-													backgroundColor: hex,
-													border: '1px solid black',
-													height: '15px',
-													width: '15px',
-											}}
-									/>
-							</Button>)
+							return (
+								<Tooltip
+									title={name.replace(/_/g, ' ')}
+								>
+									<Button
+										key={hex}
+										value={name}
+										onClick={(e) => {
+												setSelectedColor(name);
+												return onClick(name, hex)
+										}}
+										style={{
+												backgroundColor: selectedColor === name ? 'grey': ''
+										}}
+									>
+										<div
+												style={{
+														backgroundColor: hex,
+														border: '1px solid black',
+														height: '15px',
+														width: '15px',
+												}}
+												aria-label={name.replace(/_/g, ' ')}
+										/>
+									</Button>
+								</Tooltip>
+							)
 						})}
 					</Grid>
 					{hasReset && selectedColor !== undefined && (
