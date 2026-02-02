@@ -158,6 +158,7 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 							});
 						}}
 						aria-label="Close"
+						title="Close"
 					>
 						<Close/>
 					</Button>
