@@ -29,9 +29,12 @@ const MakeToolButtonComponent = (Icon:any, tooltip:string, onclick?: MouseEventH
 							height: '24px',
 						}}
 						src={Icon}
+						alt={tooltip}
 					/>
 				):
-				(<Icon />)
+				(<Icon 
+					aria-label={tooltip}
+				/>)
 				}
 				</Button>
 			</Tooltip>

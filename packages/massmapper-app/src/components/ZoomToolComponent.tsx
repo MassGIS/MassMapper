@@ -38,7 +38,6 @@ const ZoomToolComponent: FunctionComponent<ToolComponentProps> = observer(({tool
 			tool.zoomOut();
 		},
 		() => {
-			console.log(mapService.layersMinZoom)
 			return mapService.mapZoom <= mapService.layersMinZoom!;
 		},
 		{
