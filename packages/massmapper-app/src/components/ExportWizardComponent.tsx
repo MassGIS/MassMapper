@@ -157,8 +157,9 @@ const ExportWizardComponent: FunctionComponent<ToolComponentProps> = observer(({
 								tool.activeStep = undefined;
 							});
 						}}
+						aria-label="Close"
 					>
-						<Close />
+						<Close/>
 					</Button>
 				</DialogActions>
 
