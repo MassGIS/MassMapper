@@ -197,6 +197,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						onTouchEnd={() => {
 							myState.windowSize = myState.windowSize === 'xl' ? 'xs':'xl'
 						}}
+						title={myState.windowSize === 'xl' ? 'Collapse': 'Expand'}
 					>
 						{myState.windowSize === 'xl' && <PhotoSizeSelectSmall />}
 						{myState.windowSize === 'xs' && <AspectRatio />}
@@ -212,6 +213,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 							selectionService.clearIdentifyResults()
 							selectionService.selectedIdentifyResult = undefined;
 						}}
+						title="Close"
 					>
 						<Close />
 					</Button>
