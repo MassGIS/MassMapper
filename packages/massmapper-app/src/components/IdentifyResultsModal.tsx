@@ -276,7 +276,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 						>
 							<TableHead>
 								<TableRow>
-									<TableCell padding="normal"></TableCell>
+									<TableCell padding="normal">Feature Type</TableCell>
 									<TableCell padding="normal">Data Layer Name</TableCell>
 									<TableCell padding="normal">Feature(s) Found?</TableCell>
 								</TableRow>
@@ -297,6 +297,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 											<img
 												style={iconStyle}
 												src={imageTypes.get(result.layer.layerType as string)!.image}
+												title={imageTypes.get(result.layer.layerType as string)!.label}
 											/>
 										</TableCell>
 										<TableCell>{result.layer.title}</TableCell>
