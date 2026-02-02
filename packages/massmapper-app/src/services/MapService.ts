@@ -499,7 +499,7 @@ class MapService {
 				DomUtil.create('div', 'leaflet-control-layers-separator', this['_section']);
 				let opacity = DomUtil.create('div', 'leaflet-control-layers-opacity', this['_section']);
 				opacity.style.textAlign = 'center';
-				opacity.innerHTML = 'Opacity <span>(' + basemapOpacity + '%)</span><br/>0% <input type="range" min="0" max="100" value="' + basemapOpacity + '" class="slider" style="height:10px"> 100%';
+				opacity.innerHTML = 'Opacity <span>(' + basemapOpacity + '%)</span><br/>0% <input type="range" min="0" max="100" aria-label="Opacity" value="' + basemapOpacity + '" class="slider" style="height:10px"> 100%';
 				opacity.getElementsByTagName('input')[0].oninput = function() {
 					const value = this['value'];
 					basemaps.forEach(o => {
