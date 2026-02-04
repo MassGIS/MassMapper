@@ -298,6 +298,7 @@ const IdentifyResultsModal: FunctionComponent<IdentifyResultsModalProps> = obser
 												style={iconStyle}
 												src={imageTypes.get(result.layer.layerType as string)!.image}
 												title={imageTypes.get(result.layer.layerType as string)!.label}
+												alt={imageTypes.get(result.layer.layerType as string)!.label}
 											/>
 										</TableCell>
 										<TableCell>{result.layer.title}</TableCell>
