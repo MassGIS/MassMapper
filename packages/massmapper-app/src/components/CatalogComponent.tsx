@@ -84,6 +84,20 @@ const renderTree = (nodes: CatalogTreeNode[], classes:ClassNameMap, gsurl: strin
 						);
 						addLayer(l);
 					}}
+					onKeyUp={(e) => {
+						if (/enter/i.test(e.code)) {
+							const l = new Layer(
+								node.name!,
+								node.style!,
+								node.title!,
+								node.type!,
+								node.agol || gsurl + '/geoserver/wms',
+								node.query || node.name!,
+								gsurl,
+							);
+							addLayer(l);
+						}
+					}}
 				/>
 			)));
 		}
