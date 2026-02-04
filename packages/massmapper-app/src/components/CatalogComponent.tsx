@@ -126,6 +126,7 @@ const CatalogComponent: FunctionComponent<CatalogComponentProps> = observer(({})
 							{...params}
 							variant="outlined"
 							inputProps={{
+								...params.inputProps,
 								"aria-label": "Search for a Layer"
 							}}
 						/>
