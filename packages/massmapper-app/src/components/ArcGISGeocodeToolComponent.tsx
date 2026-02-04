@@ -201,7 +201,8 @@ const ArcGISGeocodeToolComponent: FunctionComponent<ArcGISGeocodeToolComponentPr
 									}}
 									placeholder={myState.isFocused ? '' : 'Enter a location...'}
 									inputProps={{
-										"aria-label": "Enter a location",
+										...params.inputProps,
+										"aria-label": "Enter a location"
 									}}
 								/>
 							</Tooltip>
